@@ -5,8 +5,22 @@ import { Label } from "@/components/ui/label";
 import { Download, FileText, Settings } from "lucide-react";
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import html2pdf from "html2pdf.js";
 import { MicroRegionData } from "@/types/dashboard";
 import { useState } from "react";
+import { useRef } from "react";
+import { useEffect } from "react";
+import { Filters } from '@/components/dashboard/Filters';
+import { DashboardHeader } from '@/components/dashboard/DashboardHeader';
+import { StatsOverview } from '@/components/dashboard/StatsOverview';
+import { DashboardRadarChart } from '@/components/dashboard/RadarChart';
+import { DashboardBarChart } from '@/components/dashboard/BarChart';
+import { EixosTable } from '@/components/dashboard/EixosTable';
+import { PopulationChart } from '@/components/dashboard/PopulationChart';
+import { RecommendationsPanel } from '@/components/dashboard/RecommendationsPanel';
+import { ExecutiveDashboard } from '@/components/dashboard/ExecutiveDashboard';
+import { AdvancedAnalysis } from '@/components/dashboard/AdvancedAnalysis';
+import { PDFStatsOverview } from '../pdf/PDFStatsOverview';
 
 interface DownloadPDFProps {
   selectedData: MicroRegionData;
@@ -723,7 +737,7 @@ export function DownloadPDF({ selectedData, data, selectedMicroregiao }: Downloa
             </div>
           )}
           
-          <div className="pt-4 border-t">
+          <div className="pt-4 border-t space-y-2">
             <Button 
               onClick={generatePDF}
               className="w-full"
@@ -741,9 +755,111 @@ export function DownloadPDF({ selectedData, data, selectedMicroregiao }: Downloa
                 </>
               )}
             </Button>
+            {/* Novo botão para exportar a tela visual */}
+            <ExportScreenPDFButton 
+              filteredData={data}
+              selectedData={selectedData}
+              selectedMicroregiao={selectedMicroregiao}
+              filters={{}} // Placeholder, as filters are not managed by this component
+              medians={{}} // Placeholder, as medians are not managed by this component
+              handleMicroregiaoChange={() => {}} // Placeholder
+              handleFiltersChange={() => {}} // Placeholder
+              handleNavigateToRecommendations={() => {}} // Placeholder
+            />
           </div>
         </div>
       </DialogContent>
     </Dialog>
+  );
+} 
+
+interface ExportScreenPDFButtonProps {
+  filteredData: any[];
+  selectedData: any;
+  selectedMicroregiao: string;
+  filters: any;
+  medians: any;
+  handleMicroregiaoChange: (microrregiao: string) => void;
+  handleFiltersChange: (filters: any) => void;
+  handleNavigateToRecommendations: (eixoIndex: number) => void;
+}
+
+function ExportScreenPDFButton({
+  filteredData,
+  selectedData,
+  selectedMicroregiao,
+  filters,
+  medians,
+  handleMicroregiaoChange,
+  handleFiltersChange,
+  handleNavigateToRecommendations,
+}: ExportScreenPDFButtonProps) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleExport = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      // Capturar seções selecionadas
+      const secoesSelecionadas = (sections || []).filter(s => s.checked).map(s => s.id);
+      // Enviar evento customizado para o Clarity
+      if ((window as any).clarity) {
+        (window as any).clarity('set', 'exportou_pdf', {
+          secoes: secoesSelecionadas,
+          data: new Date().toISOString()
+        });
+      }
+      const dashboard = document.getElementById("dashboard-content");
+      if (!dashboard) {
+        setError("Não foi possível encontrar o conteúdo do dashboard na tela.");
+        setLoading(false);
+        return;
+      }
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      await new Promise((resolve) => setTimeout(resolve, 400));
+      // Usar html2pdf.js para exportar a tela como imagem
+      const opt = {
+        margin: [10, 10, 10, 10],
+        filename: 'dashboard-visual.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+      };
+      await (window as any).html2pdf().set(opt).from(dashboard).save();
+    } catch (e) {
+      setError("Erro ao exportar a tela. Tente novamente.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="space-y-1">
+      <button
+        onClick={handleExport}
+        className="w-full bg-green-600 hover:bg-green-700 text-white p-2 rounded"
+        disabled={loading}
+        type="button"
+      >
+        {loading ? (
+          <>
+            <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></span>
+            Exportando tela...
+          </>
+        ) : (
+          <>
+            Exportar Tela para PDF
+          </>
+        )}
+      </button>
+      <p className="text-xs text-muted-foreground text-center">
+        Exporta exatamente o que está visível na tela do dashboard.<br/>
+        <span className="text-yellow-700 font-semibold">Dica:</span> Expanda todas as caixas, role até o final e feche modais antes de exportar.<br/>
+        O PDF será dividido em páginas A4 automaticamente e tentará não cortar blocos no meio.
+      </p>
+      {error && <p className="text-xs text-red-600 text-center">{error}</p>}
+    </div>
   );
 } 

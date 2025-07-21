@@ -257,7 +257,7 @@ const Index = () => {
 
       {/* Main Content */}
       <main className={`px-4 sm:px-6 lg:px-8 py-8 transition-all duration-300 ${getSidebarMargin()}`}>
-        <div className="max-w-6xl mx-auto">
+        <div id="dashboard-content" className="max-w-6xl mx-auto">
         {/* Filtros */}
         <div id="filtros" className="mb-16">
           <Filters
