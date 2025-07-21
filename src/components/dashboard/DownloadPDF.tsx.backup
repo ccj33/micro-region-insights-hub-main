@@ -1,0 +1,1131 @@
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { Download, FileText, Settings } from "lucide-react";
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+import { MicroRegionData } from "@/types/dashboard";
+import { useState } from "react";
+
+interface DownloadPDFProps {
+  selectedData: MicroRegionData;
+  data: MicroRegionData[];
+  selectedMicroregiao: string;
+}
+
+interface SectionOption {
+  id: string;
+  label: string;
+  checked: boolean;
+}
+
+export function DownloadPDF({ selectedData, data, selectedMicroregiao }: DownloadPDFProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [sections, setSections] = useState<SectionOption[]>([
+    { id: 'stats', label: 'Estatísticas Gerais', checked: true },
+    { id: 'radar', label: 'Gráfico Radar (Comparação por Eixos)', checked: true },
+    { id: 'bar', label: 'Gráfico de Barras (Ranking)', checked: true },
+    { id: 'table', label: 'Tabela de Eixos', checked: true },
+    { id: 'population', label: 'Gráfico de População', checked: true },
+    { id: 'recommendations', label: 'Recomendações por Eixo', checked: true },
+    { id: 'executive', label: 'Dashboard Executivo', checked: true },
+    { id: 'advanced', label: 'Análise Avançada', checked: true },
+    { id: 'eixos-detail', label: 'Detalhamento por Eixos de Maturidade', checked: true },
+  ]);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generationProgress, setGenerationProgress] = useState('');
+
+  const handleSelectAll = (checked: boolean) => {
+    setSections(sections.map(section => ({ ...section, checked })));
+  };
+
+  const handleSectionChange = (id: string, checked: boolean) => {
+    setSections(sections.map(section => 
+      section.id === id ? { ...section, checked } : section
+    ));
+  };
+
+  const generatePDF = async () => {
+    try {
+      setIsGenerating(true);
+      const selectedSections = sections.filter(s => s.checked);
+      if (selectedSections.length === 0) {
+        alert('Selecione pelo menos uma seção para incluir no PDF.');
+        setIsGenerating(false);
+        return;
+      }
+
+      setGenerationProgress('Iniciando geração do PDF...');
+      
+      // Configurações do PDF para A4
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+      });
+
+      let currentPage = 1;
+      const totalPages = selectedSections.length + 1; // +1 para página de capa
+
+      // Página de capa
+      setGenerationProgress('Criando página de capa...');
+      const coverPage = generateCoverPage();
+      await addPageToPDF(pdf, coverPage, currentPage, totalPages);
+      currentPage++;
+
+      // Aguardar um pouco para garantir que os gráficos sejam renderizados
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      // Adicionar seções selecionadas (uma por página)
+      for (const section of selectedSections) {
+        try {
+          setGenerationProgress(`Gerando seção: ${section.label}...`);
+          
+          let sectionContent = '';
+          switch (section.id) {
+            case 'stats':
+              sectionContent = generateStatsPage();
+              break;
+            case 'radar':
+              sectionContent = await generateRadarPage();
+              break;
+            case 'bar':
+              sectionContent = await generateBarPage();
+              break;
+            case 'table':
+              sectionContent = generateTablePage();
+              break;
+            case 'population':
+              sectionContent = await generatePopulationPage();
+              break;
+            case 'recommendations':
+              sectionContent = generateRecommendationsPage();
+              break;
+            case 'executive':
+              sectionContent = generateExecutivePage();
+              break;
+            case 'advanced':
+              sectionContent = generateAdvancedPage();
+              break;
+            case 'eixos-detail':
+              sectionContent = generateEixosDetailPage();
+              break;
+          }
+          
+          if (sectionContent) {
+            setGenerationProgress(`Adicionando página ${currentPage} de ${totalPages}...`);
+            await addPageToPDF(pdf, sectionContent, currentPage, totalPages);
+            currentPage++;
+          }
+        } catch (error) {
+          console.error(`Erro ao processar seção ${section.id}:`, error);
+        }
+      }
+
+      // Nome do arquivo
+      setGenerationProgress('Finalizando e salvando PDF...');
+      const fileName = `relatorio-maturidade-${selectedData.microrregiao.replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.pdf`;
+      pdf.save(fileName);
+      setGenerationProgress('PDF gerado com sucesso!');
+      
+      setTimeout(() => {
+        setIsGenerating(false);
+        setGenerationProgress('');
+        setIsOpen(false);
+      }, 800);
+
+    } catch (error) {
+      console.error('Erro geral:', error);
+      alert('Erro ao gerar relatório. Tente novamente.');
+      setGenerationProgress('Erro na geração do PDF');
+    } finally {
+      setIsGenerating(false);
+      setGenerationProgress('');
+    }
+  };
+
+  const addPageToPDF = async (pdf: jsPDF, content: string, currentPage: number, totalPages: number) => {
+
+    
+    // Criar elemento temporário para a página
+    const pageElement = document.createElement('div');
+    pageElement.style.width = '210mm';
+    pageElement.style.minHeight = '297mm';
+    pageElement.style.padding = '20mm';
+    pageElement.style.backgroundColor = 'white';
+    pageElement.style.fontFamily = 'Arial, sans-serif';
+    pageElement.style.fontSize = '12px';
+    pageElement.style.lineHeight = '1.5';
+    pageElement.style.position = 'absolute';
+    pageElement.style.left = '-9999px';
+    pageElement.style.top = '0';
+    pageElement.style.color = '#000';
+
+    // Adicionar conteúdo da página
+    pageElement.innerHTML = content;
+
+    // Adicionar ao DOM temporariamente
+    document.body.appendChild(pageElement);
+
+    try {
+      // Configurações do html2canvas para melhor qualidade
+      const canvas = await html2canvas(pageElement, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#ffffff',
+        width: pageElement.scrollWidth,
+        height: pageElement.scrollHeight,
+        scrollX: 0,
+        scrollY: 0,
+        logging: false,
+        removeContainer: true,
+        windowWidth: pageElement.scrollWidth,
+        windowHeight: pageElement.scrollHeight
+      });
+
+      // Calcular dimensões para A4
+      const imgWidth = 210; // Largura A4 em mm
+      const pageHeight = 297; // Altura A4 em mm
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      // Adicionar página ao PDF
+      if (currentPage > 1) {
+        pdf.addPage();
+      }
+      
+      // Adicionar imagem ao PDF - sempre usar altura completa para evitar cortes
+      pdf.addImage(canvas, 'PNG', 0, 0, imgWidth, imgHeight);
+
+    } catch (error) {
+      console.error('Erro ao adicionar página ao PDF:', error);
+    } finally {
+      // Remover elemento temporário
+      document.body.removeChild(pageElement);
+    }
+  };
+
+  const generateCoverPage = () => `
+    <div style="text-align: center; padding-top: 60px;">
+      <h1 style="color: #1e40af; font-size: 32px; margin-bottom: 30px; font-weight: bold;">
+        Relatório de Maturidade Digital
+      </h1>
+      <h2 style="color: #374151; font-size: 24px; margin-bottom: 20px; font-weight: bold;">
+        Microrregião: ${selectedData.microrregiao}
+      </h2>
+      <div style="background-color: #f8fafc; padding: 30px; border-radius: 8px; margin: 40px 0;">
+        <p style="color: #6b7280; font-size: 18px; margin-bottom: 15px;">
+          <strong>Data:</strong> ${new Date().toLocaleDateString('pt-BR')}
+        </p>
+        <p style="color: #6b7280; font-size: 18px; margin-bottom: 15px;">
+          <strong>Índice Geral:</strong> ${parseFloat(String(selectedData.indice_geral).replace(',', '.')).toFixed(3)}
+        </p>
+        <p style="color: #6b7280; font-size: 18px;">
+          <strong>Status:</strong> ${getStatusText(selectedData.indice_geral)}
+        </p>
+      </div>
+      <p style="color: #6b7280; font-size: 16px; margin-top: 40px;">
+        Gerado pelo Sistema de Monitoramento Regional
+      </p>
+    </div>
+  `;
+
+  const generateHeaderSection = () => `
+    <div style="margin-bottom: 20px; page-break-inside: avoid;">
+      <h3 style="color: #1e40af; font-size: 14px; margin-bottom: 10px; border-bottom: 1px solid #1e40af; padding-bottom: 3px;">
+        Informações Detalhadas da Microrregião
+      </h3>
+      
+      <!-- Informações Principais -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 11px; margin-bottom: 15px;">
+        <div style="background-color: #f9fafb; padding: 8px; border-radius: 4px;">
+          <strong>Macrorregião:</strong> ${selectedData.macrorregiao}
+        </div>
+        <div style="background-color: #f9fafb; padding: 8px; border-radius: 4px;">
+          <strong>Regional de Saúde:</strong> ${selectedData.regional_saude}
+        </div>
+        <div style="background-color: #f9fafb; padding: 8px; border-radius: 4px;">
+          <strong>Analista:</strong> ${selectedData.analista}
+          ${selectedData.email_analista ? `<br/><small>${selectedData.email_analista}</small>` : ''}
+        </div>
+        <div style="background-color: #f9fafb; padding: 8px; border-radius: 4px;">
+          <strong>População:</strong> ${selectedData.populacao} habitantes
+        </div>
+        <div style="background-color: #f9fafb; padding: 8px; border-radius: 4px;">
+          <strong>IDH:</strong> ${selectedData.idh_completo}
+        </div>
+        <div style="background-color: #f9fafb; padding: 8px; border-radius: 4px;">
+          <strong>Classificação INMSD:</strong> ${selectedData.classificacao_inmsd}
+        </div>
+      </div>
+
+      <!-- Informações Adicionais -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 11px; margin-bottom: 15px;">
+        <div style="background-color: #f0f9ff; padding: 8px; border-radius: 4px; border-left: 4px solid #1e40af;">
+          <strong>Pontuação Geral:</strong> ${selectedData.pontuacao_geral || 'N/A'}
+        </div>
+        <div style="background-color: #f0f9ff; padding: 8px; border-radius: 4px; border-left: 4px solid #1e40af;">
+          <strong>Status INMSD:</strong> ${selectedData.status_inmsd || 'N/A'}
+        </div>
+      </div>
+
+      <!-- Pontos Focais -->
+      <div style="background-color: #f9fafb; padding: 10px; border-radius: 4px; margin-bottom: 15px; font-size: 11px;">
+        <strong>Ponto Focal:</strong><br/>
+        ${selectedData.ponto_focal || 'N/A'}
+        ${selectedData.email_ponto_focal ? `<br/><strong>Email:</strong> ${selectedData.email_ponto_focal}` : ''}
+      </div>
+
+      <!-- Índice Geral de Maturidade Digital -->
+      <div style="margin-top: 10px; background-color: #eff6ff; padding: 15px; border-radius: 4px; text-align: center; border: 2px solid #1e40af;">
+        <strong style="color: #1e40af; font-size: 18px;">
+          Índice Geral de Maturidade Digital: ${parseFloat(String(selectedData.indice_geral).replace(',', '.')).toFixed(3)}
+        </strong>
+      </div>
+
+      <!-- Municípios da Microrregião -->
+      <div style="margin-top: 15px; background-color: #f9fafb; padding: 10px; border-radius: 4px; font-size: 11px;">
+        <strong>Municípios da Microrregião:</strong><br/>
+        <div style="display: flex; flex-wrap: wrap; gap: 5px; margin-top: 5px;">
+          ${selectedData.municipios?.split(',').map(municipio => 
+            `<span style="background-color: #e5e7eb; padding: 3px 8px; border-radius: 12px; font-size: 10px;">${municipio.trim()}</span>`
+          ).join('') || 'N/A'}
+        </div>
+      </div>
+    </div>
+  `;
+
+  const generateStatsSection = () => `
+    <div style="margin-bottom: 20px; page-break-inside: avoid;">
+      <h3 style="color: #1e40af; font-size: 14px; margin-bottom: 10px; border-bottom: 1px solid #1e40af; padding-bottom: 3px;">
+        Estatísticas Gerais
+      </h3>
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; font-size: 11px;">
+        <div style="background-color: #f0f9ff; padding: 10px; border-radius: 4px; text-align: center; border-left: 4px solid #1e40af;">
+          <div style="font-size: 18px; font-weight: bold; color: #1e40af;">${data.length}</div>
+          <div style="font-size: 10px; color: #6b7280;">Total de Microrregiões</div>
+        </div>
+        <div style="background-color: #f0f9ff; padding: 10px; border-radius: 4px; text-align: center; border-left: 4px solid #1e40af;">
+          <div style="font-size: 18px; font-weight: bold; color: #1e40af;">${data.reduce((sum, item) => sum + parseInt(String(item.populacao).replace(/\./g, '')), 0).toLocaleString('pt-BR')}</div>
+          <div style="font-size: 10px; color: #6b7280;">População Total</div>
+        </div>
+        <div style="background-color: #f0f9ff; padding: 10px; border-radius: 4px; text-align: center; border-left: 4px solid #1e40af;">
+          <div style="font-size: 18px; font-weight: bold; color: #1e40af;">${(data.reduce((sum, item) => sum + parseFloat(String(item.indice_geral).replace(',', '.')), 0) / data.length).toFixed(3)}</div>
+          <div style="font-size: 10px; color: #6b7280;">Maturidade Média</div>
+        </div>
+        <div style="background-color: #f0f9ff; padding: 10px; border-radius: 4px; text-align: center; border-left: 4px solid #1e40af;">
+          <div style="font-size: 18px; font-weight: bold; color: #1e40af;">${data.sort((a, b) => parseFloat(String(b.indice_geral).replace(',', '.')) - parseFloat(String(a.indice_geral).replace(',', '.'))).findIndex(item => item.microrregiao === selectedData.microrregiao) + 1}º</div>
+          <div style="font-size: 10px; color: #6b7280;">Posição no Ranking</div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const generateRadarSection = async () => {
+    const radarElement = document.querySelector('[data-chart="radar"]');
+    if (radarElement && (radarElement as HTMLElement).offsetWidth > 0) {
+      try {
+        const canvas = await html2canvas(radarElement as HTMLElement, {
+          scale: 2, // Aumentado para melhor qualidade
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          width: (radarElement as HTMLElement).offsetWidth,
+          height: (radarElement as HTMLElement).offsetHeight,
+          scrollX: 0,
+          scrollY: 0,
+          logging: false,
+          removeContainer: true
+        });
+        
+        // Criar um canvas maior para incluir o título
+        const finalCanvas = document.createElement('canvas');
+        const ctx = finalCanvas.getContext('2d');
+        const padding = 30;
+        const titleHeight = 60;
+        
+        finalCanvas.width = canvas.width + (padding * 2);
+        finalCanvas.height = canvas.height + padding + titleHeight;
+        
+        if (ctx) {
+          // Fundo branco
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
+          
+          // Adicionar título da seção
+          ctx.fillStyle = '#1e40af';
+          ctx.font = 'bold 24px Arial, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('Análise de Maturidade por Eixos', finalCanvas.width / 2, 35);
+          
+          // Adicionar subtítulo
+          ctx.fillStyle = '#6b7280';
+          ctx.font = '16px Arial, sans-serif';
+          ctx.fillText(`${selectedData.microrregiao}`, finalCanvas.width / 2, 55);
+          
+          // Adicionar o gráfico
+          ctx.drawImage(canvas, padding, titleHeight);
+          
+          const imgData = finalCanvas.toDataURL('image/png');
+          return `
+            <div style="margin-bottom: 30px; page-break-inside: avoid;">
+              <div style="text-align: center; page-break-inside: avoid;">
+                <img src="${imgData}" style="max-width: 100%; max-height: 500px; height: auto; border: 1px solid #d1d5db; border-radius: 4px; object-fit: contain;" />
+              </div>
+              <div style="margin-top: 15px; text-align: center; font-size: 11px; color: #6b7280;">
+                <p><strong>Escala:</strong> 0 (Inicial) → 1 (Consolidado)</p>
+                <p>Comparação dos valores da microrregião ${selectedData.microrregiao} versus mediana geral</p>
+                <p><strong>Legenda:</strong> Azul = Microrregião | Verde = Mediana Geral | Linhas pontilhadas = Níveis de referência</p>
+              </div>
+            </div>
+          `;
+        }
+      } catch (error) {
+        console.error('Erro ao capturar gráfico radar:', error);
+      }
+    }
+    
+    // Fallback para texto se não conseguir capturar o gráfico
+    return `
+      <div style="margin-bottom: 30px; page-break-inside: avoid;">
+        <h3 style="color: #1e40af; font-size: 16px; margin-bottom: 15px; border-bottom: 2px solid #1e40af; padding-bottom: 5px;">
+          Análise de Maturidade por Eixos - ${selectedData.microrregiao}
+        </h3>
+        <div style="background-color: #f9fafb; padding: 20px; border-radius: 6px; font-size: 12px;">
+          <p style="margin: 0 0 15px 0; font-weight: bold; color: #1e40af;">Valores da microrregião ${selectedData.microrregiao}:</p>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div style="padding: 8px; background: white; border-radius: 4px; border-left: 4px solid #1e40af;">
+              <strong>Gestão e Governança:</strong> ${selectedData.eixo_1} (${(parseFloat(String(selectedData.eixo_1).replace(',', '.')) * 100).toFixed(1)}%)
+            </div>
+            <div style="padding: 8px; background: white; border-radius: 4px; border-left: 4px solid #1e40af;">
+              <strong>Infraestrutura e Conectividade:</strong> ${selectedData.eixo_2} (${(parseFloat(String(selectedData.eixo_2).replace(',', '.')) * 100).toFixed(1)}%)
+            </div>
+            <div style="padding: 8px; background: white; border-radius: 4px; border-left: 4px solid #1e40af;">
+              <strong>Sistemas e Dados:</strong> ${selectedData.eixo_3} (${(parseFloat(String(selectedData.eixo_3).replace(',', '.')) * 100).toFixed(1)}%)
+            </div>
+            <div style="padding: 8px; background: white; border-radius: 4px; border-left: 4px solid #1e40af;">
+              <strong>Capacitação e Desenvolvimento:</strong> ${selectedData.eixo_4} (${(parseFloat(String(selectedData.eixo_4).replace(',', '.')) * 100).toFixed(1)}%)
+            </div>
+            <div style="padding: 8px; background: white; border-radius: 4px; border-left: 4px solid #1e40af;">
+              <strong>Serviços Digitais:</strong> ${selectedData.eixo_5} (${(parseFloat(String(selectedData.eixo_5).replace(',', '.')) * 100).toFixed(1)}%)
+            </div>
+            <div style="padding: 8px; background: white; border-radius: 4px; border-left: 4px solid #1e40af;">
+              <strong>Interoperabilidade:</strong> ${selectedData.eixo_6} (${(parseFloat(String(selectedData.eixo_6).replace(',', '.')) * 100).toFixed(1)}%)
+            </div>
+            <div style="padding: 8px; background: white; border-radius: 4px; border-left: 4px solid #1e40af;">
+              <strong>Segurança e Privacidade:</strong> ${selectedData.eixo_7} (${(parseFloat(String(selectedData.eixo_7).replace(',', '.')) * 100).toFixed(1)}%)
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  };
+
+  const generateBarSection = async () => {
+    const barElement = document.querySelector('[data-chart="bar"]');
+    if (barElement && (barElement as HTMLElement).offsetWidth > 0) {
+      try {
+        const canvas = await html2canvas(barElement as HTMLElement, {
+          scale: 1.5, // Reduzido para melhor performance
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          width: (barElement as HTMLElement).offsetWidth,
+          height: (barElement as HTMLElement).offsetHeight,
+          scrollX: 0,
+          scrollY: 0,
+          logging: false,
+          removeContainer: true
+        });
+        const imgData = canvas.toDataURL('image/png');
+        return `
+          <div style="margin-bottom: 20px; page-break-inside: avoid;">
+            <div style="text-align: center; page-break-inside: avoid;">
+              <img src="${imgData}" style="max-width: 100%; max-height: 600px; height: auto; border: 1px solid #d1d5db; border-radius: 4px; object-fit: contain;" />
+            </div>
+            <div style="margin-top: 15px; text-align: center; font-size: 11px; color: #6b7280;">
+              <p><strong>Ranking:</strong> Posição da microrregião ${selectedData.microrregiao} no contexto geral</p>
+              <p>Comparação do índice de maturidade digital entre todas as microrregiões analisadas</p>
+            </div>
+          </div>
+        `;
+      } catch (error) {
+        console.error('Erro ao capturar gráfico de barras:', error);
+      }
+    }
+    
+    // Fallback para texto se não conseguir capturar o gráfico
+    return `
+      <div style="margin-bottom: 20px; page-break-inside: avoid;">
+        <h3 style="color: #1e40af; font-size: 14px; margin-bottom: 10px; border-bottom: 1px solid #1e40af; padding-bottom: 3px;">
+          Ranking do Índice Geral de Maturidade
+        </h3>
+        <div style="background-color: #f9fafb; padding: 15px; border-radius: 4px; font-size: 11px;">
+          <p style="margin: 0 0 10px 0; font-weight: bold;">Top 10 microrregiões:</p>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+            ${data
+              .sort((a, b) => parseFloat(String(b.indice_geral).replace(',', '.')) - parseFloat(String(a.indice_geral).replace(',', '.')))
+              .slice(0, 10)
+              .map((item, index) => `
+                <div style="padding: 4px; ${item.microrregiao === selectedData.microrregiao ? 'background-color: #dbeafe; border-left: 3px solid #1e40af;' : ''}">
+                  <strong>${index + 1}º</strong> ${item.microrregiao}: ${parseFloat(String(item.indice_geral).replace(',', '.')).toFixed(3)}
+                </div>
+              `).join('')}
+          </div>
+        </div>
+      </div>
+    `;
+  };
+
+  const generateTableSection = () => `
+    <div style="margin-bottom: 20px; page-break-inside: avoid;">
+      <h3 style="color: #1e40af; font-size: 14px; margin-bottom: 10px; border-bottom: 1px solid #1e40af; padding-bottom: 3px;">
+        Detalhamento por Eixos de Maturidade
+      </h3>
+      <table style="width: 100%; border-collapse: collapse; font-size: 10px;">
+        <thead>
+          <tr style="background-color: #1e40af; color: white;">
+            <th style="padding: 6px; border: 1px solid #1e40af; text-align: left;">Eixo</th>
+            <th style="padding: 6px; border: 1px solid #1e40af; text-align: center;">Valor</th>
+            <th style="padding: 6px; border: 1px solid #1e40af; text-align: center;">Percentual</th>
+            <th style="padding: 6px; border: 1px solid #1e40af; text-align: center;">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding: 6px; border: 1px solid #d1d5db; font-weight: bold;">Gestão e Governança</td>
+            <td style="padding: 6px; border: 1px solid #d1d5db; text-align: center;">${selectedData.eixo_1}</td>
+            <td style="padding: 6px; border: 1px solid #d1d5db; text-align: center;">${(parseFloat(String(selectedData.eixo_1).replace(',', '.')) * 100).toFixed(1)}%</td>
+            <td style="padding: 6px; border: 1px solid #d1d5db; text-align: center; background-color: ${getStatusColor(selectedData.eixo_1)};">${getStatusText(selectedData.eixo_1)}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px; border: 1px solid #d1d5db; font-weight: bold;">Infraestrutura e Conectividade</td>
+            <td style="padding: 6px; border: 1px solid #d1d5db; text-align: center;">${selectedData.eixo_2}</td>
+            <td style="padding: 6px; border: 1px solid #d1d5db; text-align: center;">${(parseFloat(String(selectedData.eixo_2).replace(',', '.')) * 100).toFixed(1)}%</td>
+            <td style="padding: 6px; border: 1px solid #d1d5db; text-align: center; background-color: ${getStatusColor(selectedData.eixo_2)};">${getStatusText(selectedData.eixo_2)}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px; border: 1px solid #d1d5db; font-weight: bold;">Sistemas e Dados</td>
+            <td style="padding: 6px; border: 1px solid #d1d5db; text-align: center;">${selectedData.eixo_3}</td>
+            <td style="padding: 6px; border: 1px solid #d1d5db; text-align: center;">${(parseFloat(String(selectedData.eixo_3).replace(',', '.')) * 100).toFixed(1)}%</td>
+            <td style="padding: 6px; border: 1px solid #d1d5db; text-align: center; background-color: ${getStatusColor(selectedData.eixo_3)};">${getStatusText(selectedData.eixo_3)}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px; border: 1px solid #d1d5db; font-weight: bold;">Capacitação e Desenvolvimento</td>
+            <td style="padding: 6px; border: 1px solid #d1d5db; text-align: center;">${selectedData.eixo_4}</td>
+            <td style="padding: 6px; border: 1px solid #d1d5db; text-align: center;">${(parseFloat(String(selectedData.eixo_4).replace(',', '.')) * 100).toFixed(1)}%</td>
+            <td style="padding: 6px; border: 1px solid #d1d5db; text-align: center; background-color: ${getStatusColor(selectedData.eixo_4)};">${getStatusText(selectedData.eixo_4)}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px; border: 1px solid #d1d5db; font-weight: bold;">Serviços Digitais</td>
+            <td style="padding: 6px; border: 1px solid #d1d5db; text-align: center;">${selectedData.eixo_5}</td>
+            <td style="padding: 6px; border: 1px solid #d1d5db; text-align: center;">${(parseFloat(String(selectedData.eixo_5).replace(',', '.')) * 100).toFixed(1)}%</td>
+            <td style="padding: 6px; border: 1px solid #d1d5db; text-align: center; background-color: ${getStatusColor(selectedData.eixo_5)};">${getStatusText(selectedData.eixo_5)}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px; border: 1px solid #d1d5db; font-weight: bold;">Interoperabilidade</td>
+            <td style="padding: 6px; border: 1px solid #d1d5db; text-align: center;">${selectedData.eixo_6}</td>
+            <td style="padding: 6px; border: 1px solid #d1d5db; text-align: center;">${(parseFloat(String(selectedData.eixo_6).replace(',', '.')) * 100).toFixed(1)}%</td>
+            <td style="padding: 6px; border: 1px solid #d1d5db; text-align: center; background-color: ${getStatusColor(selectedData.eixo_6)};">${getStatusText(selectedData.eixo_6)}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px; border: 1px solid #d1d5db; font-weight: bold;">Segurança e Privacidade</td>
+            <td style="padding: 6px; border: 1px solid #d1d5db; text-align: center;">${selectedData.eixo_7}</td>
+            <td style="padding: 6px; border: 1px solid #d1d5db; text-align: center;">${(parseFloat(String(selectedData.eixo_7).replace(',', '.')) * 100).toFixed(1)}%</td>
+            <td style="padding: 6px; border: 1px solid #d1d5db; text-align: center; background-color: ${getStatusColor(selectedData.eixo_7)};">${getStatusText(selectedData.eixo_7)}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  `;
+
+  const generatePopulationSection = async () => {
+    const populationElement = document.querySelector('[data-chart="population"]');
+    if (populationElement && (populationElement as HTMLElement).offsetWidth > 0) {
+      try {
+        const canvas = await html2canvas(populationElement as HTMLElement, {
+          scale: 1.5, // Reduzido para melhor performance
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          width: (populationElement as HTMLElement).offsetWidth,
+          height: (populationElement as HTMLElement).offsetHeight,
+          scrollX: 0,
+          scrollY: 0,
+          logging: false,
+          removeContainer: true
+        });
+        const imgData = canvas.toDataURL('image/png');
+        return `
+          <div style="margin-bottom: 20px; page-break-inside: avoid;">
+            <div style="text-align: center; page-break-inside: avoid;">
+              <img src="${imgData}" style="max-width: 100%; max-height: 600px; height: auto; border: 1px solid #d1d5db; border-radius: 4px; object-fit: avoid;" />
+            </div>
+            <div style="margin-top: 15px; text-align: center; font-size: 11px; color: #6b7280;">
+              <p><strong>Distribuição:</strong> População atendida por cada microrregião</p>
+              <p>Análise demográfica e impacto populacional das iniciativas de maturidade digital</p>
+            </div>
+          </div>
+        `;
+      } catch (error) {
+        console.error('Erro ao capturar gráfico de população:', error);
+      }
+    }
+    
+    // Fallback para texto se não conseguir capturar o gráfico
+    return `
+      <div style="margin-bottom: 20px; page-break-inside: avoid;">
+        <h3 style="color: #1e40af; font-size: 14px; margin-bottom: 10px; border-bottom: 1px solid #1e40af; padding-bottom: 3px;">
+          Distribuição Populacional
+        </h3>
+        <div style="background-color: #f9fafb; padding: 15px; border-radius: 4px; font-size: 11px;">
+          <p style="margin: 0 0 10px 0; font-weight: bold;">População da microrregião ${selectedData.microrregiao}:</p>
+          <div style="font-size: 16px; font-weight: bold; color: #1e40af; text-align: center; padding: 10px; background-color: #eff6ff; border-radius: 4px;">
+            ${selectedData.populacao} habitantes
+          </div>
+          <p style="margin: 10px 0 0 0; font-size: 10px; color: #6b7280;">
+            Representa ${((parseInt(String(selectedData.populacao).replace(/\./g, '')) / data.reduce((sum, item) => sum + parseInt(String(item.populacao).replace(/\./g, '')), 0)) * 100).toFixed(1)}% da população total analisada
+          </p>
+        </div>
+      </div>
+    `;
+  };
+
+  const generateRecommendationsSection = () => {
+    const eixos = [
+      { nome: 'Gestão e Governança', valor: selectedData.eixo_1, situacao: selectedData.situacao_eixo_1, recomendacao: selectedData.recomendacao_eixo_1, ferramenta: selectedData.ferramenta_eixo_1 },
+      { nome: 'Infraestrutura e Conectividade', valor: selectedData.eixo_2, situacao: selectedData.situacao_eixo_2, recomendacao: selectedData.recomendacao_eixo_2, ferramenta: selectedData.ferramenta_eixo_2 },
+      { nome: 'Sistemas e Dados', valor: selectedData.eixo_3, situacao: selectedData.situacao_eixo_3, recomendacao: selectedData.recomendacao_eixo_3, ferramenta: selectedData.ferramenta_eixo_3 },
+      { nome: 'Capacitação e Desenvolvimento', valor: selectedData.eixo_4, situacao: selectedData.situacao_eixo_4, recomendacao: selectedData.recomendacao_eixo_4, ferramenta: selectedData.ferramenta_eixo_4 },
+      { nome: 'Serviços Digitais', valor: selectedData.eixo_5, situacao: selectedData.situacao_eixo_5, recomendacao: selectedData.recomendacao_eixo_5, ferramenta: selectedData.ferramenta_eixo_5 },
+      { nome: 'Interoperabilidade', valor: selectedData.eixo_6, situacao: selectedData.situacao_eixo_6, recomendacao: selectedData.recomendacao_eixo_6, ferramenta: selectedData.ferramenta_eixo_6 },
+      { nome: 'Segurança e Privacidade', valor: selectedData.eixo_7, situacao: selectedData.situacao_eixo_7, recomendacao: selectedData.recomendacao_eixo_7, ferramenta: selectedData.ferramenta_eixo_7 }
+    ];
+
+
+
+    // Retornar todos os eixos em uma única string
+    return `
+      <div style="margin-bottom: 20px; page-break-inside: avoid;">
+        <div style="background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); color: white; padding: 12px; border-radius: 8px; margin-bottom: 15px; text-align: center;">
+          <h3 style="color: white; font-size: 14px; margin: 0; font-weight: bold;">
+            📋 Recomendações por Eixo de Maturidade - ${selectedData.microrregiao}
+          </h3>
+        </div>
+          ${eixos.map((eixo, index) => `
+          <div style="margin-bottom: 15px; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.1); background-color: #ffffff;">
+            <div style="background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); color: white; padding: 10px; font-weight: bold; font-size: 12px; display: flex; justify-content: space-between; align-items: center;">
+                <span>Eixo ${index + 1} – ${eixo.nome}</span>
+                <span style="background-color: rgba(255,255,255,0.2); padding: 2px 6px; border-radius: 4px; font-size: 10px;">${parseFloat(String(eixo.valor).replace(',', '.')).toFixed(3)}</span>
+            </div>
+            <div style="padding: 12px; font-size: 10px;">
+              
+              <!-- Situação Atual -->
+              <div style="margin-bottom: 12px; background-color: #fef3c7; padding: 10px; border-radius: 6px; border-left: 3px solid #f59e0b;">
+                <div style="display: flex; align-items: center; margin-bottom: 6px;">
+                  <span style="background-color: #f59e0b; color: white; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; margin-right: 6px;">!</span>
+                  <strong style="color: #92400e; font-size: 11px;">Situação Atual</strong>
+                </div>
+                <p style="margin: 0; line-height: 1.4; color: #78350f; font-size: 9px;">${eixo.situacao || 'Informação não disponível'}</p>
+              </div>
+              
+              <!-- Recomendação -->
+              <div style="margin-bottom: 12px; background-color: #dbeafe; padding: 10px; border-radius: 6px; border-left: 3px solid #3b82f6;">
+                <div style="display: flex; align-items: center; margin-bottom: 6px;">
+                  <span style="background-color: #3b82f6; color: white; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; margin-right: 6px;">→</span>
+                  <strong style="color: #1e40af; font-size: 11px;">Recomendação</strong>
+                </div>
+                <div style="line-height: 1.4; color: #1e3a8a; font-size: 9px;">
+                  ${eixo.recomendacao ? eixo.recomendacao.split('\n').map((line, idx) => 
+                    line.trim().startsWith('**') ? 
+                      `<div style="margin: 6px 0; padding: 6px; background-color: rgba(59,130,246,0.1); border-radius: 3px; font-weight: bold;">${line.replace(/\*\*/g, '')}</div>` :
+                      `<p style="margin: 3px 0;">${line}</p>`
+                  ).join('') : 'Informação não disponível'}
+                </div>
+              </div>
+              
+              <!-- Ferramenta Sugerida -->
+              <div style="background-color: #d1fae5; padding: 10px; border-radius: 6px; border-left: 3px solid #10b981;">
+                <div style="display: flex; align-items: center; margin-bottom: 6px;">
+                  <span style="background-color: #10b981; color: white; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; margin-right: 6px;">✓</span>
+                  <strong style="color: #065f46; font-size: 11px;">Ferramenta Sugerida</strong>
+                </div>
+                <p style="margin: 0; line-height: 1.4; color: #064e3b; font-size: 9px;">${eixo.ferramenta || 'Informação não disponível'}</p>
+              </div>
+              
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  };
+
+  const getStatusColor = (valor: string): string => {
+    const num = parseFloat(String(valor).replace(',', '.'));
+    if (num >= 0.7) return '#dcfce7'; // Verde claro
+    if (num >= 0.4) return '#fef3c7'; // Amarelo claro
+    return '#fee2e2'; // Vermelho claro
+  };
+
+  const getStatusText = (valor: string): string => {
+    const num = parseFloat(String(valor).replace(',', '.'));
+    if (num >= 0.7) return 'Consolidado';
+    if (num >= 0.4) return 'Em Evolução';
+    return 'Inicial';
+  };
+
+  const generateStatsPage = () => `
+    <div style="text-align: center; margin-bottom: 30px;">
+      <h1 style="color: #1e40af; font-size: 28px; margin-bottom: 20px; font-weight: bold;">
+        Estatísticas Gerais
+      </h1>
+      <h2 style="color: #374151; font-size: 20px; margin-bottom: 15px;">
+        Microrregião: ${selectedData.microrregiao}
+      </h2>
+    </div>
+    ${generateHeaderSection()}
+    ${generateStatsSection()}
+    <div style="margin-top: 30px; padding: 20px; background-color: #f8fafc; border-radius: 8px;">
+      <h3 style="color: #1e40af; font-size: 16px; margin-bottom: 15px;">Explicação dos Indicadores:</h3>
+      <p style="font-size: 14px; line-height: 1.6; color: #374151;">
+        <strong>Índice Geral:</strong> Representa a média ponderada de todos os eixos de maturidade digital.<br>
+        <strong>Status:</strong> Classifica a microrregião em Emergente (0-0.3), Em Evolução (0.3-0.7) ou Avançado (0.7-1.0).<br>
+        <strong>População:</strong> Total de habitantes da microrregião.<br>
+        <strong>Municípios:</strong> Número de cidades que compõem a microrregião.
+      </p>
+    </div>
+  `;
+
+  const generateRadarPage = async () => {
+    const radarElement = document.querySelector('.recharts-wrapper');
+    if (radarElement && (radarElement as HTMLElement).offsetWidth > 0) {
+      try {
+        const canvas = await html2canvas(radarElement as HTMLElement, {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          width: (radarElement as HTMLElement).offsetWidth,
+          height: (radarElement as HTMLElement).offsetHeight,
+          scrollX: 0,
+          scrollY: 0,
+          logging: false,
+          removeContainer: true
+        });
+        
+        const imgData = canvas.toDataURL('image/png');
+        return `
+          <div style="text-align: center; margin-bottom: 30px;">
+            <h1 style="color: #1e40af; font-size: 28px; margin-bottom: 20px; font-weight: bold;">
+              Análise de Maturidade por Eixos
+            </h1>
+            <h2 style="color: #374151; font-size: 20px; margin-bottom: 15px;">
+              Microrregião: ${selectedData.microrregiao}
+            </h2>
+          </div>
+          <div style="text-align: center; margin-bottom: 30px;">
+            <img src="${imgData}" style="max-width: 100%; max-height: 400px; height: auto; border: 2px solid #d1d5db; border-radius: 8px;" />
+          </div>
+          <div style="background-color: #f8fafc; padding: 25px; border-radius: 8px; margin-bottom: 20px;">
+            <h3 style="color: #1e40af; font-size: 18px; margin-bottom: 15px;">Como interpretar este gráfico:</h3>
+            <div style="font-size: 14px; line-height: 1.8; color: #374151; text-align: left;">
+              <p><strong>🔵 Linha AZUL:</strong> Valores da microrregião selecionada (${selectedData.microrregiao})</p>
+              <p><strong>🟢 Linha VERDE:</strong> Mediana geral de todas as microrregiões analisadas</p>
+              <p><strong>🔴 Linhas pontilhadas:</strong> Níveis de referência para comparação</p>
+              <ul style="margin-left: 20px;">
+                <li><strong>Vermelho pontilhado:</strong> Nível Emergente (20% - 0.2)</li>
+                <li><strong>Laranja pontilhado:</strong> Nível Em Evolução (50% - 0.5)</li>
+                <li><strong>Verde pontilhado:</strong> Nível Avançado (80% - 0.8)</li>
+              </ul>
+              <p><strong>📊 Escala:</strong> 0 = Inicial (sem maturidade) → 1 = Consolidado (maturidade completa)</p>
+            </div>
+          </div>
+        `;
+      } catch (error) {
+        console.error('Erro ao capturar gráfico radar:', error);
+      }
+    }
+    
+    return `
+      <div style="text-align: center; margin-bottom: 30px;">
+        <h1 style="color: #1e40af; font-size: 28px; margin-bottom: 20px; font-weight: bold;">
+          Análise de Maturidade por Eixos
+        </h1>
+        <h2 style="color: #374151; font-size: 20px; margin-bottom: 15px;">
+          Microrregião: ${selectedData.microrregiao}
+        </h2>
+      </div>
+      ${generateRadarSection()}
+    `;
+  };
+
+  const generateBarPage = async () => {
+    const barElement = document.querySelector('[data-chart="bar"]');
+    if (barElement && (barElement as HTMLElement).offsetWidth > 0) {
+      try {
+        const canvas = await html2canvas(barElement as HTMLElement, {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          width: (barElement as HTMLElement).offsetWidth,
+          height: (barElement as HTMLElement).offsetHeight,
+          scrollX: 0,
+          scrollY: 0,
+          logging: false,
+          removeContainer: true
+        });
+        
+        const imgData = canvas.toDataURL('image/png');
+        return `
+          <div style="text-align: center; margin-bottom: 30px;">
+            <h1 style="color: #1e40af; font-size: 28px; margin-bottom: 20px; font-weight: bold;">
+              Ranking do Índice Geral
+            </h1>
+            <h2 style="color: #374151; font-size: 20px; margin-bottom: 15px;">
+              Microrregião: ${selectedData.microrregiao}
+            </h2>
+          </div>
+          <div style="text-align: center; margin-bottom: 30px;">
+            <img src="${imgData}" style="max-width: 100%; max-height: 400px; height: auto; border: 2px solid #d1d5db; border-radius: 8px;" />
+          </div>
+          <div style="background-color: #f8fafc; padding: 25px; border-radius: 8px;">
+            <h3 style="color: #1e40af; font-size: 18px; margin-bottom: 15px;">Explicação do Ranking:</h3>
+            <div style="font-size: 14px; line-height: 1.8; color: #374151; text-align: left;">
+              <p><strong>📊 Objetivo:</strong> Mostrar a posição da microrregião selecionada no contexto geral</p>
+              <p><strong>🎯 Comparação:</strong> Permite visualizar como a microrregião se posiciona em relação às demais</p>
+              <p><strong>📈 Interpretação:</strong> Quanto maior a barra, melhor o índice de maturidade digital</p>
+              <p><strong>🔍 Destaque:</strong> A microrregião selecionada aparece destacada para fácil identificação</p>
+            </div>
+          </div>
+        `;
+      } catch (error) {
+        console.error('Erro ao capturar gráfico de barras:', error);
+      }
+    }
+    
+    return `
+      <div style="text-align: center; margin-bottom: 30px;">
+        <h1 style="color: #1e40af; font-size: 28px; margin-bottom: 20px; font-weight: bold;">
+          Ranking do Índice Geral
+        </h1>
+        <h2 style="color: #374151; font-size: 20px; margin-bottom: 15px;">
+          Microrregião: ${selectedData.microrregiao}
+        </h2>
+      </div>
+      ${generateBarSection()}
+    `;
+  };
+
+  const generateTablePage = () => `
+    <div style="text-align: center; margin-bottom: 30px;">
+      <h1 style="color: #1e40af; font-size: 28px; margin-bottom: 20px; font-weight: bold;">
+        Tabela Detalhada por Eixos
+      </h1>
+      <h2 style="color: #374151; font-size: 20px; margin-bottom: 15px;">
+        Microrregião: ${selectedData.microrregiao}
+      </h2>
+    </div>
+    ${generateHeaderSection()}
+    ${generateTableSection()}
+    <div style="margin-top: 30px; padding: 20px; background-color: #f8fafc; border-radius: 8px;">
+      <h3 style="color: #1e40af; font-size: 16px; margin-bottom: 15px;">Explicação dos Eixos:</h3>
+      <div style="font-size: 14px; line-height: 1.6; color: #374151;">
+        <p><strong>Eixo 1 - Gestão e Governança:</strong> Estruturas organizacionais e políticas de TI</p>
+        <p><strong>Eixo 2 - Infraestrutura e Conectividade:</strong> Recursos tecnológicos e conectividade</p>
+        <p><strong>Eixo 3 - Sistemas e Dados:</strong> Gestão de sistemas e qualidade dos dados</p>
+        <p><strong>Eixo 4 - Capacitação e Desenvolvimento:</strong> Treinamento e desenvolvimento de competências</p>
+        <p><strong>Eixo 5 - Serviços Digitais:</strong> Disponibilização de serviços online</p>
+        <p><strong>Eixo 6 - Interoperabilidade:</strong> Integração entre sistemas e serviços</p>
+        <p><strong>Eixo 7 - Segurança e Privacidade:</strong> Proteção de dados e segurança da informação</p>
+      </div>
+    </div>
+  `;
+
+  const generatePopulationPage = async () => {
+    const populationElement = document.querySelector('[data-chart="population"]');
+    if (populationElement && (populationElement as HTMLElement).offsetWidth > 0) {
+      try {
+        const canvas = await html2canvas(populationElement as HTMLElement, {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          width: (populationElement as HTMLElement).offsetWidth,
+          height: (populationElement as HTMLElement).offsetHeight,
+          scrollX: 0,
+          scrollY: 0,
+          logging: false,
+          removeContainer: true
+        });
+        
+        const imgData = canvas.toDataURL('image/png');
+        return `
+          <div style="text-align: center; margin-bottom: 30px;">
+            <h1 style="color: #1e40af; font-size: 28px; margin-bottom: 20px; font-weight: bold;">
+              Análise Demográfica
+            </h1>
+            <h2 style="color: #374151; font-size: 20px; margin-bottom: 15px;">
+              Microrregião: ${selectedData.microrregiao}
+            </h2>
+          </div>
+          ${generateHeaderSection()}
+          <div style="text-align: center; margin-bottom: 30px;">
+            <img src="${imgData}" style="max-width: 100%; max-height: 400px; height: auto; border: 2px solid #d1d5db; border-radius: 8px;" />
+          </div>
+          <div style="background-color: #f8fafc; padding: 25px; border-radius: 8px;">
+            <h3 style="color: #1e40af; font-size: 18px; margin-bottom: 15px;">Contexto Demográfico:</h3>
+            <div style="font-size: 14px; line-height: 1.8; color: #374151; text-align: left;">
+              <p><strong>👥 População Total:</strong> ${selectedData.populacao} habitantes</p>
+              <p><strong>🏙️ Municípios:</strong> ${selectedData.municipios} cidades</p>
+              <p><strong>📊 Densidade:</strong> Média populacional por município</p>
+              <p><strong>🎯 Relevância:</strong> O tamanho da população influencia a complexidade da gestão digital</p>
+            </div>
+          </div>
+        `;
+      } catch (error) {
+        console.error('Erro ao capturar gráfico de população:', error);
+      }
+    }
+    
+    return `
+      <div style="text-align: center; margin-bottom: 30px;">
+        <h1 style="color: #1e40af; font-size: 28px; margin-bottom: 20px; font-weight: bold;">
+          Análise Demográfica
+        </h1>
+        <h2 style="color: #374151; font-size: 20px; margin-bottom: 15px;">
+          Microrregião: ${selectedData.microrregiao}
+        </h2>
+      </div>
+      ${generateHeaderSection()}
+      ${generatePopulationSection()}
+    `;
+  };
+
+  const generateRecommendationsPage = () => `
+      <div style="text-align: center; margin-bottom: 30px;">
+        <h1 style="color: #1e40af; font-size: 28px; margin-bottom: 20px; font-weight: bold;">
+          Recomendações por Eixo
+        </h1>
+        <h2 style="color: #374151; font-size: 20px; margin-bottom: 15px;">
+          Microrregião: ${selectedData.microrregiao}
+        </h2>
+      </div>
+      ${generateHeaderSection()}
+      ${generateRecommendationsSection()}
+      <div style="margin-top: 30px; padding: 20px; background-color: #f8fafc; border-radius: 8px;">
+        <h3 style="color: #1e40af; font-size: 16px; margin-bottom: 15px;">Como usar as recomendações:</h3>
+        <div style="font-size: 14px; line-height: 1.6; color: #374151;">
+          <p><strong>🎯 Priorização:</strong> Foque primeiro nos eixos com menor pontuação</p>
+          <p><strong>📈 Evolução:</strong> As recomendações são baseadas no nível atual de maturidade</p>
+          <p><strong>🔄 Iterativo:</strong> Implemente gradualmente e monitore o progresso</p>
+          <p><strong>🤝 Colaboração:</strong> Envolva diferentes setores na implementação</p>
+        </div>
+      </div>
+    `;
+  };
+
+  const generateExecutivePage = () => {
+    const indiceGeral = parseFloat(String(selectedData.indice_geral).replace(',', '.'));
+    const classification = indiceGeral >= 0.8 ? 'Consolidado' : indiceGeral >= 0.5 ? 'Em Evolução' : indiceGeral >= 0.2 ? 'Emergente' : 'Inicial';
+    
+    return `
+      <div style="text-align: center; margin-bottom: 30px;">
+        <h1 style="color: #1e40af; font-size: 28px; margin-bottom: 20px; font-weight: bold;">
+          Dashboard Executivo
+        </h1>
+        <h2 style="color: #374151; font-size: 20px; margin-bottom: 15px;">
+          Microrregião: ${selectedData.microrregiao}
+        </h2>
+      </div>
+      ${generateHeaderSection()}
+      
+      <div style="background-color: #f8fafc; padding: 25px; border-radius: 8px; margin-bottom: 20px;">
+        <h3 style="color: #1e40af; font-size: 18px; margin-bottom: 15px;">Resumo Executivo</h3>
+        <div style="font-size: 14px; line-height: 1.8; color: #374151;">
+          <p><strong>Índice Geral de Maturidade:</strong> ${(indiceGeral * 100).toFixed(1)}%</p>
+          <p><strong>Classificação:</strong> ${classification}</p>
+          <p><strong>Status:</strong> ${selectedData.microrregiao} está em processo de evolução digital</p>
+        </div>
+      </div>
+      
+      <div style="margin-top: 30px; padding: 20px; background-color: #f8fafc; border-radius: 8px;">
+        <h3 style="color: #1e40af; font-size: 16px; margin-bottom: 15px;">Recomendação Estratégica:</h3>
+        <div style="font-size: 14px; line-height: 1.6; color: #374151;">
+          <p>${selectedData.microrregiao} demonstra maturidade digital ${classification.toLowerCase()}. 
+          Priorize os eixos emergentes e fortaleça as áreas já em desenvolvimento para acelerar a transformação digital.</p>
+        </div>
+      </div>
+    `;
+  };
+
+  const generateAdvancedPage = () => `
+    <div style="text-align: center; margin-bottom: 30px;">
+      <h1 style="color: #1e40af; font-size: 28px; margin-bottom: 20px; font-weight: bold;">
+        Análise Avançada
+      </h1>
+      <h2 style="color: #374151; font-size: 20px; margin-bottom: 15px;">
+        Microrregião: ${selectedData.microrregiao}
+      </h2>
+    </div>
+    ${generateHeaderSection()}
+    
+    <div style="background-color: #f8fafc; padding: 25px; border-radius: 8px; margin-bottom: 20px;">
+      <h3 style="color: #1e40af; font-size: 18px; margin-bottom: 15px;">Comparação entre Regiões</h3>
+      <div style="font-size: 14px; line-height: 1.8; color: #374151;">
+        <p><strong>Funcionalidade:</strong> Esta seção permite comparar ${selectedData.microrregiao} com outras microrregiões</p>
+        <p><strong>Análise:</strong> Gráficos radar, barras e resumo executivo comparativo</p>
+        <p><strong>Insights:</strong> Identificação de pontos fortes e oportunidades de melhoria</p>
+      </div>
+    </div>
+    
+    <div style="margin-top: 30px; padding: 20px; background-color: #f8fafc; border-radius: 8px;">
+      <h3 style="color: #1e40af; font-size: 16px; margin-bottom: 15px;">Como usar a Análise Avançada:</h3>
+      <div style="font-size: 14px; line-height: 1.6; color: #374151;">
+        <p><strong>🔍 Seleção:</strong> Escolha uma região para comparação</p>
+        <p><strong>📊 Visualização:</strong> Use diferentes tipos de gráficos para análise</p>
+        <p><strong>📈 Métricas:</strong> Compare índices e pontuações por eixo</p>
+        <p><strong>🎯 Estratégia:</strong> Baseie decisões em dados comparativos</p>
+      </div>
+    </div>
+  `;
+
+  const generateEixosDetailPage = () => {
+    const eixosNames = [
+      'Gestão e Governança',
+      'Infraestrutura e Conectividade', 
+      'Sistemas e Dados',
+      'Capacitação e Desenvolvimento',
+      'Serviços Digitais',
+      'Interoperabilidade',
+      'Segurança e Privacidade'
+    ];
+
+    let eixosContent = '';
+    for (let i = 1; i <= 7; i++) {
+      const eixoKey = `eixo_${i}` as keyof MicroRegionData;
+      const valor = parseFloat(String(selectedData[eixoKey]).replace(',', '.'));
+      const status = valor >= 0.8 ? 'Avançado' : valor >= 0.5 ? 'Em Evolução' : valor >= 0.2 ? 'Emergente' : 'Inicial';
+      const statusColor = valor >= 0.8 ? '#10b981' : valor >= 0.5 ? '#f59e0b' : valor >= 0.2 ? '#f97316' : '#ef4444';
+      
+      eixosContent += `
+        <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e5e7eb; border-radius: 8px; background-color: #ffffff;">
+          <h4 style="color: #1e40af; font-size: 16px; margin-bottom: 10px; font-weight: bold;">
+            Eixo ${i} - ${eixosNames[i-1]}
+          </h4>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <span style="font-size: 14px; color: #374151;">Pontuação: <strong>${(valor * 100).toFixed(1)}%</strong></span>
+            <span style="font-size: 14px; color: ${statusColor}; font-weight: bold;">${status}</span>
+          </div>
+          <div style="background-color: #f3f4f6; height: 8px; border-radius: 4px; overflow: hidden;">
+            <div style="width: ${valor * 100}%; height: 100%; background-color: ${statusColor};"></div>
+          </div>
+        </div>
+      `;
+    }
+
+    return `
+      <div style="text-align: center; margin-bottom: 30px;">
+        <h1 style="color: #1e40af; font-size: 28px; margin-bottom: 20px; font-weight: bold;">
+          Detalhamento por Eixos de Maturidade
+        </h1>
+        <h2 style="color: #374151; font-size: 20px; margin-bottom: 15px;">
+          Microrregião: ${selectedData.microrregiao}
+        </h2>
+      </div>
+      ${generateHeaderSection()}
+      
+      <div style="background-color: #f8fafc; padding: 25px; border-radius: 8px; margin-bottom: 20px;">
+        <h3 style="color: #1e40af; font-size: 18px; margin-bottom: 15px;">Análise Detalhada por Eixo</h3>
+        ${eixosContent}
+      </div>
+      
+      <div style="margin-top: 30px; padding: 20px; background-color: #f8fafc; border-radius: 8px;">
+        <h3 style="color: #1e40af; font-size: 16px; margin-bottom: 15px;">Legenda de Status:</h3>
+        <div style="font-size: 14px; line-height: 1.6; color: #374151;">
+          <p><strong style="color: #10b981;">🟢 Avançado (80-100%):</strong> Nível alto de maturidade digital</p>
+          <p><strong style="color: #f59e0b;">🟡 Em Evolução (50-79%):</strong> Nível intermediário de desenvolvimento</p>
+          <p><strong style="color: #f97316;">🟠 Emergente (20-49%):</strong> Nível básico de maturidade</p>
+          <p><strong style="color: #ef4444;">🔴 Inicial (0-19%):</strong> Necessita de desenvolvimento prioritário</p>
+        </div>
+      </div>
+    `;
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <Button 
+          className="bg-primary hover:bg-primary/90 text-white shadow-lg"
+          size="lg"
+        >
+          <Download className="h-4 w-4 mr-2" />
+          Baixar Relatório PDF
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-md bg-blue-50 border-blue-200">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Settings className="h-5 w-5" />
+            Configurar Relatório PDF
+          </DialogTitle>
+        </DialogHeader>
+        
+        <div className="space-y-4">
+          <div className="flex items-center space-x-2">
+            <Checkbox 
+              id="select-all"
+              checked={sections.every(s => s.checked)}
+              onCheckedChange={handleSelectAll}
+            />
+            <Label htmlFor="select-all" className="font-semibold">
+              Selecionar Todos
+            </Label>
+          </div>
+          
+          <div className="space-y-3">
+            {sections.map((section) => (
+              <div key={section.id} className="flex items-center space-x-2">
+                <Checkbox 
+                  id={section.id}
+                  checked={section.checked}
+                  onCheckedChange={(checked) => handleSectionChange(section.id, checked as boolean)}
+                />
+                <Label htmlFor={section.id} className="text-sm">
+                  {section.label}
+                </Label>
+              </div>
+            ))}
+          </div>
+          
+          {isGenerating && (
+            <div className="pt-2 text-center">
+              <p className="text-sm text-blue-600 font-medium">{generationProgress}</p>
+            </div>
+          )}
+          
+          <div className="pt-4 border-t">
+            <Button 
+              onClick={generatePDF}
+              className="w-full"
+              disabled={!sections.some(s => s.checked) || isGenerating}
+            >
+              {isGenerating ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  Gerando PDF...
+                </>
+              ) : (
+                <>
+              <FileText className="h-4 w-4 mr-2" />
+              Gerar PDF
+                </>
+              )}
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+} 
