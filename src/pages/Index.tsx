@@ -14,20 +14,28 @@ import { Sidebar } from '@/components/dashboard/Sidebar';
 import { NavigationMenu } from '@/components/dashboard/NavigationMenu';
 import { HelpButton } from '@/components/ui/help-button';
 import { Button } from '@/components/ui/button';
-import { Menu, Moon, Sun } from 'lucide-react';
-import { mockData, calculateMedians } from '@/data/mockData';
+import { Menu, Moon, Sun, RefreshCw } from 'lucide-react';
+import { calculateMedians } from '@/data/mockData';
 import { FilterOptions } from '@/types/dashboard';
 import { toast } from 'sonner';
+import { useExcelData } from '@/hooks/useExcelData';
 
 const Index = () => {
-  const [data, setData] = useState(mockData);
-  const [selectedMicroregiao, setSelectedMicroregiao] = useState(data[0]?.microrregiao || '');
+  const { data, loading, error, dataSource, refreshData } = useExcelData();
+  const [selectedMicroregiao, setSelectedMicroregiao] = useState('');
   const [filters, setFilters] = useState<FilterOptions>({});
   const [activeSection, setActiveSection] = useState('overview');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+  // Atualizar microrregião selecionada quando os dados carregarem
+  useMemo(() => {
+    if (data.length > 0 && !selectedMicroregiao) {
+      setSelectedMicroregiao(data[0].microrregiao);
+    }
+  }, [data, selectedMicroregiao]);
 
   // Calcular medianas dos eixos
   const medians = useMemo(() => calculateMedians(data), [data]);
@@ -213,8 +221,34 @@ const Index = () => {
         <div className="px-4 sm:px-6 lg:px-8 py-3">
           <div className="max-w-6xl mx-auto">
             <div className="flex items-center justify-between">
-              <div className="text-sm text-muted-foreground">
-                {data.length} microrregiões • {filteredData.length} exibidas
+              <div className="flex items-center gap-4">
+                <div className="text-sm text-muted-foreground">
+                  {loading ? 'Carregando...' : `${data.length} microrregiões • ${filteredData.length} exibidas`}
+                </div>
+                {dataSource === 'excel' && (
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <span className="text-xs text-green-600 font-medium">Dados do Excel</span>
+                  </div>
+                )}
+                {dataSource === 'mock' && (
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                    <span className="text-xs text-yellow-600 font-medium">Dados de Exemplo</span>
+                  </div>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={refreshData}
+                  disabled={loading}
+                  className="text-xs"
+                >
+                  <RefreshCw className={`h-3 w-3 mr-1 ${loading ? 'animate-spin' : ''}`} />
+                  Atualizar
+                </Button>
               </div>
             </div>
           </div>
@@ -350,7 +384,6 @@ const Index = () => {
         {/* Upload de Dados */}
         <div>
           <DataUpload onDataUpdate={(newData) => {
-            setData(newData);
             // Resetar para a primeira microrregião dos novos dados
             if (newData.length > 0) {
               setSelectedMicroregiao(newData[0].microrregiao);
