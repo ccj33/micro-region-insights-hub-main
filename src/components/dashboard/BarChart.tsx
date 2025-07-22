@@ -10,6 +10,7 @@ const LazyBarChartComponent = lazy(() => import('./BarChartComponent').then(modu
 interface DashboardBarChartProps {
   data: MicroRegionData[];
   selectedMicroregiao: string;
+  macroFiltro?: string;
 }
 
 // Skeleton loading component
@@ -25,7 +26,7 @@ function BarChartSkeleton() {
   );
 }
 
-export function DashboardBarChart({ data, selectedMicroregiao }: DashboardBarChartProps) {
+export function DashboardBarChart({ data, selectedMicroregiao, macroFiltro }: DashboardBarChartProps) {
   const [isLoaded, setIsLoaded] = useState(false);
 
   const handleChartLoad = () => {
@@ -50,6 +51,7 @@ export function DashboardBarChart({ data, selectedMicroregiao }: DashboardBarCha
           <LazyBarChartComponent 
             data={data}
             selectedMicroregiao={selectedMicroregiao}
+            macroFiltro={macroFiltro}
             onLoad={handleChartLoad}
           />
         </Suspense>
@@ -63,27 +65,6 @@ export function DashboardBarChart({ data, selectedMicroregiao }: DashboardBarCha
         </div>
       )}
 
-      {isLoaded && (
-        <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-          <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
-            📊 Legenda do Gráfico de Barras
-          </h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded bg-blue-500 border-2 border-white shadow-sm"></div>
-              <span className="font-medium">Outras Microrregiões</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded bg-yellow-500 border-2 border-white shadow-sm"></div>
-              <span className="font-medium">Microrregião Selecionada</span>
-            </div>
-          </div>
-          <div className="mt-3 text-xs text-gray-600">
-            <strong>💡 Dica:</strong> As barras mostram o índice de maturidade digital de cada microrregião. 
-            Quanto mais alta a barra, melhor o desempenho. A microrregião selecionada aparece destacada em amarelo.
-          </div>
-        </div>
-      )}
     </div>
   );
 }

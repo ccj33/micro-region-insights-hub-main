@@ -8,6 +8,7 @@ import RadarChartPage from "./pages/RadarChartPage";
 import BarChartPage from "./pages/BarChartPage";
 import PopulationChartPage from "./pages/PopulationChartPage";
 import NotFound from "./pages/NotFound";
+import MicroRegionPage from "./pages/MicroRegionPage";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +23,7 @@ const App = () => (
           <Route path="/radar" element={<RadarChartPage />} />
           <Route path="/barras" element={<BarChartPage />} />
           <Route path="/populacao" element={<PopulationChartPage />} />
+          <Route path="/dashboard/microrregiao/:token" element={<MicroRegionPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

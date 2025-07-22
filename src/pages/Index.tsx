@@ -19,6 +19,59 @@ import { calculateMedians } from '@/data/mockData';
 import { FilterOptions } from '@/types/dashboard';
 import { toast } from 'sonner';
 import { useExcelData } from '@/hooks/useExcelData';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { HelpCircle, X } from 'lucide-react';
+import { useEffect } from 'react';
+
+const GUIDE_STORAGE_KEY = 'mrh-guide-dismissed';
+
+function UserGuideModal({ open, setOpen }: { open: boolean, setOpen: (v: boolean) => void }) {
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogContent className="max-w-2xl p-0 overflow-hidden border border-blue-200 bg-white shadow-lg shadow-blue-100">
+        <div className="bg-gradient-to-br from-blue-50 to-white p-6 relative">
+          <button onClick={() => setOpen(false)} className="absolute top-4 right-4 text-blue-900 hover:text-blue-600"><X size={22} /></button>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-2xl font-bold text-blue-900 mb-2">
+              <HelpCircle className="h-7 w-7 text-blue-700" />
+              Bem-vindo ao Micro-Region Insights Hub!
+            </DialogTitle>
+          </DialogHeader>
+          <p className="text-blue-900 text-lg mb-4">Seu painel de inteligência para maturidade digital das microrregiões.</p>
+          <ol className="space-y-4 text-blue-900 text-base">
+            <li>
+              <b>1. Selecione a Região:</b> Use os filtros no topo para escolher a <b>Macrorregião</b> e depois a <b>Microrregião</b> que deseja analisar.
+            </li>
+            <li>
+              <b>2. Explore os Indicadores:</b> Veja cards com <b>população</b>, <b>índice de maturidade</b> e <b>classificação</b>. Passe o mouse para mais detalhes.
+            </li>
+            <li>
+              <b>3. Analise os Gráficos:</b> O <b>Radar</b> mostra forças e fraquezas por eixo. O <b>Ranking</b> compara todas as microrregiões. A <b>Tabela</b> detalha cada eixo.
+            </li>
+            <li>
+              <b>4. Veja Recomendações:</b> Receba dicas automáticas para evoluir em cada eixo de maturidade digital.
+            </li>
+            <li>
+              <b>5. Exporte Relatórios:</b> Gere um PDF completo do dashboard para compartilhar ou arquivar.
+            </li>
+          </ol>
+          <div className="mt-6 p-4 bg-blue-100 rounded-lg border border-blue-200 text-blue-800 text-sm">
+            <b>Dicas rápidas:</b>
+            <ul className="list-disc ml-5 mt-1 space-y-1">
+              <li>Passe o mouse nos gráficos para ver explicações.</li>
+              <li>Clique em uma microrregião no ranking para analisá-la.</li>
+              <li>Use o botão <HelpCircle className="inline h-4 w-4" /> no topo para reabrir este guia a qualquer momento.</li>
+            </ul>
+          </div>
+          <div className="mt-4 text-xs text-blue-700 text-center">
+            Dúvidas? Fale com o suporte ou consulte o manual completo.<br/>
+            <a href="mailto:suporte@microregionhub.com" className="underline text-blue-900">suporte@microregionhub.com</a>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 const Index = () => {
   const { data, loading, error, dataSource, refreshData } = useExcelData();
@@ -29,6 +82,9 @@ const Index = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [guideOpen, setGuideOpen] = useState(true);
+
+  // Remover o useEffect que verifica o localStorage
 
   // Atualizar microrregião selecionada quando os dados carregarem
   useMemo(() => {
@@ -49,14 +105,15 @@ const Index = () => {
   const filteredData = useMemo(() => {
     return data.filter(item => {
       return (!filters.macrorregiao || item.macrorregiao === filters.macrorregiao) &&
-             (!filters.regional_saude || item.regional_saude === filters.regional_saude) &&
              (!filters.classificacao_inmsd || item.classificacao_inmsd === filters.classificacao_inmsd);
     });
   }, [filters, data]);
 
   const handleMicroregiaoChange = (microrregiao: string) => {
     setSelectedMicroregiao(microrregiao);
-    toast.success(`Microrregião selecionada: ${microrregiao}`);
+    toast.success(`Microrregião selecionada: ${microrregiao}`, {
+      className: 'bg-blue-600 text-white'
+    });
   };
 
   const handleFiltersChange = (newFilters: FilterOptions) => {
@@ -65,7 +122,6 @@ const Index = () => {
     // Se a microrregião selecionada não estiver mais nos dados filtrados, selecionar a primeira disponível
     const filtered = data.filter(item => {
       return (!newFilters.macrorregiao || item.macrorregiao === newFilters.macrorregiao) &&
-             (!newFilters.regional_saude || item.regional_saude === newFilters.regional_saude) &&
              (!newFilters.classificacao_inmsd || item.classificacao_inmsd === newFilters.classificacao_inmsd);
     });
     
@@ -170,7 +226,15 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-dashboard-bg">
+    <>
+      <UserGuideModal open={guideOpen} setOpen={setGuideOpen} />
+      <div className="fixed top-4 right-4 z-50">
+        <button onClick={() => setGuideOpen(true)} className="bg-blue-600 hover:bg-blue-700 text-white rounded-full p-2 shadow-lg flex items-center gap-2">
+          <HelpCircle className="h-5 w-5" />
+          <span className="hidden sm:inline">Ajuda</span>
+        </button>
+      </div>
+      <div className="min-h-screen bg-dashboard-bg">
       {/* Navigation Menu Fixo */}
       <NavigationMenu
         activeSection={activeSection}
@@ -233,8 +297,8 @@ const Index = () => {
                 )}
                 {dataSource === 'mock' && (
                   <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                    <span className="text-xs text-yellow-600 font-medium">Dados de Exemplo</span>
+                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                    <span className="text-xs text-blue-600 font-medium">Dados de Exemplo</span>
                   </div>
                 )}
               </div>
@@ -287,7 +351,7 @@ const Index = () => {
 
         {/* Estatísticas Gerais */}
         <div id="overview" className="mb-16">
-          <StatsOverview data={filteredData} selectedData={selectedData} />
+          <StatsOverview data={filteredData} selectedData={selectedData} macroFiltro={filters.macrorregiao} />
         </div>
 
         {/* Separador Visual */}
@@ -315,7 +379,7 @@ const Index = () => {
             <h2 className="text-xl font-semibold text-foreground">Gráfico de Barras</h2>
             <p className="text-sm text-muted-foreground">Comparação entre Microrregiões</p>
           </div>
-          <DashboardBarChart data={filteredData} selectedMicroregiao={selectedMicroregiao} />
+          <DashboardBarChart data={filteredData} selectedMicroregiao={selectedMicroregiao} macroFiltro={filters.macrorregiao} />
         </div>
 
         {/* Separador Visual */}
@@ -409,6 +473,7 @@ const Index = () => {
         </div>
       </footer>
     </div>
+    </>
   );
 };
 

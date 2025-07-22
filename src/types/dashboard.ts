@@ -56,7 +56,6 @@ export interface EixoData {
 
 export interface FilterOptions {
   macrorregiao?: string;
-  regional_saude?: string;
   classificacao_inmsd?: string;
 }
 

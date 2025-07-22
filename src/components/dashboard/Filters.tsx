@@ -83,16 +83,15 @@ export function Filters({
               <span>Cache: {cacheStats.hits}/{cacheStats.hits + cacheStats.misses}</span>
             </div>
             <DownloadPDF 
-              selectedData={selectedData}
-              data={data}
-              selectedMicroregiao={selectedMicroregiao}
+              microrregiao={selectedData?.microrregiao || 'NÃO DEFINIDO'}
+              indice={selectedData?.indice_geral ? parseFloat(String(selectedData.indice_geral)).toFixed(3) : '---'}
             />
           </div>
         </div>
       </CardHeader>
       <CardContent>
-        {/* Barra de Pesquisa */}
-        <div className="mb-4">
+        {/* Barra de Pesquisa REMOVIDA */}
+        {/* <div className="mb-4">
           <label className="text-sm font-semibold text-foreground mb-2 block flex items-center gap-2">
             <Search className="h-4 w-4 text-primary" />
             Pesquisar Microrregiões
@@ -116,66 +115,10 @@ export function Filters({
               {filteredMicroregioes.length} resultado(s) encontrado(s)
             </p>
           )}
-        </div>
+        </div> */}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          {/* Filtro Principal - Microrregião */}
-          <div className="lg:col-span-2">
-            <label className="text-sm font-semibold text-foreground mb-2 block flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-primary" />
-              Microrregião (Principal)
-            </label>
-            <Popover open={openMicroregiao} onOpenChange={setOpenMicroregiao}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  aria-expanded={openMicroregiao}
-                  className="w-full justify-between bg-white border-2 border-primary/20 focus:border-primary transition-colors shadow-sm h-12 sm:h-10"
-                >
-                  {selectedMicroregiao || "Selecione uma microrregião"}
-                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-[400px] p-0">
-                <Command>
-                  <CommandInput placeholder="Buscar microrregião..." />
-                  <CommandList>
-                    <CommandEmpty>Nenhuma microrregião encontrada.</CommandEmpty>
-                    <CommandGroup>
-                      {filteredMicroregioes
-                        .sort((a, b) => a.microrregiao.localeCompare(b.microrregiao, 'pt-BR'))
-                        .map((item) => (
-                        <CommandItem
-                          key={item.microrregiao}
-                          value={item.microrregiao}
-                          onSelect={() => {
-                            onMicroregiaoChange(item.microrregiao);
-                            setOpenMicroregiao(false);
-                          }}
-                        >
-                          <Check
-                            className={cn(
-                              "mr-2 h-4 w-4",
-                              selectedMicroregiao === item.microrregiao ? "opacity-100" : "opacity-0"
-                            )}
-                          />
-                    <div className="flex flex-col">
-                      <span>{item.microrregiao}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {item.macrorregiao} • {item.classificacao_inmsd}
-                      </span>
-                    </div>
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
-          </div>
-
-          {/* Filtros Opcionais */}
+          {/* Filtro Macrorregião - AGORA PRIMEIRO */}
           <div>
             <label className="text-sm font-semibold text-foreground mb-2 block flex items-center gap-2">
               <Building className="h-4 w-4 text-primary" />
@@ -239,60 +182,53 @@ export function Filters({
             </Popover>
           </div>
 
-          <div>
+          {/* Filtro Microrregião - AGORA SEGUNDO */}
+          <div className="lg:col-span-2">
             <label className="text-sm font-semibold text-foreground mb-2 block flex items-center gap-2">
-              <Target className="h-4 w-4 text-primary" />
-              Regional de Saúde
+              <MapPin className="h-4 w-4 text-primary" />
+              Microrregião (Principal)
             </label>
-            <Popover open={openRegional} onOpenChange={setOpenRegional}>
+            <Popover open={openMicroregiao} onOpenChange={setOpenMicroregiao}>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
                   role="combobox"
-                  aria-expanded={openRegional}
-                  className="w-full justify-between bg-white border border-gray-300 hover:border-primary/50 transition-colors shadow-sm"
+                  aria-expanded={openMicroregiao}
+                  className="w-full justify-between bg-white border-2 border-primary/20 focus:border-primary transition-colors shadow-sm h-12 sm:h-10"
                 >
-                  {filters.regional_saude || "Todas as regionais"}
+                  {selectedMicroregiao || "Selecione uma microrregião"}
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-[300px] p-0">
+              <PopoverContent className="w-[400px] p-0">
                 <Command>
-                  <CommandInput placeholder="Buscar regional..." />
+                  <CommandInput placeholder="Buscar microrregião..." />
                   <CommandList>
-                    <CommandEmpty>Nenhuma regional encontrada.</CommandEmpty>
+                    <CommandEmpty>Nenhuma microrregião encontrada.</CommandEmpty>
                     <CommandGroup>
-                      <CommandItem
-                        value="todas"
-                        onSelect={() => {
-                          onFiltersChange({ ...filters, regional_saude: undefined });
-                          setOpenRegional(false);
-                        }}
-                      >
-                        <Check
-                          className={cn(
-                            "mr-2 h-4 w-4",
-                            !filters.regional_saude ? "opacity-100" : "opacity-0"
-                          )}
-                        />
-                        Todas as regionais
-                      </CommandItem>
-                      {uniqueValues.regionaisSaude.map((regional) => (
+                      {filteredMicroregioes
+                        .sort((a, b) => a.microrregiao.localeCompare(b.microrregiao, 'pt-BR'))
+                        .map((item) => (
                         <CommandItem
-                          key={regional}
-                          value={regional}
+                          key={item.microrregiao}
+                          value={item.microrregiao}
                           onSelect={() => {
-                            onFiltersChange({ ...filters, regional_saude: regional });
-                            setOpenRegional(false);
+                            onMicroregiaoChange(item.microrregiao);
+                            setOpenMicroregiao(false);
                           }}
                         >
                           <Check
                             className={cn(
                               "mr-2 h-4 w-4",
-                              filters.regional_saude === regional ? "opacity-100" : "opacity-0"
+                              selectedMicroregiao === item.microrregiao ? "opacity-100" : "opacity-0"
                             )}
                           />
-                          {regional}
+                    <div className="flex flex-col">
+                      <span>{item.microrregiao}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {item.macrorregiao} • {item.classificacao_inmsd}
+                      </span>
+                    </div>
                         </CommandItem>
                       ))}
                     </CommandGroup>
@@ -355,17 +291,6 @@ export function Filters({
                     Todas as macrorregiões
                   </Badge>
                 )}
-                
-                {filters.regional_saude ? (
-                  <Badge variant="outline" className="text-xs">
-                    {filters.regional_saude}
-                  </Badge>
-                ) : (
-                  <Badge variant="secondary" className="text-xs">
-                    Todas as regionais
-                  </Badge>
-                )}
-                
                 {filters.classificacao_inmsd ? (
                   <Badge variant="outline" className="text-xs">
                     {filters.classificacao_inmsd}

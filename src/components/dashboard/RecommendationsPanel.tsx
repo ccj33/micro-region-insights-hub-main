@@ -109,7 +109,7 @@ export function RecommendationsPanel({ data }: RecommendationsPanelProps) {
   };
 
   return (
-    <div className="space-y-6">
+    <div data-section="recommendations" className="space-y-6">
       <Card className="shadow-lg border-0 bg-gradient-to-r from-dashboard-header to-primary-light">
         <CardHeader className="pb-4">
           <CardTitle className="text-xl font-bold text-center text-foreground">

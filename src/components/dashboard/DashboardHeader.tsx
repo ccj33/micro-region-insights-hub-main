@@ -28,7 +28,7 @@ export function DashboardHeader({ data, allData, onMicroregiaoChange }: Dashboar
     if (valor >= 0.8) return 'bg-success text-success-foreground';
     if (valor >= 0.7) return 'bg-chart-tertiary text-foreground';
     if (valor >= 0.6) return 'bg-warning text-warning-foreground';
-    return 'bg-error text-error-foreground';
+    return 'bg-yellow-100 text-yellow-800';
   };
 
   // Filtrar microrregiões da mesma macrorregião
@@ -79,7 +79,7 @@ export function DashboardHeader({ data, allData, onMicroregiaoChange }: Dashboar
                 <div className="flex items-center gap-2">
                   <Users className="h-4 w-4 text-primary" />
                   <span className="font-medium">População:</span>
-                  <span>{data.populacao}</span>
+                  <span>{parseInt(String(data.populacao).replace(/\./g, '')).toLocaleString('pt-BR')}</span>
                 </div>
                 
                 <div className="flex items-center gap-2">
@@ -187,7 +187,7 @@ export function DashboardHeader({ data, allData, onMicroregiaoChange }: Dashboar
                       </div>
                       <div className="flex justify-between">
                         <span>População:</span>
-                        <span>{microrregiao.populacao}</span>
+                        <span>{parseInt(String(microrregiao.populacao).replace(/\./g, '')).toLocaleString('pt-BR')}</span>
                       </div>
                       <div className="flex justify-between">
                         <span>Regional:</span>

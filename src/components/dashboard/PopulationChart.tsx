@@ -62,20 +62,6 @@ export function PopulationChart({ data, selectedMicroregiao }: PopulationChartPr
           </div>
         </div>
       )}
-
-      {isLoaded && (
-        <div className="mt-4 p-4 bg-muted/30 rounded-lg">
-          <div className="text-sm text-muted-foreground">
-            <p className="mb-2"><strong>Faixas populacionais das microrregiões:</strong></p>
-            <ul className="space-y-1 text-xs">
-              <li>• <span className="text-blue-600 font-bold">Pequena</span>: Menos de <strong>30 mil</strong> habitantes</li>
-              <li>• <span className="text-green-600 font-bold">Média</span>: <strong>30 mil</strong> a <strong>60 mil</strong> habitantes</li>
-              <li>• <span className="text-orange-600 font-bold">Grande</span>: <strong>60 mil</strong> a <strong>100 mil</strong> habitantes</li>
-              <li>• <span className="text-purple-600 font-bold">Muito Grande</span>: Mais de <strong>100 mil</strong> habitantes</li>
-            </ul>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

@@ -6,10 +6,11 @@ import { Badge } from "@/components/ui/badge";
 interface BarChartComponentProps {
   data: MicroRegionData[];
   selectedMicroregiao: string;
+  macroFiltro?: string;
   onLoad?: () => void;
 }
 
-export function BarChartComponent({ data, selectedMicroregiao, onLoad }: BarChartComponentProps) {
+export function BarChartComponent({ data, selectedMicroregiao, macroFiltro, onLoad }: BarChartComponentProps) {
   useEffect(() => {
     // Simular carregamento do gráfico
     const timer = setTimeout(() => {
@@ -85,37 +86,66 @@ export function BarChartComponent({ data, selectedMicroregiao, onLoad }: BarChar
   };
 
   return (
-    <ResponsiveContainer width="100%" height="100%">
-      <BarChart
-        data={chartData}
-        margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
-      >
-        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
-        <XAxis 
-          dataKey="microrregiao" 
-          hide={true}
-        />
-        <YAxis 
-          domain={[0, 1]}
-          tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
-        />
-        <Tooltip content={<CustomTooltip />} />
-        <Bar 
-          dataKey="indice" 
-          radius={[4, 4, 0, 0]}
-          stroke="hsl(var(--border))"
-          strokeWidth={1}
+    <div data-section="bar" style={{ width: '100%', height: '100%', position: 'relative' }}>
+      {selectedMicroregiao && (
+        <div style={{ position: 'absolute', top: 16, left: '50%', transform: 'translateX(-50%)', zIndex: 10, background: 'rgba(255,255,255,0.92)', borderRadius: 8, padding: '6px 18px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', fontWeight: 600, fontSize: 16, color: '#1e3a8a', textAlign: 'center' }}>
+          {selectedMicroregiao}
+          <div style={{ fontWeight: 400, fontSize: 13, color: '#666', marginTop: 2 }}>
+            Macrorregião: <strong>{macroFiltro || 'Todas'}</strong>
+          </div>
+        </div>
+      )}
+      <div style={{ position: 'absolute', top: 24, right: 8, zIndex: 9, background: 'rgba(255,255,255,0.92)', borderRadius: 6, padding: '6px 10px 6px 12px', boxShadow: '0 1px 4px rgba(0,0,0,0.03)', fontSize: 12, color: '#444', textAlign: 'left', minWidth: 200, maxWidth: 260 }}>
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+              <span style={{ display: 'inline-block', width: 11, height: 11, borderRadius: 2, background: '#3b82f6', border: '1px solid #2563eb' }}></span>
+              <span style={{ fontWeight: 500, color: '#222', fontSize: 11 }}>Outras Microrregiões</span>
+            </span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+              <span style={{ display: 'inline-block', width: 11, height: 11, borderRadius: 2, background: '#fde047', border: '1px solid #facc15' }}></span>
+              <span style={{ fontWeight: 500, color: '#222', fontSize: 11 }}>Microrregião Selecionada</span>
+            </span>
+          </div>
+          <div style={{ fontWeight: 500, color: '#eab308', marginBottom: 1, fontSize: 11 }}>Dica:</div>
+          <div style={{ fontSize: 11, color: '#444', lineHeight: 1.2 }}>
+            Quanto mais alta a barra, melhor.<br />
+            A barra amarela é a selecionada.
+          </div>
+        </div>
+      </div>
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart
+          data={chartData}
+          margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
         >
-          {chartData.map((entry, index) => (
-            <Cell 
-              key={`cell-${index}`} 
-              fill={entry.isSelected ? 'hsl(45, 100%, 50%)' : 'hsl(220, 80%, 50%)'}
-              stroke={entry.isSelected ? 'hsl(45, 90%, 40%)' : 'hsl(220, 90%, 40%)'}
-              strokeWidth={entry.isSelected ? 2 : 1}
-            />
-          ))}
-        </Bar>
-      </BarChart>
-    </ResponsiveContainer>
+          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
+          <XAxis 
+            dataKey="microrregiao" 
+            hide={true}
+          />
+          <YAxis 
+            domain={[0, 1]}
+            tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
+          />
+          <Tooltip content={<CustomTooltip />} />
+          <Bar 
+            dataKey="indice" 
+            radius={[4, 4, 0, 0]}
+            stroke="hsl(var(--border))"
+            strokeWidth={1}
+          >
+            {chartData.map((entry, index) => (
+              <Cell 
+                key={`cell-${index}`} 
+                fill={entry.isSelected ? 'hsl(45, 100%, 50%)' : 'hsl(220, 80%, 50%)'}
+                stroke={entry.isSelected ? 'hsl(45, 90%, 40%)' : 'hsl(220, 90%, 40%)'}
+                strokeWidth={entry.isSelected ? 2 : 1}
+              />
+            ))}
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
   );
 } 

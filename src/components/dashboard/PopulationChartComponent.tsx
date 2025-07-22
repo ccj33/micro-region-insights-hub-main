@@ -1,7 +1,7 @@
-import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell } from 'recharts';
 import { MicroRegionData } from "@/types/dashboard";
 import { MapPin } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 interface PopulationChartComponentProps {
   data: MicroRegionData[];
@@ -10,6 +10,8 @@ interface PopulationChartComponentProps {
 }
 
 export function PopulationChartComponent({ data, selectedMicroregiao, onLoad }: PopulationChartComponentProps) {
+  const [hoveredBar, setHoveredBar] = useState<number | null>(null);
+
   useEffect(() => {
     // Simular carregamento do gráfico
     const timer = setTimeout(() => {
@@ -21,10 +23,10 @@ export function PopulationChartComponent({ data, selectedMicroregiao, onLoad }: 
 
   // Categorizar por faixas de população
   const categorizePopulation = (pop: number) => {
-    if (pop < 30000) return 'Pequena (< 30k)';
-    if (pop < 60000) return 'Média (30k-60k)';
-    if (pop < 100000) return 'Grande (60k-100k)';
-    return 'Muito Grande (> 100k)';
+    if (pop < 30000) return 'Pequena (< 30 mil)';
+    if (pop < 60000) return 'Média (30 mil a 60 mil)';
+    if (pop < 100000) return 'Grande (60 mil a 100 mil)';
+    return 'Muito Grande (> 100 mil)';
   };
 
   const chartData = data.reduce((acc, item) => {
@@ -51,12 +53,13 @@ export function PopulationChartComponent({ data, selectedMicroregiao, onLoad }: 
   const selectedData = selectedMicroregiao ? data.find(item => item.microrregiao === selectedMicroregiao) : null;
   const selectedCategory = selectedData ? categorizePopulation(parseInt(String(selectedData.populacao).replace(/\./g, ''))) : null;
 
-  const COLORS = [
-    'hsl(var(--chart-primary))',
-    'hsl(var(--chart-secondary))',
-    'hsl(var(--chart-tertiary))',
-    'hsl(var(--chart-quaternary))'
-  ];
+  // Cores fixas para cada categoria, alinhadas com a legenda
+  const CATEGORY_COLORS: Record<string, string> = {
+    'Pequena (< 30 mil)': '#d1d5db', // cinza claro
+    'Média (30 mil a 60 mil)': '#059669', // verde
+    'Grande (60 mil a 100 mil)': '#a21caf', // roxo
+    'Muito Grande (> 100 mil)': '#1e3a8a', // azul escuro
+  };
 
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
@@ -79,32 +82,86 @@ export function PopulationChartComponent({ data, selectedMicroregiao, onLoad }: 
     return null;
   };
 
-  return (
-    <ResponsiveContainer width="100%" height="100%">
-      <PieChart>
-        <Pie
-          data={chartData}
-          cx="50%"
-          cy="50%"
-          labelLine={false}
-          label={({ category, count, percent }) => 
-            `${category}: ${count} (${(percent * 100).toFixed(0)}%)`
+  // Ordem fixa das categorias
+  const POPULATION_ORDER = [
+    'Pequena (< 30 mil)',
+    'Média (30 mil a 60 mil)',
+    'Grande (60 mil a 100 mil)',
+    'Muito Grande (> 100 mil)'
+  ];
+
+  // Preparar dados para o gráfico de pirâmide, já ordenados
+  const pyramidData = POPULATION_ORDER
+    .map(category => {
+      const item = chartData.find(i => i.category === category);
+      return item
+        ? {
+            category: item.category,
+            count: item.count,
+            percent: Math.round((item.count / data.length) * 100),
+            isSelected: selectedCategory === item.category
           }
-          outerRadius={120}
-          fill="#8884d8"
-          dataKey="count"
+        : null;
+    })
+    .filter(Boolean);
+
+  return (
+    <div data-section="population" style={{ width: '100%', height: '100%', position: 'relative' }}>
+      {selectedMicroregiao && selectedData && (
+        <div style={{ position: 'absolute', top: -20, left: '50%', transform: 'translateX(-50%)', zIndex: 10, background: 'rgba(255,255,255,0.92)', borderRadius: 8, padding: '6px 18px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', fontWeight: 600, fontSize: 16, color: '#1e3a8a', textAlign: 'center' }}>
+          {selectedMicroregiao}
+          <div style={{ fontWeight: 400, fontSize: 13, color: '#666', marginTop: 2 }}>
+            Macrorregião: <strong>{selectedData.macrorregiao || 'Todas'}</strong>
+          </div>
+        </div>
+      )}
+      {/* Legenda customizada dentro do gráfico */}
+      <div style={{ position: 'absolute', top: 30, right: 40, zIndex: 10, background: 'rgba(255,255,255,0.85)', borderRadius: 8, padding: '6px 10px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', fontSize: '12px', minWidth: 160 }}>
+        <ul className="space-y-1 text-xs">
+          {POPULATION_ORDER.map((category, idx) => {
+            const entry = pyramidData.find(e => e.category === category);
+            if (!entry) return null;
+            return (
+              <li key={category} className="flex items-center gap-2">
+                <span style={{ display: 'inline-block', width: 12, height: 12, borderRadius: 3, background: CATEGORY_COLORS[category] || '#bdbdbd', border: entry.isSelected ? '2px solid #1e3a8a' : '1px solid #ccc' }}></span>
+                <span className={entry.isSelected ? 'font-semibold text-blue-900' : ''} style={{ fontSize: '12px' }}>
+                  {entry.isSelected && <span role="img" aria-label="pin">📍</span>}
+                  {category}
+                  {entry.isSelected && <span className="ml-1 text-xs text-blue-900">(Sua microrregião)</span>}
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+      <ResponsiveContainer width="100%" height={350}>
+        <BarChart
+          data={pyramidData}
+          layout="vertical"
+          margin={{ top: 30, right: 60, left: 40, bottom: 20 }}
+          barCategoryGap={20}
         >
-          {chartData.map((entry, index) => (
-            <Cell 
-              key={`cell-${index}`} 
-              fill={COLORS[index % COLORS.length]}
-              stroke={selectedCategory === entry.category ? 'hsl(var(--primary))' : 'none'}
-              strokeWidth={selectedCategory === entry.category ? 3 : 0}
-            />
-          ))}
-        </Pie>
-        <Tooltip content={<CustomTooltip />} />
-      </PieChart>
-    </ResponsiveContainer>
+          <XAxis type="number" hide domain={[0, Math.max(...pyramidData.map(d => d.count)) * 1.1]} />
+          <YAxis type="category" dataKey="category" tick={{ fontSize: 13 }} width={120} />
+          <Tooltip
+            cursor={{ fill: 'rgba(30,58,138,0.07)' }}
+            formatter={(value, name, props) => [`${value} microrregiões (${props.payload.percent}%)`, '']}
+          />
+          <Bar dataKey="count" radius={6} onMouseLeave={() => setHoveredBar(null)}>
+            {pyramidData.map((entry, idx) => (
+              <Cell
+                key={`cell-${idx}`}
+                fill={
+                  hoveredBar === idx
+                    ? (entry.isSelected ? '#1e3a8a' : CATEGORY_COLORS[entry.category] || '#bdbdbd')
+                    : (entry.isSelected ? '#1e3a8a' : CATEGORY_COLORS[entry.category] || '#bdbdbd')
+                }
+                onMouseEnter={() => setHoveredBar(idx)}
+              />
+            ))}
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
   );
 } 

@@ -80,8 +80,8 @@ export function ExecutiveDashboard({ data, selectedMicroregiao, medians }: Execu
   // Status de cada eixo
   const getEixoStatus = (valor: number) => {
     if (valor >= 0.8) return { status: 'Avançado', color: 'text-green-600', bg: 'bg-green-50' };
-    if (valor >= 0.5) return { status: 'Em Evolução', color: 'text-yellow-600', bg: 'bg-yellow-50' };
-    if (valor >= 0.2) return { status: 'Emergente', color: 'text-orange-600', bg: 'bg-orange-50' };
+    if (valor >= 0.5) return { status: 'Em Evolução', color: 'text-blue-600', bg: 'bg-blue-50' };
+    if (valor >= 0.2) return { status: 'Emergente', color: 'text-gray-600', bg: 'bg-gray-50' };
     return { status: 'Inicial', color: 'text-red-600', bg: 'bg-red-50' };
   };
 
@@ -99,7 +99,7 @@ export function ExecutiveDashboard({ data, selectedMicroregiao, medians }: Execu
   const ClassificationIcon = classification.icon;
 
   return (
-    <div className="space-y-6">
+    <div data-section="executive">
       {/* Cabeçalho Executivo */}
       <Card className="bg-gradient-to-r from-slate-50 to-gray-50 border-2 border-slate-200">
         <CardHeader>
@@ -127,78 +127,57 @@ export function ExecutiveDashboard({ data, selectedMicroregiao, medians }: Execu
       </Card>
 
       {/* KPIs Principais */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
-          <CardContent className="p-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        {/* Índice Geral */}
+        <Card className="bg-white border border-gray-200">
+          <CardContent className="flex flex-col gap-2 p-4">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-blue-600">Índice Geral</p>
-                <p className="text-3xl font-bold text-blue-900">
-                  {(stats.indiceGeral * 100).toFixed(1)}%
-                </p>
-              </div>
-              <div className="p-3 bg-blue-500 rounded-lg">
-                <BarChart3 className="h-6 w-6 text-white" />
-              </div>
+              <span className="text-xs font-semibold text-black">Índice Geral</span>
+              <BarChart3 className="h-5 w-5 text-black" />
             </div>
-            <Progress value={stats.indiceGeral * 100} className="mt-4" />
+            <div className="flex items-end gap-2">
+              <span className="text-3xl font-bold text-black">{(stats.indiceGeral * 100).toFixed(1)}%</span>
+            </div>
+            <Progress value={stats.indiceGeral * 100} className="h-2 bg-gray-100" />
           </CardContent>
         </Card>
-
-        <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
-          <CardContent className="p-6">
+        {/* Eixos Avançados */}
+        <Card className="bg-white border border-gray-200">
+          <CardContent className="flex flex-col gap-2 p-4">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-green-600">Eixos Avançados</p>
-                <p className="text-3xl font-bold text-green-900">
-                  {stats.avancado}/{stats.totalEixos}
-                </p>
-              </div>
-              <div className="p-3 bg-green-500 rounded-lg">
-                <Award className="h-6 w-6 text-white" />
-              </div>
+              <span className="text-xs font-semibold text-black">Eixos Avançados</span>
+              <Award className="h-5 w-5 text-black" />
             </div>
-            <p className="text-sm text-green-700 mt-2">
-              {((stats.avancado / stats.totalEixos) * 100).toFixed(0)}% dos eixos
-            </p>
+            <div className="flex items-end gap-2">
+              <span className="text-3xl font-bold text-black">{stats.avancado}/7</span>
+            </div>
+            <span className="text-xs text-black">{((stats.avancado / stats.totalEixos) * 100).toFixed(0)}% dos eixos</span>
           </CardContent>
         </Card>
-
-        <Card className="bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200">
-          <CardContent className="p-6">
+        {/* Acima da Média */}
+        <Card className="bg-white border border-gray-200">
+          <CardContent className="flex flex-col gap-2 p-4">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-yellow-600">Acima da Média</p>
-                <p className="text-3xl font-bold text-yellow-900">
-                  {stats.eixosAcimaMedia}/{stats.totalEixos}
-                </p>
-              </div>
-              <div className="p-3 bg-yellow-500 rounded-lg">
-                <TrendingUp className="h-6 w-6 text-white" />
-              </div>
+              <span className="text-xs font-semibold text-black">Acima da Média</span>
+              <TrendingUp className="h-5 w-5 text-black" />
             </div>
-            <p className="text-sm text-yellow-700 mt-2">
-              {((stats.eixosAcimaMedia / stats.totalEixos) * 100).toFixed(0)}% dos eixos
-            </p>
+            <div className="flex items-end gap-2">
+              <span className="text-3xl font-bold text-black">{stats.eixosAcimaMedia}/7</span>
+            </div>
+            <span className="text-xs text-black">{((stats.eixosAcimaMedia / stats.totalEixos) * 100).toFixed(0)}% dos eixos</span>
           </CardContent>
         </Card>
-
-        <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
-          <CardContent className="p-6">
+        {/* Em Evolução */}
+        <Card className="bg-white border border-gray-200">
+          <CardContent className="flex flex-col gap-2 p-4">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-purple-600">Em Evolução</p>
-                <p className="text-3xl font-bold text-purple-900">
-                  {stats.emEvolucao}/{stats.totalEixos}
-                </p>
-              </div>
-              <div className="p-3 bg-purple-500 rounded-lg">
-                <Activity className="h-6 w-6 text-white" />
-              </div>
+              <span className="text-xs font-semibold text-black">Em Evolução</span>
+              <Activity className="h-5 w-5 text-black" />
             </div>
-            <p className="text-sm text-purple-700 mt-2">
-              {((stats.emEvolucao / stats.totalEixos) * 100).toFixed(0)}% dos eixos
-            </p>
+            <div className="flex items-end gap-2">
+              <span className="text-3xl font-bold text-black">{stats.emEvolucao}/7</span>
+            </div>
+            <span className="text-xs text-black">{((stats.emEvolucao / stats.totalEixos) * 100).toFixed(0)}% dos eixos</span>
           </CardContent>
         </Card>
       </div>
@@ -210,6 +189,12 @@ export function ExecutiveDashboard({ data, selectedMicroregiao, medians }: Execu
             <MapPin className="h-5 w-5" />
             Análise Detalhada por Eixos
           </CardTitle>
+          <p className="mt-2 text-xs text-muted-foreground leading-relaxed bg-blue-50 rounded-md p-3 border border-blue-100">
+            <span className="font-semibold text-blue-900">Como ler as porcentagens?</span><br/>
+            Cada valor mostra o quanto sua microrregião avançou em cada eixo (0% a 100%).<br/>
+            A “Média” é a média das microrregiões.<br/>
+            <span className="block mt-1 italic text-blue-800">Obs: O cálculo original vai de 0 a 1, mas é exibido em porcentagem para facilitar. <b>Exemplo: 0.25 vira 25%.</b></span>
+          </p>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -224,19 +209,15 @@ export function ExecutiveDashboard({ data, selectedMicroregiao, medians }: Execu
               return (
                 <div 
                   key={index}
-                  className={`p-4 rounded-lg border-2 ${
-                    isMax ? 'bg-green-50 border-green-300 ring-2 ring-green-200' :
-                    isMin ? 'bg-red-50 border-red-300 ring-2 ring-red-200' :
-                    `${status.bg} border-gray-200`
-                  }`}
+                  className="p-4 rounded-lg border border-gray-200 bg-white"
                 >
                   <div className="flex items-center justify-between mb-3">
                     <h4 className="font-semibold text-sm">Eixo {index + 1}</h4>
                     <div className="flex items-center gap-1">
-                      {isMax && <Badge className="bg-green-500 text-white text-xs">Melhor</Badge>}
-                      {isMin && <Badge className="bg-red-500 text-white text-xs">Crítico</Badge>}
+                      {isMax && <Badge className="border border-green-400 text-green-600 bg-white text-xs">Melhor</Badge>}
+                      {isMin && <Badge className="border border-red-400 text-red-600 bg-white text-xs">Crítico</Badge>}
                       {isAcimaMedia && !isMax && (
-                        <Badge className="bg-blue-500 text-white text-xs">↑</Badge>
+                        <Badge className="border border-blue-400 text-blue-600 bg-white text-xs">↑</Badge>
                       )}
                     </div>
                   </div>
@@ -253,17 +234,15 @@ export function ExecutiveDashboard({ data, selectedMicroregiao, medians }: Execu
                     
                     <Progress 
                       value={valor * 100} 
-                      className="h-2"
-                      style={{
-                        '--progress-background': status.color.replace('text-', 'bg-')
-                      } as React.CSSProperties}
+                      className="h-2 bg-gray-100"
                     />
                     
                     <div className="flex justify-between items-center">
                       <span className="text-xs text-gray-500">Status:</span>
                       <Badge 
                         variant="outline" 
-                        className={`text-xs ${status.color} border-current`}
+                        className={`text-xs border ${status.color} border-current bg-white`}
+                        style={{ background: 'white' }}
                       >
                         {status.status}
                       </Badge>
@@ -271,7 +250,7 @@ export function ExecutiveDashboard({ data, selectedMicroregiao, medians }: Execu
                     
                     <div className="flex justify-between items-center">
                       <span className="text-xs text-gray-500">Média:</span>
-                      <span className="text-xs font-medium">
+                      <span className="text-xs font-medium text-gray-500">
                         {(mediana * 100).toFixed(1)}%
                       </span>
                     </div>
@@ -318,19 +297,19 @@ export function ExecutiveDashboard({ data, selectedMicroregiao, medians }: Execu
               <h4 className="font-semibold text-indigo-900 mb-3">Oportunidades de Melhoria</h4>
               <div className="space-y-2">
                 {stats.emergente > 0 && (
-                  <div className="flex items-center gap-2 text-orange-700">
+                  <div className="flex items-center gap-2 text-gray-700">
                     <AlertTriangle className="h-4 w-4" />
                     <span className="text-sm">{stats.emergente} eixo(s) em nível emergente</span>
                   </div>
                 )}
                 {stats.eixosAcimaMedia < stats.totalEixos / 2 && (
-                  <div className="flex items-center gap-2 text-orange-700">
+                  <div className="flex items-center gap-2 text-gray-700">
                     <TrendingDown className="h-4 w-4" />
                     <span className="text-sm">Maioria dos eixos abaixo da média</span>
                   </div>
                 )}
                 {stats.indiceGeral < 0.3 && (
-                  <div className="flex items-center gap-2 text-orange-700">
+                  <div className="flex items-center gap-2 text-gray-700">
                     <Clock className="h-4 w-4" />
                     <span className="text-sm">Índice geral em nível inicial</span>
                   </div>

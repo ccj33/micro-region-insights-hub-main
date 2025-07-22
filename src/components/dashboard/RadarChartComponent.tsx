@@ -93,7 +93,6 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 
 export function RadarChartComponent({ data, medians, onNavigateToRecommendations, onLoad, hoveredEixo, setHoveredEixo }: RadarChartComponentProps) {
   const [currentHoveredEixo, setCurrentHoveredEixo] = useState<number | null>(null);
-
   // Usar o hoveredEixo externo se fornecido, senão usar o interno
   const currentSetHoveredEixo = setHoveredEixo || setCurrentHoveredEixo;
   const currentHoveredEixoValue = hoveredEixo !== undefined ? hoveredEixo : currentHoveredEixo;
@@ -197,83 +196,104 @@ export function RadarChartComponent({ data, medians, onNavigateToRecommendations
 
   return (
     <div className="relative w-full h-full">
-      <ResponsiveContainer width="100%" height={400}>
-        <RadarChart 
-          data={currentHoveredEixoValue !== null ? modifiedData : chartData} 
-          margin={{ top: 20, right: 30, bottom: 20, left: 30 }}
-        >
-          <Tooltip content={<CustomTooltip />} />
-          
-          <PolarGrid 
-            stroke="hsl(var(--border))" 
-            strokeWidth={1}
-            className="opacity-50"
-          />
-          <PolarAngleAxis 
-            dataKey="eixo" 
-            tick={{ fontSize: 11, fill: 'hsl(var(--foreground))' }}
-            className="text-xs"
-          />
-          <PolarRadiusAxis 
-            angle={90} 
-            domain={[0, 1]} 
-            tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
-            tickCount={6}
-          />
-          
-          {/* Linhas de referência sutis para níveis de maturidade */}
-          <Radar
-            name="Emergente"
-            dataKey="Emergente"
-            stroke="hsl(0, 70%, 50%)"
-            fill="transparent"
-            strokeWidth={0.3}
-            strokeDasharray="1 1"
-            dot={{ r: 0.5, fill: "hsl(0, 70%, 50%)" }}
-          />
-          
-          <Radar
-            name="Em Evolução"
-            dataKey="Em Evolução"
-            stroke="hsl(45, 100%, 50%)"
-            fill="transparent"
-            strokeWidth={0.3}
-            strokeDasharray="1 1"
-            dot={{ r: 0.5, fill: "hsl(45, 100%, 50%)" }}
-          />
-          
-          <Radar
-            name="Avançado"
-            dataKey="Avançado"
-            stroke="hsl(120, 70%, 40%)"
-            fill="transparent"
-            strokeWidth={0.3}
-            strokeDasharray="1 1"
-            dot={{ r: 0.5, fill: "hsl(120, 70%, 40%)" }}
-          />
-          
-          {/* Dados principais */}
-          <Radar
-            name="Microrregião"
-            dataKey="Microrregião"
-            stroke="hsl(220, 80%, 50%)"
-            fill="hsl(220, 80%, 50%)"
-            fillOpacity={0.3}
-            strokeWidth={4}
-            dot={<CustomDot />}
-          />
-          
-          {/* Mediana Geral */}
-          <Radar
-            name="Mediana Geral"
-            dataKey="Mediana Geral"
-            stroke="hsl(160, 70%, 40%)"
-            fill="transparent"
-            strokeWidth={3}
-            dot={{ r: 4, fill: "hsl(160, 70%, 40%)" }}
-          />
-        </RadarChart>
-      </ResponsiveContainer>
+      {/* Legenda customizada dentro do gráfico */}
+      <div className="absolute top-4 right-4 bg-white/90 rounded-lg shadow-md p-3 z-10 text-xs flex flex-col gap-2 border border-blue-100">
+        <div className="flex items-center gap-2">
+          <span className="w-3 h-3 rounded-full bg-blue-500 inline-block" />
+          <span>Microrregião</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="w-3 h-3 rounded-full bg-green-600 inline-block" />
+          <span>Mediana Geral</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="w-3 h-3 rounded-full border border-red-500 border-dashed inline-block" />
+          <span>Emergente (0.2)</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="w-3 h-3 rounded-full border border-blue-500 border-dashed inline-block" />
+          <span>Em Evolução (0.5)</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="w-3 h-3 rounded-full border border-emerald-500 border-dashed inline-block" />
+          <span>Avançado (0.8)</span>
+        </div>
+      </div>
+      <div
+      >
+        <ResponsiveContainer width="100%" height={400}>
+          <RadarChart 
+            data={currentHoveredEixoValue !== null ? modifiedData : chartData} 
+            margin={{ top: 20, right: 30, bottom: 20, left: 30 }}
+          >
+            <Tooltip content={<CustomTooltip />} />
+            <PolarGrid 
+              stroke="hsl(var(--border))" 
+              strokeWidth={1}
+              className="opacity-50"
+            />
+            <PolarAngleAxis 
+              dataKey="eixo" 
+              tick={{ fontSize: 11, fill: 'hsl(var(--foreground))' }}
+              className="text-xs"
+            />
+            <PolarRadiusAxis 
+              angle={90} 
+              domain={[0, 1]} 
+              tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
+              tickCount={6}
+            />
+            {/* Linhas de referência com cor dinâmica */}
+            <Radar
+              name="Emergente"
+              dataKey="Emergente"
+              stroke="hsl(0, 70%, 50%)"
+              fill="transparent"
+              strokeWidth={0.3}
+              strokeDasharray="1 1"
+              dot={{ r: 0.5, fill: "hsl(0, 70%, 50%)" }}
+            />
+            <Radar
+              name="Em Evolução"
+              dataKey="Em Evolução"
+              stroke="hsl(45, 100%, 50%)"
+              fill="transparent"
+              strokeWidth={0.3}
+              strokeDasharray="1 1"
+              dot={{ r: 0.5, fill: "hsl(45, 100%, 50%)" }}
+            />
+            <Radar
+              name="Avançado"
+              dataKey="Avançado"
+              stroke="hsl(120, 70%, 40%)"
+              fill="transparent"
+              strokeWidth={0.3}
+              strokeDasharray="1 1"
+              dot={{ r: 0.5, fill: "hsl(120, 70%, 40%)" }}
+            />
+            {/* Dados principais */}
+            <Radar
+              name="Microrregião"
+              dataKey="Microrregião"
+              stroke="hsl(220, 80%, 50%)"
+              fill="hsl(220, 80%, 50%)"
+              fillOpacity={0.3}
+              strokeWidth={4}
+              dot={<CustomDot />}
+            />
+            
+            {/* Mediana Geral */}
+            <Radar
+              name="Mediana Geral"
+              dataKey="Mediana Geral"
+              stroke="hsl(160, 70%, 40%)"
+              fill="transparent"
+              strokeWidth={3}
+              dot={{ r: 4, fill: "hsl(160, 70%, 40%)" }}
+            />
+          </RadarChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 } 
