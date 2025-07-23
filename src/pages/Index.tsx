@@ -22,8 +22,58 @@ import { useExcelData } from '@/hooks/useExcelData';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { HelpCircle, X } from 'lucide-react';
 import { useEffect } from 'react';
+import { Eye, EyeOff } from 'lucide-react';
+import Joyride, { CallBackProps, STATUS, Step } from 'react-joyride';
 
 const GUIDE_STORAGE_KEY = 'mrh-guide-dismissed';
+const TOUR_STEPS: Step[] = [
+  {
+    target: '[data-tour="filtros"]',
+    content: 'Use os filtros para selecionar macrorregião, microrregião e classificação.',
+    title: 'Filtros de Seleção',
+    disableBeacon: true,
+  },
+  {
+    target: '[data-tour="menu"]',
+    content: 'Navegue entre as principais áreas do dashboard por aqui.',
+    title: 'Menu de Navegação',
+  },
+  {
+    target: '[data-tour="estatisticas"]',
+    content: 'Veja um resumo geral das microrregiões analisadas.',
+    title: 'Estatísticas Gerais',
+  },
+  {
+    target: '[data-tour="radar"]',
+    content: 'Visualize a maturidade por eixo no gráfico radar.',
+    title: 'Gráfico Radar',
+  },
+  {
+    target: '[data-tour="barras"]',
+    content: 'Compare o índice geral de maturidade entre microrregiões.',
+    title: 'Gráfico de Barras',
+  },
+  {
+    target: '[data-tour="eixos"]',
+    content: 'Veja o detalhamento por eixo de maturidade.',
+    title: 'Tabela de Eixos',
+  },
+  {
+    target: '[data-tour="populacao"]',
+    content: 'Veja a distribuição populacional das microrregiões.',
+    title: 'Gráfico de População',
+  },
+  {
+    target: '[data-tour="recomendacoes"]',
+    content: 'Confira recomendações específicas para cada eixo.',
+    title: 'Recomendações',
+  },
+  {
+    target: '[data-tour="olho"]',
+    content: 'Use este botão para minimizar ou expandir qualquer bloco do dashboard.',
+    title: 'Botão de Olho',
+  },
+];
 
 function UserGuideModal({ open, setOpen }: { open: boolean, setOpen: (v: boolean) => void }) {
   return (
@@ -83,8 +133,22 @@ const Index = () => {
   const [showSidebar, setShowSidebar] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [guideOpen, setGuideOpen] = useState(true);
+  const [showAdvanced, setShowAdvanced] = useState(true);
+  // Adicionar hooks de tour aqui
+  const [runTour, setRunTour] = useState(false);
+  useEffect(() => {
+    if (!localStorage.getItem(GUIDE_STORAGE_KEY)) {
+      setRunTour(true);
+    }
+  }, []);
 
-  // Remover o useEffect que verifica o localStorage
+  const handleJoyrideCallback = (data: CallBackProps) => {
+    const { status } = data;
+    if (status === STATUS.FINISHED || status === STATUS.SKIPPED) {
+      setRunTour(false);
+      localStorage.setItem(GUIDE_STORAGE_KEY, '1');
+    }
+  };
 
   // Atualizar microrregião selecionada quando os dados carregarem
   useMemo(() => {
@@ -234,6 +298,24 @@ const Index = () => {
           <span className="hidden sm:inline">Ajuda</span>
         </button>
       </div>
+      <Joyride
+        steps={TOUR_STEPS}
+        run={runTour}
+        continuous
+        showSkipButton
+        showProgress
+        locale={{ last: 'Finalizar', skip: 'Pular', next: 'Próximo', back: 'Voltar' }}
+        callback={handleJoyrideCallback}
+        styles={{ options: { zIndex: 9999 } }}
+      />
+      <button
+        className="fixed bottom-6 right-6 z-50 bg-blue-600 text-white rounded-full p-3 shadow-lg hover:bg-blue-700 transition-colors"
+        onClick={() => setRunTour(true)}
+        aria-label="Ajuda"
+        data-tour="ajuda"
+      >
+        <HelpCircle className="h-6 w-6" />
+      </button>
       <div className="min-h-screen bg-dashboard-bg">
       {/* Navigation Menu Fixo */}
       <NavigationMenu
@@ -323,7 +405,7 @@ const Index = () => {
       <main className={`px-4 sm:px-6 lg:px-8 py-8 transition-all duration-300 ${getSidebarMargin()}`}>
         <div id="dashboard-content" className="max-w-6xl mx-auto">
         {/* Filtros */}
-        <div id="filtros" className="mb-16">
+        <div id="filtros" className="mb-16" data-tour="filtros">
           <Filters
             data={filteredData}
             selectedMicroregiao={selectedMicroregiao}
@@ -350,7 +432,7 @@ const Index = () => {
         <div className="border-t border-border/50 my-16"></div>
 
         {/* Estatísticas Gerais */}
-        <div id="overview" className="mb-16">
+        <div id="overview" className="mb-16" data-tour="estatisticas">
           <StatsOverview data={filteredData} selectedData={selectedData} macroFiltro={filters.macrorregiao} />
         </div>
 
@@ -358,7 +440,7 @@ const Index = () => {
         <div className="border-t border-border/50 my-16"></div>
 
         {/* Gráfico Radar */}
-        <div id="radar" className="bg-card rounded-lg border border-border p-6 mb-16">
+        <div id="radar" className="bg-card rounded-lg border border-border p-6 mb-16" data-tour="radar">
           <div className="mb-4">
             <h2 className="text-xl font-semibold text-foreground">Gráfico de Radar</h2>
             <p className="text-sm text-muted-foreground">Comparação por Eixos de Maturidade</p>
@@ -374,7 +456,7 @@ const Index = () => {
         <div className="border-t border-border/50 my-16"></div>
 
         {/* Gráfico de Barras */}
-        <div id="barras" className="bg-card rounded-lg border border-border p-6 mb-16">
+        <div id="barras" className="bg-card rounded-lg border border-border p-6 mb-16" data-tour="barras">
           <div className="mb-4">
             <h2 className="text-xl font-semibold text-foreground">Gráfico de Barras</h2>
             <p className="text-sm text-muted-foreground">Comparação entre Microrregiões</p>
@@ -386,7 +468,7 @@ const Index = () => {
         <div className="border-t border-border/50 my-16"></div>
 
         {/* Tabela de Eixos */}
-        <div id="tabela" className="mb-16">
+        <div id="tabela" className="mb-16" data-tour="eixos">
           <EixosTable data={selectedData} medians={medians} />
         </div>
 
@@ -394,7 +476,7 @@ const Index = () => {
         <div className="border-t border-border/50 my-16"></div>
 
         {/* Gráfico de População */}
-        <div id="populacao" className="bg-card rounded-lg border border-border p-6 mb-16">
+        <div id="populacao" className="bg-card rounded-lg border border-border p-6 mb-16" data-tour="populacao">
           <div className="mb-4">
             <h2 className="text-xl font-semibold text-foreground">Gráfico de População</h2>
             <p className="text-sm text-muted-foreground">Distribuição Populacional</p>
@@ -406,7 +488,7 @@ const Index = () => {
         <div className="border-t border-border/50 my-16"></div>
 
         {/* Recomendações por Eixo */}
-        <div id="recomendacoes" className="mb-16">
+        <div id="recomendacoes" className="mb-16" data-tour="recomendacoes">
           <RecommendationsPanel data={selectedData} />
         </div>
 
@@ -431,15 +513,25 @@ const Index = () => {
 
         {/* Análise Avançada */}
         <div id="analise-avancada" className="mb-16">
-          <div className="mb-4">
+          <div className="mb-4 flex items-center gap-2">
             <h2 className="text-xl font-semibold text-foreground">Análise Avançada</h2>
-            <p className="text-sm text-muted-foreground">Comparação detalhada entre microrregiões</p>
+            <button
+              className="ml-2 p-1 rounded hover:bg-muted transition-colors"
+              onClick={() => setShowAdvanced((v) => !v)}
+              aria-label={showAdvanced ? 'Minimizar bloco' : 'Expandir bloco'}
+              type="button"
+            >
+              {showAdvanced ? <Eye className="h-5 w-5 text-primary" /> : <EyeOff className="h-5 w-5 text-primary" />}
+            </button>
           </div>
-          <AdvancedAnalysis 
-            data={filteredData} 
-            selectedMicroregiao={selectedMicroregiao}
-            medians={medians}
-          />
+          <p className="text-sm text-muted-foreground">Comparação detalhada entre microrregiões</p>
+          <div className={showAdvanced ? '' : 'hidden'}>
+            <AdvancedAnalysis 
+              data={filteredData} 
+              selectedMicroregiao={selectedMicroregiao}
+              medians={medians}
+            />
+          </div>
         </div>
 
         {/* Separador Visual */}

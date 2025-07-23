@@ -12,12 +12,12 @@ interface DashboardHeaderProps {
 export function DashboardHeader({ data, allData, onMicroregiaoChange }: DashboardHeaderProps) {
   const getClassificationColor = (classification: string) => {
     switch (classification.toLowerCase()) {
-      case 'consolidado':
+      case 'avancado':
         return 'bg-success text-success-foreground';
       case 'em evolução':
         return 'bg-warning text-warning-foreground';
-      case 'inicial':
-        return 'bg-error text-error-foreground';
+      case 'emergente':
+        return 'bg-yellow-100 text-yellow-800';
       default:
         return 'bg-muted text-muted-foreground';
     }
@@ -117,7 +117,7 @@ export function DashboardHeader({ data, allData, onMicroregiaoChange }: Dashboar
             <div className="space-y-4">
               <div className="text-center p-4 bg-card rounded-lg shadow-sm">
                 <div className="text-3xl font-bold text-primary mb-2">
-                  {parseFloat(String(data.indice_geral).replace(',', '.')).toFixed(3)}
+                  {parseFloat(String(data.indice_geral).replace(',', '.')).toFixed(2)}
                 </div>
                 <div className="text-sm font-medium text-muted-foreground">
                   Índice Geral de Maturidade Digital

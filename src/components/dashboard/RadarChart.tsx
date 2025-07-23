@@ -1,7 +1,7 @@
 import { ResponsiveContainer, RadarChart as RechartsRadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend } from 'recharts';
 import { MicroRegionData, EIXOS_NAMES } from "@/types/dashboard";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Target, Download } from "lucide-react";
+import { ArrowRight, Target, Download, Eye, EyeOff } from "lucide-react";
 import { useState, Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { RadarChartComponent } from './RadarChartComponent';
@@ -24,6 +24,7 @@ const RadarChartSkeleton = () => (
 export function DashboardRadarChart({ data, medians, onNavigateToRecommendations, onLoad }: RadarChartProps) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [hoveredEixo, setHoveredEixo] = useState<number | null>(null);
+  const [showRadar, setShowRadar] = useState(true);
 
   const handleChartLoad = () => {
     setIsLoaded(true);
@@ -93,12 +94,15 @@ export function DashboardRadarChart({ data, medians, onNavigateToRecommendations
           <div className="p-2 bg-primary/10 rounded-lg">
             <Target className="h-5 w-5 text-primary" />
           </div>
-          <div>
+          <div className="flex items-center gap-2">
             <h3 className="text-lg font-semibold">Análise de Maturidade por Eixos</h3>
-            <p className="text-sm text-muted-foreground">
-              Comparação dos eixos da microrregião selecionada com referências de maturidade
-            </p>
+            <button className="ml-2 p-1 rounded hover:bg-muted transition-colors" onClick={() => setShowRadar(v => !v)} aria-label={showRadar ? 'Ocultar bloco' : 'Mostrar bloco'} type="button">
+              {showRadar ? <Eye className="h-5 w-5 text-primary" /> : <EyeOff className="h-5 w-5 text-primary" />}
+            </button>
           </div>
+          <p className="text-sm text-muted-foreground">
+            Comparação dos eixos da microrregião selecionada com referências de maturidade
+          </p>
         </div>
         
         {/* Nome da microrregião com destaque */}
@@ -146,7 +150,7 @@ export function DashboardRadarChart({ data, medians, onNavigateToRecommendations
               // Trocar statusColor para azul/cinza
               if (diferenca > 0.1) {
                 statusColor = 'bg-green-100 text-green-700 border-green-300';
-                statusText = 'Acima da Média';
+                statusText = 'Acima da Mediana';
                 statusIcon = '↑';
               } else if (diferenca < -0.1) {
                 statusColor = 'bg-yellow-50 text-yellow-600 border-yellow-200';
@@ -154,7 +158,7 @@ export function DashboardRadarChart({ data, medians, onNavigateToRecommendations
                 statusIcon = '↓';
               } else {
                 statusColor = 'bg-gray-100 text-gray-800';
-                statusText = 'Na Média';
+                statusText = 'Na Mediana';
                 statusIcon = '=';
               }
 
@@ -169,13 +173,13 @@ export function DashboardRadarChart({ data, medians, onNavigateToRecommendations
                   <div className="text-center">
                     <div className="text-xs font-bold mb-1">Eixo {index + 1}</div>
                     <div className="text-xs opacity-90">{nome}</div>
-                    <div className="text-xs font-bold mt-1">{valor.toFixed(3)}</div>
+                    <div className="text-xs font-bold mt-1">{valor.toFixed(2)}</div>
                     <div className="text-xs opacity-75 flex items-center justify-center gap-1">
                       <span>{statusIcon}</span>
                       <span>{statusText}</span>
                     </div>
                     <div className="text-xs opacity-60 mt-1 text-gray-500">
-                      Mediana: {mediana.toFixed(3)}
+                      Mediana: {mediana.toFixed(2)}
                     </div>
                   </div>
                 </button>
@@ -185,18 +189,20 @@ export function DashboardRadarChart({ data, medians, onNavigateToRecommendations
         </div>
       )}
       
-      <div className="h-[350px] sm:h-[400px] md:h-[450px] w-full mb-4">
-        <Suspense fallback={<RadarChartSkeleton />}>
-          <RadarChartComponent 
-            data={data}
-            medians={medians}
-            onNavigateToRecommendations={onNavigateToRecommendations}
-            onLoad={handleChartLoad}
-            hoveredEixo={hoveredEixo}
-            setHoveredEixo={setHoveredEixo}
-          />
-        </Suspense>
-      </div>
+      {showRadar && (
+        <div className="h-[350px] sm:h-[400px] md:h-[450px] w-full mb-4">
+          <Suspense fallback={<RadarChartSkeleton />}>
+            <RadarChartComponent 
+              data={data}
+              medians={medians}
+              onNavigateToRecommendations={onNavigateToRecommendations}
+              onLoad={handleChartLoad}
+              hoveredEixo={hoveredEixo}
+              setHoveredEixo={setHoveredEixo}
+            />
+          </Suspense>
+        </div>
+      )}
 
       {!isLoaded && (
         <div className="mt-4 p-4 bg-muted/30 rounded-lg">

@@ -7,6 +7,7 @@ import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadius
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Cell } from 'recharts';
 import { MicroRegionData, EIXOS_NAMES } from "@/types/dashboard";
 import { TrendingUp, TrendingDown, Minus, Target, Users, BarChart3, Award } from 'lucide-react';
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
 
 interface AdvancedAnalysisProps {
   data: MicroRegionData[];
@@ -179,10 +180,7 @@ export function AdvancedAnalysis({ data, selectedMicroregiao, medians }: Advance
                   {availableRegions.map((region) => (
                     <SelectItem key={region.value} value={region.value}>
                       <div className="flex items-center justify-between w-full">
-                        <span>{region.label}</span>
-                        <Badge variant="outline" className="ml-2">
-                          {(region.indice * 100).toFixed(1)}%
-                        </Badge>
+                        <span>{region.label} — INMSD: {region.indice.toFixed(3)}</span>
                       </div>
                     </SelectItem>
                   ))}
@@ -230,38 +228,45 @@ export function AdvancedAnalysis({ data, selectedMicroregiao, medians }: Advance
               </CardTitle>
             </CardHeader>
             <CardContent>
+              <p className="text-sm text-muted-foreground mb-4">
+                Compare o índice de maturidade digital (INMSD) entre as microrregiões selecionadas. A diferença mostra quanto a região selecionada está acima ou abaixo da comparação.
+              </p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg border border-blue-200">
-                  <div className="text-2xl font-bold text-blue-900">
-                    {(comparisonStats?.selectedIndice * 100).toFixed(1)}%
+                <div className="text-center p-4 bg-white rounded-lg border border-gray-200">
+                  <div className="text-2xl font-bold text-gray-900">
+                    {(comparisonStats?.selectedIndice).toFixed(2)}
                   </div>
-                  <div className="text-sm text-blue-700">Índice Selecionada</div>
-                  <div className="text-xs text-blue-600 mt-1">{selectedData.microrregiao}</div>
-                </div>
-
-                <div className="text-center p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-lg border border-green-200">
-                  <div className="text-2xl font-bold text-green-900">
-                    {(comparisonStats?.comparisonIndice * 100).toFixed(1)}%
+                  <div className="text-sm text-gray-700">INMSD Selecionada</div>
+                  <div className="text-xs text-gray-500 mt-1">
+                    <b className="text-blue-700 font-semibold">{selectedData.microrregiao}</b>
                   </div>
-                  <div className="text-sm text-green-700">Índice Comparação</div>
-                  <div className="text-xs text-green-600 mt-1">{comparisonData.microrregiao}</div>
                 </div>
-
-                <div className="text-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg border border-purple-200">
-                  <div className="text-2xl font-bold text-purple-900 flex items-center justify-center gap-1">
+                <div className="text-center p-4 bg-white rounded-lg border border-gray-200">
+                  <div className="text-2xl font-bold text-gray-900">
+                    {(comparisonStats?.comparisonIndice).toFixed(2)}
+                  </div>
+                  <div className="text-sm text-gray-700">INMSD Comparação</div>
+                  <div className="text-xs text-gray-500 mt-1">
+                    <b className="text-blue-700 font-semibold">{comparisonData.microrregiao}</b>
+                  </div>
+                </div>
+                <div className="text-center p-4 bg-white rounded-lg border border-gray-200">
+                  <div className={`text-2xl font-bold flex items-center justify-center gap-1 ${comparisonStats?.isBetter ? 'text-green-600' : comparisonStats?.difference < 0 ? 'text-yellow-600' : 'text-purple-900'}`}>
                     {comparisonStats?.isBetter ? (
-                      <TrendingUp className="h-5 w-5 text-green-600" />
+                      <TrendingUp className="h-5 w-5 text-green-600 mr-3" />
                     ) : comparisonStats?.difference < 0 ? (
-                      <TrendingDown className="h-5 w-5 text-red-600" />
+                      <TrendingDown className="h-5 w-5 text-yellow-600 mr-3" />
                     ) : (
-                      <Minus className="h-5 w-5 text-gray-600" />
+                      <Minus className="h-5 w-5 text-gray-600 mr-3" />
                     )}
-                    {Math.abs(comparisonStats?.percentageDiff || 0).toFixed(1)}%
+                    {Math.abs(comparisonStats?.percentageDiff || 0).toFixed(2)}%
                   </div>
-                  <div className="text-sm text-purple-700">Diferença</div>
-                  <div className="text-xs text-purple-600 mt-1">
-                    {comparisonStats?.status === 'superior' ? 'Superior' : 
-                     comparisonStats?.status === 'inferior' ? 'Inferior' : 'Similar'}
+                  <div className={`text-sm mt-1 ${comparisonStats?.isBetter ? 'text-green-600' : comparisonStats?.difference < 0 ? 'text-yellow-600' : 'text-purple-900'}`}>Diferença</div>
+                  <div className="text-xs text-gray-700 mt-1 text-center">
+                    {comparisonStats?.isBetter ? 'Maior' : comparisonStats?.difference < 0 ? 'Menor' : 'Igual'}
+                  </div>
+                  <div className="text-xs text-gray-700 mt-2 text-center leading-snug max-w-[90%]">
+                    <b className="text-blue-700 font-semibold">{selectedData.microrregiao}</b> em comparação com <b className="text-blue-700 font-semibold">{comparisonData.microrregiao}</b>
                   </div>
                 </div>
               </div>
@@ -280,7 +285,7 @@ export function AdvancedAnalysis({ data, selectedMicroregiao, medians }: Advance
                     <RadarChart data={chartData}>
                       <PolarGrid stroke="hsl(var(--border))" strokeWidth={1} />
                       <PolarAngleAxis 
-                        dataKey="eixo" 
+                        dataKey="nome" // Usar nome completo do eixo
                         tick={{ fontSize: 11, fill: 'hsl(var(--foreground))' }}
                       />
                       <PolarRadiusAxis 
@@ -294,7 +299,7 @@ export function AdvancedAnalysis({ data, selectedMicroregiao, medians }: Advance
                       <Radar
                         name="Emergente"
                         dataKey="Emergente"
-                        stroke="hsl(0, 70%, 50%)"
+                        stroke="#eab308"
                         fill="transparent"
                         strokeWidth={0.5}
                         strokeDasharray="2 2"
@@ -302,7 +307,7 @@ export function AdvancedAnalysis({ data, selectedMicroregiao, medians }: Advance
                       <Radar
                         name="Em Evolução"
                         dataKey="Em Evolução"
-                        stroke="hsl(45, 100%, 50%)"
+                        stroke="#3b82f6"
                         fill="transparent"
                         strokeWidth={0.5}
                         strokeDasharray="2 2"
@@ -310,7 +315,7 @@ export function AdvancedAnalysis({ data, selectedMicroregiao, medians }: Advance
                       <Radar
                         name="Avançado"
                         dataKey="Avançado"
-                        stroke="hsl(120, 70%, 40%)"
+                        stroke="#10b981"
                         fill="transparent"
                         strokeWidth={0.5}
                         strokeDasharray="2 2"
@@ -320,23 +325,37 @@ export function AdvancedAnalysis({ data, selectedMicroregiao, medians }: Advance
                       <Radar
                         name="Selecionada"
                         dataKey="Selecionada"
-                        stroke="hsl(220, 80%, 50%)"
-                        fill="hsl(220, 80%, 50%)"
-                        fillOpacity={0.3}
-                        strokeWidth={3}
-                        dot={{ r: 4, fill: "hsl(220, 80%, 50%)" }}
+                        stroke="#2563eb"
+                        fill="#2563eb22"
+                        strokeWidth={2}
+                        dot
                       />
                       <Radar
                         name="Comparação"
                         dataKey="Comparação"
-                        stroke="hsl(160, 70%, 40%)"
-                        fill="hsl(160, 70%, 40%)"
-                        fillOpacity={0.2}
-                        strokeWidth={3}
-                        dot={{ r: 4, fill: "hsl(160, 70%, 40%)" }}
+                        stroke="#22c55e"
+                        fill="#22c55e22"
+                        strokeWidth={2}
+                        dot
+                      />
+                      <Radar
+                        name="Mediana"
+                        dataKey="Mediana"
+                        stroke="#a21caf"
+                        fill="transparent"
+                        strokeWidth={2}
+                        strokeDasharray="4 2"
                       />
                     </RadarChart>
                   </ResponsiveContainer>
+                </div>
+                <div className="flex flex-wrap gap-4 mt-4 items-center justify-center text-sm">
+                  <span className="flex items-center gap-2"><span className="inline-block w-4 h-2 rounded bg-[#2563eb]"></span>Selecionada</span>
+                  <span className="flex items-center gap-2"><span className="inline-block w-4 h-2 rounded bg-[#22c55e]"></span>Comparação</span>
+                  <span className="flex items-center gap-2"><span className="inline-block w-4 h-2 rounded bg-[#a21caf]"></span>Mediana</span>
+                  <span className="flex items-center gap-2"><span className="inline-block w-4 h-2 rounded border border-[#eab308] bg-transparent"></span>Emergente</span>
+                  <span className="flex items-center gap-2"><span className="inline-block w-4 h-2 rounded border border-[#3b82f6] bg-transparent"></span>Em Evolução</span>
+                  <span className="flex items-center gap-2"><span className="inline-block w-4 h-2 rounded border border-[#10b981] bg-transparent"></span>Avançado</span>
                 </div>
               </CardContent>
             </Card>
@@ -369,122 +388,225 @@ export function AdvancedAnalysis({ data, selectedMicroregiao, medians }: Advance
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
+                <div className="flex flex-wrap gap-4 mt-4 items-center justify-center text-sm">
+                  <span className="flex items-center gap-2"><span className="inline-block w-4 h-2 rounded bg-[hsl(220,80%,50%)]"></span>{selectedData?.microrregiao || 'Selecionada'}</span>
+                  <span className="flex items-center gap-2"><span className="inline-block w-4 h-2 rounded bg-[hsl(160,70%,40%)]"></span>{comparisonData?.microrregiao || 'Comparação'}</span>
+                </div>
               </CardContent>
             </Card>
           )}
 
           {analysisType === 'summary' && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Award className="h-5 w-5" />
-                  Resumo Executivo
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-6">
-                  {/* Análise por Eixos */}
-                  <div>
-                    <h4 className="font-semibold text-lg mb-4">Análise Detalhada por Eixos</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {eixosAnalysis.map((eixo) => (
-                        <div 
-                          key={eixo.eixo}
-                          className={`p-4 rounded-lg border-2 ${
-                            eixo.status === 'superior' 
-                              ? 'bg-green-50 border-green-200' 
-                              : eixo.status === 'inferior'
-                              ? 'bg-red-50 border-red-200'
-                              : 'bg-gray-50 border-gray-200'
-                          }`}
-                        >
-                          <div className="flex items-center justify-between mb-2">
-                            <h5 className="font-semibold">Eixo {eixo.eixo}</h5>
-                            <Badge 
-                              variant={eixo.status === 'superior' ? 'default' : 'secondary'}
-                              className={
-                                eixo.status === 'superior' ? 'bg-green-500' :
-                                eixo.status === 'inferior' ? 'bg-red-500' : 'bg-gray-500'
-                              }
-                            >
-                              {eixo.status === 'superior' ? 'Superior' :
-                               eixo.status === 'inferior' ? 'Inferior' : 'Similar'}
-                            </Badge>
-                          </div>
-                          <p className="text-sm text-gray-600 mb-2">{eixo.nome}</p>
-                          <div className="space-y-1 text-xs">
-                            <div className="flex justify-between">
-                              <span>Selecionada:</span>
-                              <span className="font-semibold">{(eixo.selectedValue * 100).toFixed(1)}%</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span>Comparação:</span>
-                              <span className="font-semibold">{(eixo.comparisonValue * 100).toFixed(1)}%</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span>Diferença:</span>
-                              <span className={`font-semibold ${
-                                eixo.difference > 0 ? 'text-green-600' : 
-                                eixo.difference < 0 ? 'text-red-600' : 'text-gray-600'
-                              }`}>
-                                {eixo.difference > 0 ? '+' : ''}{(eixo.difference * 100).toFixed(1)}%
-                              </span>
-                            </div>
+            <Accordion type="multiple" defaultValue={["resumo", "eixos"]} className="mb-6">
+              <AccordionItem value="resumo">
+                <AccordionTrigger>Resumo Executivo</AccordionTrigger>
+                <AccordionContent>
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Award className="h-5 w-5" />
+                        Resumo Executivo
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-6">
+                        {/* Análise por Eixos */}
+                        <div>
+                          <h4 className="font-semibold text-lg mb-4">Análise Detalhada por Eixos</h4>
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {eixosAnalysis.map((eixo) => (
+                              <div 
+                                key={eixo.eixo}
+                                className={`p-4 rounded-lg border-2 ${
+                                  eixo.status === 'superior' 
+                                    ? 'bg-green-50 border-green-200' 
+                                    : eixo.status === 'inferior'
+                                    ? 'bg-red-50 border-red-200'
+                                    : 'bg-gray-50 border-gray-200'
+                                }`}
+                              >
+                                <div className="flex items-center justify-between mb-2">
+                                  <h5 className="font-semibold">Eixo {eixo.eixo}</h5>
+                                  <Badge 
+                                    variant={eixo.status === 'superior' ? 'default' : 'secondary'}
+                                    className={
+                                      eixo.status === 'superior' ? 'bg-green-500' :
+                                      eixo.status === 'inferior' ? 'bg-red-500' : 'bg-gray-500'
+                                    }
+                                  >
+                                    {eixo.status === 'superior' ? 'Superior' :
+                                     eixo.status === 'inferior' ? 'Inferior' : 'Similar'}
+                                  </Badge>
+                                </div>
+                                <p className="text-sm text-gray-600 mb-2">{eixo.nome}</p>
+                                <div className="space-y-1 text-xs">
+                                  <div className="flex justify-between">
+                                    <span><b className="text-blue-700 font-semibold">{selectedData.microrregiao}</b> <span className="text-gray-500">(Selecionada)</span>:</span>
+                                    <span className="font-semibold">{(eixo.selectedValue * 100).toFixed(1)}%</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span><b className="text-blue-700 font-semibold">{comparisonData.microrregiao}</b> <span className="text-gray-500">(Comparação)</span>:</span>
+                                    <span className="font-semibold">{(eixo.comparisonValue * 100).toFixed(1)}%</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span>Diferença:</span>
+                                    <span className={`font-semibold ${
+                                      eixo.difference > 0 ? 'text-green-600' : 
+                                      eixo.difference < 0 ? 'text-red-600' : 'text-gray-600'
+                                    }`}>
+                                      {eixo.difference > 0 ? '+' : ''}{(eixo.difference * 100).toFixed(1)}%
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
                           </div>
                         </div>
-                      ))}
-                    </div>
-                  </div>
 
-                  {/* Recomendações */}
-                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg border border-blue-200">
-                    <h4 className="font-semibold text-lg mb-4 text-blue-900">Recomendações Estratégicas</h4>
-                    <div className="space-y-3">
-                      {comparisonStats?.status === 'superior' ? (
-                        <div className="flex items-start gap-3">
-                          <div className="p-1 bg-green-100 rounded-full mt-1">
-                            <TrendingUp className="h-4 w-4 text-green-600" />
-                          </div>
-                          <div>
-                            <p className="font-medium text-green-900">Posição de Liderança</p>
-                            <p className="text-sm text-green-700">
-                              {selectedData.microrregiao} apresenta maturidade superior à {comparisonData.microrregiao}. 
-                              Considere compartilhar boas práticas e estabelecer parcerias de cooperação.
-                            </p>
+                        {/* Recomendações */}
+                        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg border border-blue-200">
+                          <h4 className="font-semibold text-lg mb-4 text-blue-900">Recomendações Estratégicas</h4>
+                          <div className="space-y-3">
+                            {comparisonStats?.status === 'superior' ? (
+                              <div className="flex items-start gap-3">
+                                <div className="p-1 bg-green-100 rounded-full mt-1">
+                                  <TrendingUp className="h-4 w-4 text-green-600" />
+                                </div>
+                                <div>
+                                  <p className="font-medium text-green-900">Posição de Liderança</p>
+                                  <p className="text-sm text-green-700">
+                                    {selectedData.microrregiao} apresenta maturidade superior à {comparisonData.microrregiao}. 
+                                    Considere compartilhar boas práticas e estabelecer parcerias de cooperação.
+                                  </p>
+                                </div>
+                              </div>
+                            ) : comparisonStats?.status === 'inferior' ? (
+                              <div className="flex items-start gap-3">
+                                <div className="p-1 bg-red-100 rounded-full mt-1">
+                                  <TrendingDown className="h-4 w-4 text-red-600" />
+                                </div>
+                                <div>
+                                  <p className="font-medium text-red-900">Oportunidades de Melhoria</p>
+                                  <p className="text-sm text-red-700">
+                                    {selectedData.microrregiao} pode se beneficiar das práticas implementadas em {comparisonData.microrregiao}. 
+                                    Foque nos eixos com maior diferença negativa.
+                                  </p>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="flex items-start gap-3">
+                                <div className="p-1 bg-gray-100 rounded-full mt-1">
+                                  <Minus className="h-4 w-4 text-gray-600" />
+                                </div>
+                                <div>
+                                  <p className="font-medium text-gray-900">Níveis Similares</p>
+                                  <p className="text-sm text-gray-700">
+                                    Ambas as microrregiões apresentam maturidade similar. 
+                                    Considere colaboração mútua para acelerar o desenvolvimento.
+                                  </p>
+                                </div>
+                              </div>
+                            )}
                           </div>
                         </div>
-                      ) : comparisonStats?.status === 'inferior' ? (
-                        <div className="flex items-start gap-3">
-                          <div className="p-1 bg-red-100 rounded-full mt-1">
-                            <TrendingDown className="h-4 w-4 text-red-600" />
-                          </div>
-                          <div>
-                            <p className="font-medium text-red-900">Oportunidades de Melhoria</p>
-                            <p className="text-sm text-red-700">
-                              {selectedData.microrregiao} pode se beneficiar das práticas implementadas em {comparisonData.microrregiao}. 
-                              Foque nos eixos com maior diferença negativa.
-                            </p>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="flex items-start gap-3">
-                          <div className="p-1 bg-gray-100 rounded-full mt-1">
-                            <Minus className="h-4 w-4 text-gray-600" />
-                          </div>
-                          <div>
-                            <p className="font-medium text-gray-900">Níveis Similares</p>
-                            <p className="text-sm text-gray-700">
-                              Ambas as microrregiões apresentam maturidade similar. 
-                              Considere colaboração mútua para acelerar o desenvolvimento.
-                            </p>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="eixos">
+                <AccordionTrigger>Análise Detalhada por Eixos</AccordionTrigger>
+                <AccordionContent>
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <BarChart3 className="h-5 w-5" />
+                        Análise Detalhada por Eixos
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="h-[400px]">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <RadarChart data={chartData}>
+                            <PolarGrid stroke="hsl(var(--border))" strokeWidth={1} />
+                            <PolarAngleAxis 
+                              dataKey="nome" // Usar nome completo do eixo
+                              tick={{ fontSize: 11, fill: 'hsl(var(--foreground))' }}
+                            />
+                            <PolarRadiusAxis 
+                              angle={90} 
+                              domain={[0, 1]} 
+                              tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
+                            />
+                            <Tooltip content={<ComparisonTooltip />} />
+                            
+                            {/* Linhas de referência */}
+                            <Radar
+                              name="Emergente"
+                              dataKey="Emergente"
+                              stroke="#eab308"
+                              fill="transparent"
+                              strokeWidth={0.5}
+                              strokeDasharray="2 2"
+                            />
+                            <Radar
+                              name="Em Evolução"
+                              dataKey="Em Evolução"
+                              stroke="#3b82f6"
+                              fill="transparent"
+                              strokeWidth={0.5}
+                              strokeDasharray="2 2"
+                            />
+                            <Radar
+                              name="Avançado"
+                              dataKey="Avançado"
+                              stroke="#10b981"
+                              fill="transparent"
+                              strokeWidth={0.5}
+                              strokeDasharray="2 2"
+                            />
+                            
+                            {/* Dados principais */}
+                            <Radar
+                              name="Selecionada"
+                              dataKey="Selecionada"
+                              stroke="#2563eb"
+                              fill="#2563eb22"
+                              strokeWidth={2}
+                              dot
+                            />
+                            <Radar
+                              name="Comparação"
+                              dataKey="Comparação"
+                              stroke="#22c55e"
+                              fill="#22c55e22"
+                              strokeWidth={2}
+                              dot
+                            />
+                            <Radar
+                              name="Mediana"
+                              dataKey="Mediana"
+                              stroke="#a21caf"
+                              fill="transparent"
+                              strokeWidth={2}
+                              strokeDasharray="4 2"
+                            />
+                          </RadarChart>
+                        </ResponsiveContainer>
+                      </div>
+                      <div className="flex flex-wrap gap-4 mt-4 items-center justify-center text-sm">
+                        <span className="flex items-center gap-2"><span className="inline-block w-4 h-2 rounded bg-[#2563eb]"></span>Selecionada</span>
+                        <span className="flex items-center gap-2"><span className="inline-block w-4 h-2 rounded bg-[#22c55e]"></span>Comparação</span>
+                        <span className="flex items-center gap-2"><span className="inline-block w-4 h-2 rounded bg-[#a21caf]"></span>Mediana</span>
+                        <span className="flex items-center gap-2"><span className="inline-block w-4 h-2 rounded border border-[#eab308] bg-transparent"></span>Emergente</span>
+                        <span className="flex items-center gap-2"><span className="inline-block w-4 h-2 rounded border border-[#3b82f6] bg-transparent"></span>Em Evolução</span>
+                        <span className="flex items-center gap-2"><span className="inline-block w-4 h-2 rounded border border-[#10b981] bg-transparent"></span>Avançado</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           )}
         </>
       ) : (

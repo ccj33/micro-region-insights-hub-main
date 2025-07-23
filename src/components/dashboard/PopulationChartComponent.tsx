@@ -55,10 +55,10 @@ export function PopulationChartComponent({ data, selectedMicroregiao, onLoad }: 
 
   // Cores fixas para cada categoria, alinhadas com a legenda
   const CATEGORY_COLORS: Record<string, string> = {
-    'Pequena (< 30 mil)': '#d1d5db', // cinza claro
-    'Média (30 mil a 60 mil)': '#059669', // verde
-    'Grande (60 mil a 100 mil)': '#a21caf', // roxo
-    'Muito Grande (> 100 mil)': '#1e3a8a', // azul escuro
+    'Pequena (< 30 mil)': '#e5e7eb', // cinza claro
+    'Média (30 mil a 60 mil)': '#10b981', // verde vibrante
+    'Grande (60 mil a 100 mil)': '#8b5cf6', // roxo vibrante
+    'Muito Grande (> 100 mil)': '#1e40af', // azul escuro
   };
 
   const CustomTooltip = ({ active, payload }: any) => {
@@ -153,10 +153,15 @@ export function PopulationChartComponent({ data, selectedMicroregiao, onLoad }: 
                 key={`cell-${idx}`}
                 fill={
                   hoveredBar === idx
-                    ? (entry.isSelected ? '#1e3a8a' : CATEGORY_COLORS[entry.category] || '#bdbdbd')
-                    : (entry.isSelected ? '#1e3a8a' : CATEGORY_COLORS[entry.category] || '#bdbdbd')
+                    ? CATEGORY_COLORS[entry.category] || '#bdbdbd'
+                    : CATEGORY_COLORS[entry.category] || '#bdbdbd'
                 }
                 onMouseEnter={() => setHoveredBar(idx)}
+                style={{
+                  opacity: entry.isSelected ? 0.9 : 1,
+                  stroke: entry.isSelected ? '#1e3a8a' : 'none',
+                  strokeWidth: entry.isSelected ? 2 : 0
+                }}
               />
             ))}
           </Bar>

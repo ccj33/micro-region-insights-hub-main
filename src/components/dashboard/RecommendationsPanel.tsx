@@ -35,9 +35,9 @@ export function RecommendationsPanel({ data }: RecommendationsPanelProps) {
   };
 
   const getStatusBadge = (valor: number) => {
-    if (valor >= 0.7) return { variant: 'default', text: 'Consolidado', color: 'bg-success text-success-foreground' };
+    if (valor >= 0.7) return { variant: 'default', text: 'Avançado', color: 'bg-success text-success-foreground' };
     if (valor >= 0.4) return { variant: 'secondary', text: 'Em Evolução', color: 'bg-warning text-warning-foreground' };
-    return { variant: 'destructive', text: 'Inicial', color: 'bg-error text-error-foreground' };
+    return { variant: 'secondary', text: 'Emergente', color: 'bg-yellow-100 text-yellow-800' };
   };
 
   const getStatusIcon = (valor: number) => {

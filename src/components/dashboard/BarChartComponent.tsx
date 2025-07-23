@@ -79,10 +79,10 @@ export function BarChartComponent({ data, selectedMicroregiao, macroFiltro, onLo
   };
 
   const getClassificationLevel = (value: number) => {
-    if (value >= 0.8) return 'Consolidado';
+    if (value >= 0.8) return 'Avançado';
     if (value >= 0.5) return 'Em Evolução';
     if (value >= 0.2) return 'Emergente';
-    return 'Inicial';
+    return 'Emergente';
   };
 
   return (

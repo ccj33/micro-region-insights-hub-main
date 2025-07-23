@@ -47,7 +47,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
                 break;
               case 'Emergente':
                 description = 'Nível básico de maturidade (0-30%)';
-                colorClass = 'text-red-600';
+                colorClass = 'text-yellow-600';
                 break;
               case 'Em Evolução':
                 description = 'Nível intermediário (31-70%)';

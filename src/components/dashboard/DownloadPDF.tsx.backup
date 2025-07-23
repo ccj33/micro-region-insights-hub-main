@@ -1007,7 +1007,7 @@ export function DownloadPDF({ selectedData, data, selectedMicroregiao }: Downloa
       const eixoKey = `eixo_${i}` as keyof MicroRegionData;
       const valor = parseFloat(String(selectedData[eixoKey]).replace(',', '.'));
       const status = valor >= 0.8 ? 'Avançado' : valor >= 0.5 ? 'Em Evolução' : valor >= 0.2 ? 'Emergente' : 'Inicial';
-      const statusColor = valor >= 0.8 ? '#10b981' : valor >= 0.5 ? '#f59e0b' : valor >= 0.2 ? '#f97316' : '#ef4444';
+      const statusColor = valor >= 0.8 ? '#10b981' : valor >= 0.5 ? '#f59e0b' : valor >= 0.2 ? '#eab308' : '#ef4444';
       
       eixosContent += `
         <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e5e7eb; border-radius: 8px; background-color: #ffffff;">
@@ -1046,7 +1046,7 @@ export function DownloadPDF({ selectedData, data, selectedMicroregiao }: Downloa
         <div style="font-size: 14px; line-height: 1.6; color: #374151;">
           <p><strong style="color: #10b981;">🟢 Avançado (80-100%):</strong> Nível alto de maturidade digital</p>
           <p><strong style="color: #f59e0b;">🟡 Em Evolução (50-79%):</strong> Nível intermediário de desenvolvimento</p>
-          <p><strong style="color: #f97316;">🟠 Emergente (20-49%):</strong> Nível básico de maturidade</p>
+          <p><strong style="color: #eab308;">🟡 Emergente (20-49%):</strong> Nível básico de maturidade</p>
           <p><strong style="color: #ef4444;">🔴 Inicial (0-19%):</strong> Necessita de desenvolvimento prioritário</p>
         </div>
       </div>
