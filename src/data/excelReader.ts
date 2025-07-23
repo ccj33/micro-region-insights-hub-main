@@ -1,7 +1,7 @@
 import * as XLSX from 'xlsx';
 import { MicroRegionData } from '@/types/dashboard';
 
-export async function readExcelFile(): Promise<MicroRegionData[]> {
+export async function readExcelFile(): Promise<any[]> {
   try {
     // Tentar carregar o arquivo Excel da pasta public
     const response = await fetch('/database.xlsx');
@@ -18,72 +18,20 @@ export async function readExcelFile(): Promise<MicroRegionData[]> {
     // Pular o cabeçalho (primeira linha)
     const headers = jsonData[0] as string[];
     const rows = jsonData.slice(1) as any[][];
-    
-    // Mapear os dados para o formato correto
-    const mappedData: MicroRegionData[] = rows.map((row, index) => {
-      const rowData: any = {};
-      
-      // Mapear cada coluna baseado no cabeçalho
+
+    // Novo mapeamento: cada linha é um eixo
+    const mappedData = rows.map((row) => {
+      const eixoData: any = {};
       headers.forEach((header, colIndex) => {
-        const value = row[colIndex];
-        if (value !== undefined && value !== null) {
-          rowData[header.toLowerCase().replace(/\s+/g, '_')] = value;
+        if (row[colIndex] !== undefined && row[colIndex] !== null) {
+          eixoData[header.toLowerCase().replace(/\s+/g, '_')] = row[colIndex];
         }
       });
-      
-      // Garantir que todos os campos obrigatórios existam
-      return {
-        microrregiao: rowData.microrregiao || `Microrregião ${index + 1}`,
-        macrorregiao: rowData.macrorregiao || 'Não informado',
-        regional_saude: rowData.regional_saude || 'Não informado',
-        analista: rowData.analista || 'Não informado',
-        email_analista: rowData.email_analista || '',
-        populacao: String(rowData.populacao || 0),
-        idh_completo: rowData.idh_completo || '0.000',
-        idh_valor: rowData.idh_valor || '0.000',
-        idh_classificacao: rowData.idh_classificacao || 'Não informado',
-        classificacao_inmsd: rowData.classificacao_inmsd || 'Não informado',
-        indice_geral: rowData.indice_geral || '0.000',
-        eixo_1: rowData.eixo_1 || '0.000',
-        eixo_2: rowData.eixo_2 || '0.000',
-        eixo_3: rowData.eixo_3 || '0.000',
-        eixo_4: rowData.eixo_4 || '0.000',
-        eixo_5: rowData.eixo_5 || '0.000',
-        eixo_6: rowData.eixo_6 || '0.000',
-        eixo_7: rowData.eixo_7 || '0.000',
-        ponto_focal: rowData.ponto_focal || 'Não informado',
-        email_ponto_focal: rowData.email_ponto_focal || '',
-        municipios: rowData.municipios || 'Não informado',
-        macro_micro: rowData.macro_micro || 'Não informado',
-        status_inmsd: rowData.status_inmsd || 'Não informado',
-        pontuacao_geral: rowData.pontuacao_geral || '0.000',
-        situacao_eixo_1: rowData.situacao_eixo_1 || 'Não informado',
-        situacao_eixo_2: rowData.situacao_eixo_2 || 'Não informado',
-        situacao_eixo_3: rowData.situacao_eixo_3 || 'Não informado',
-        situacao_eixo_4: rowData.situacao_eixo_4 || 'Não informado',
-        situacao_eixo_5: rowData.situacao_eixo_5 || 'Não informado',
-        situacao_eixo_6: rowData.situacao_eixo_6 || 'Não informado',
-        situacao_eixo_7: rowData.situacao_eixo_7 || 'Não informado',
-        recomendacao_eixo_1: rowData.recomendacao_eixo_1 || 'Não informado',
-        recomendacao_eixo_2: rowData.recomendacao_eixo_2 || 'Não informado',
-        recomendacao_eixo_3: rowData.recomendacao_eixo_3 || 'Não informado',
-        recomendacao_eixo_4: rowData.recomendacao_eixo_4 || 'Não informado',
-        recomendacao_eixo_5: rowData.recomendacao_eixo_5 || 'Não informado',
-        recomendacao_eixo_6: rowData.recomendacao_eixo_6 || 'Não informado',
-        recomendacao_eixo_7: rowData.recomendacao_eixo_7 || 'Não informado',
-        ferramenta_eixo_1: rowData.ferramenta_eixo_1 || 'Não informado',
-        ferramenta_eixo_2: rowData.ferramenta_eixo_2 || 'Não informado',
-        ferramenta_eixo_3: rowData.ferramenta_eixo_3 || 'Não informado',
-        ferramenta_eixo_4: rowData.ferramenta_eixo_4 || 'Não informado',
-        ferramenta_eixo_5: rowData.ferramenta_eixo_5 || 'Não informado',
-        ferramenta_eixo_6: rowData.ferramenta_eixo_6 || 'Não informado',
-        ferramenta_eixo_7: rowData.ferramenta_eixo_7 || 'Não informado',
-      };
+      return eixoData;
     });
-    
-    console.log('Dados carregados do Excel:', mappedData.length, 'registros');
+
+    console.log('Dados carregados do Excel (vertical):', mappedData.length, 'registros');
     return mappedData;
-    
   } catch (error) {
     console.error('Erro ao carregar arquivo Excel:', error);
     // Se não conseguir carregar o Excel, usar dados mock
@@ -99,5 +47,40 @@ export async function checkExcelFile(): Promise<boolean> {
     return response.ok;
   } catch (error) {
     return false;
+  }
+} 
+
+// Função para ler o arquivo macros.xlsx e retornar recomendações por eixo e tier
+export async function readMacrosExcelFile(): Promise<any[]> {
+  try {
+    // Carregar o arquivo macros.xlsx da pasta public
+    const response = await fetch('/macros.xlsx');
+    const arrayBuffer = await response.arrayBuffer();
+    const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+    // Usar a primeira aba
+    const sheetName = workbook.SheetNames[0];
+    const worksheet = workbook.Sheets[sheetName];
+    // Converter para JSON (primeira linha como cabeçalho)
+    let jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: '', raw: false });
+
+    // Limpar espaços dos nomes das colunas e dos valores
+    jsonData = jsonData.map((row: any) => {
+      const cleanedRow: any = {};
+      Object.keys(row).forEach((key) => {
+        // Remove espaços extras do nome da coluna e do valor
+        const cleanKey = key.trim().replace(/\s+/g, '_').toLowerCase();
+        let value = row[key];
+        if (typeof value === 'string') {
+          value = value.trim();
+        }
+        cleanedRow[cleanKey] = value;
+      });
+      return cleanedRow;
+    });
+
+    return jsonData;
+  } catch (error) {
+    console.error('Erro ao carregar macros.xlsx:', error);
+    return [];
   }
 } 

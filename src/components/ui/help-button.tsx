@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { HelpCircle, Search, X, BookOpen, Lightbulb } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -167,6 +167,9 @@ export function HelpButton({ className }: HelpButtonProps) {
             <BookOpen className="h-6 w-6 text-blue-600" />
             Dicionário e FAQ - Maturidade Digital
           </DialogTitle>
+          <DialogDescription>
+            Consulte termos, conceitos e perguntas frequentes sobre maturidade digital em saúde. Use a pesquisa para encontrar informações específicas.
+          </DialogDescription>
         </DialogHeader>
         
         <div className="flex flex-col h-full min-h-0">

@@ -19,7 +19,7 @@ import { calculateMedians } from '@/data/mockData';
 import { FilterOptions } from '@/types/dashboard';
 import { toast } from 'sonner';
 import { useExcelData } from '@/hooks/useExcelData';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
 import { HelpCircle, X } from 'lucide-react';
 import { useEffect } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
@@ -211,8 +211,10 @@ function UserGuideModal({ open, setOpen }: { open: boolean, setOpen: (v: boolean
               <HelpCircle className="h-7 w-7 text-blue-700" />
               Bem-vindo ao Micro-Region Insights Hub!
             </DialogTitle>
+            <DialogDescription className="text-blue-900 text-lg mb-4">
+              Seu painel de inteligência para maturidade digital das microrregiões.
+            </DialogDescription>
           </DialogHeader>
-          <p className="text-blue-900 text-lg mb-4">Seu painel de inteligência para maturidade digital das microrregiões.</p>
           <ol className="space-y-4 text-blue-900 text-base">
             <li>
               <b>1. Selecione a Região:</b> Use os filtros no topo para escolher a <b>Macrorregião</b> e depois a <b>Microrregião</b> que deseja analisar.

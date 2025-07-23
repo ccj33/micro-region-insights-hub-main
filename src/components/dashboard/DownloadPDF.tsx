@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 
 const SECTION_CONFIG = [
   { id: "stats", label: "Estatísticas Gerais", selector: '[data-section="stats"]' },
@@ -156,6 +156,9 @@ export function DownloadPDF({ microrregiao = 'NÃO DEFINIDO', indice = '---' }) 
           <DialogTitle className="flex items-center gap-2">
             Configurar Relatório PDF
           </DialogTitle>
+          <DialogDescription>
+            Selecione as seções que deseja incluir no relatório PDF da microrregião. Marque ou desmarque as opções conforme sua necessidade antes de gerar o arquivo.
+          </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
           <div className="flex items-center space-x-2">
