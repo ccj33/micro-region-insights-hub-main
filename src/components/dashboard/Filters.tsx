@@ -35,22 +35,25 @@ export function Filters({
   const [openMicroregiao, setOpenMicroregiao] = useState(false);
   
   // Usar o hook de cache de dados
-  const { 
-    filteredData: cachedFilteredData, 
-    isLoading, 
-    searchTerm, 
-    setSearchTerm, 
-    clearCache, 
-    cacheStats 
+  const {
+    filteredData: cachedFilteredData,
+    isLoading,
+    searchTerm,
+    setSearchTerm,
+    clearCache,
+    cacheStats
   } = useDataCache(data, filters);
-  
+
   const uniqueValues = {
     macrorregioes: Array.from(new Set(data.map(item => item.macrorregiao))).sort(),
     regionaisSaude: Array.from(new Set(data.map(item => item.regional_saude))).sort(),
     classificacoes: Array.from(new Set(data.map(item => item.classificacao_inmsd))).sort()
   };
 
-  const filteredMicroregioes = cachedFilteredData;
+  // Garante que, se nenhum filtro está aplicado, todas as microrregiões aparecem
+  const filteredMicroregioes = (!filters.macrorregiao && !filters.classificacao_inmsd && !searchTerm)
+    ? data
+    : cachedFilteredData;
 
   const clearFilters = () => {
     onFiltersChange({});
