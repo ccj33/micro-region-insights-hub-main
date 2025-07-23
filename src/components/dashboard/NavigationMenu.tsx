@@ -54,84 +54,56 @@ export function NavigationMenu({ activeSection, onNavigate }: NavigationMenuProp
       {/* Menu de Navegação Fixo */}
       <div className="sticky top-0 z-50 bg-blue-50 border-b border-blue-200 shadow-sm">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-16">
+          <div className="flex items-center h-16 w-full">
             {/* Logo/Título */}
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <Home className="w-4 h-4 text-white" />
+            <div className="flex-shrink-0 flex items-center pl-4">
+              <div className="w-10 h-10 flex items-center justify-center">
+                <img src="/logo%20sus%20digital.png" alt="SUS Digital SES-MG" className="h-10 w-auto" />
               </div>
-              <h1 className="text-lg font-semibold text-blue-600">Maturidade Digital</h1>
+              <h1 className="text-lg font-semibold text-blue-900 ml-2">Radar NSDIGI</h1>
             </div>
-
-            {/* Breadcrumbs - Desktop */}
-            <div className="hidden lg:flex items-center space-x-1 text-sm text-blue-700">
-              {getBreadcrumbPath().map((item, index) => (
-                <div key={index} className="flex items-center">
-                  {index > 0 && <ChevronRight className="w-4 h-4 mx-1 text-blue-500" />}
-                  <div className="flex items-center space-x-1">
-                    <item.icon className="w-4 h-4" />
-                    <span>{item.label}</span>
-                  </div>
-                </div>
-              ))}
+            {/* Menu Centralizado */}
+            <div className="flex-1 flex justify-center">
+              <div className="flex items-center gap-4">
+                {sections.map((section) => {
+                  const Icon = section.icon;
+                  return (
+                    <button
+                      key={section.id}
+                      onClick={() => handleNavigate(section.id)}
+                      className={`flex flex-col items-center justify-center py-2 px-2 rounded transition-colors duration-200 cursor-pointer ${activeSection === section.id ? 'bg-blue-100 text-blue-700 font-semibold' : 'hover:bg-blue-50 text-blue-700'}`}
+                      style={{ minWidth: 64 }}
+                    >
+                      <Icon className="w-6 h-6 mb-1" />
+                      <span className="text-xs leading-tight">{section.label.split(' ')[1] || section.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-
-            {/* Menu de Seções - Desktop */}
-            <div className="hidden lg:flex items-center space-x-1 overflow-x-auto max-w-4xl">
-              {sections.map((section) => {
-                const Icon = section.icon;
-                return (
-                  <Button
-                    key={section.id}
-                    variant={activeSection === section.id ? "default" : "ghost"}
-                    size="sm"
-                    onClick={() => handleNavigate(section.id)}
-                    className={`items-center space-x-1 px-1 cursor-pointer z-10 relative flex-shrink-0 ${
-                      activeSection === section.id 
-                        ? "bg-blue-600 hover:bg-blue-700 text-white" 
-                        : "text-blue-700 hover:bg-blue-100"
-                    }`}
-                  >
-                    <Icon className="w-4 h-4" />
-                    <span className="hidden lg:inline text-xs truncate">{section.label}</span>
-                  </Button>
-                );
-              })}
-            </div>
-
-            {/* Botão Hambúrguer - Mobile */}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setShowMobileMenu(!showMobileMenu)}
-              className="lg:hidden p-2 text-blue-700 hover:bg-blue-100"
-            >
-              {showMobileMenu ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </Button>
+            {/* Espaço à direita para balancear */}
+            <div className="flex-shrink-0 w-40" />
           </div>
         </div>
+
+        {/* Botão Hambúrguer - Mobile */}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setShowMobileMenu(!showMobileMenu)}
+          className="lg:hidden p-2 text-blue-700 hover:bg-blue-100"
+        >
+          {showMobileMenu ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+        </Button>
 
         {/* Menu Mobile Dropdown */}
         {showMobileMenu && (
           <div className="lg:hidden bg-white border-t border-blue-200 shadow-lg">
             <div className="container mx-auto px-4 py-2">
-              {/* Breadcrumbs Mobile */}
-              <div className="mb-3 pb-2 border-b border-blue-100">
-                <div className="flex items-center space-x-1 text-sm text-blue-700">
-                  {getBreadcrumbPath().map((item, index) => (
-                    <div key={index} className="flex items-center">
-                      {index > 0 && <ChevronRight className="w-3 h-3 mx-1 text-blue-500" />}
-                      <div className="flex items-center space-x-1">
-                        <item.icon className="w-3 h-3" />
-                        <span className="text-xs">{item.label}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
+              {/* Removido: Breadcrumbs Mobile */}
+              {/* Removido: <div className="mb-3 pb-2 border-b border-blue-100"> ... </div> */}
               {/* Menu Items Mobile */}
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-3 gap-2 justify-center">
                 {sections.map((section) => {
                   const Icon = section.icon;
                   return (

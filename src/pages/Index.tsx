@@ -26,52 +26,177 @@ import { Eye, EyeOff } from 'lucide-react';
 import Joyride, { CallBackProps, STATUS, Step } from 'react-joyride';
 
 const GUIDE_STORAGE_KEY = 'mrh-guide-dismissed';
+const RoboBalao = ({ title, children }) => (
+  <div style={{ position: 'relative', minHeight: 60 }}>
+    {/* Robô fora do balão */}
+    <img
+      src="/logo_sus_digital-removebg-preview.png"
+      alt="Robô Assistente"
+      style={{
+        position: 'absolute',
+        left: -56,
+        top: -24,
+        width: 48,
+        height: 48,
+        borderRadius: '50%',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.10)',
+        background: '#fff',
+        zIndex: 2
+      }}
+    />
+    {/* Balão de fala */}
+    <div style={{
+      marginLeft: 32,
+      position: 'relative',
+      background: '#fff',
+      borderRadius: 12,
+      padding: '8px 0 0 0',
+      zIndex: 1
+    }}>
+      {/* Triângulo do balão */}
+      <div style={{
+        position: 'absolute',
+        left: -16,
+        top: 24,
+        width: 0,
+        height: 0,
+        borderTop: '10px solid transparent',
+        borderBottom: '10px solid transparent',
+        borderRight: '16px solid #fff',
+        zIndex: 1
+      }} />
+      <div>
+        {children}
+      </div>
+    </div>
+  </div>
+);
+
 const TOUR_STEPS: Step[] = [
   {
+    target: 'body',
+    content: (
+      <RoboBalao title="Bem-vindo!">
+        <b>Olá! Eu sou o <span style={{color:'#2563eb'}}>AlexSUS</span>, seu assistente digital.</b><br/>
+        Estou aqui para te auxiliar a explorar o Radar NSDIGI.<br/>
+        Vou te mostrar os principais blocos e funcionalidades do painel.<br/><br/>
+        Clique em <b>Próximo</b> para começar o tour!
+      </RoboBalao>
+    ),
+    title: 'Bem-vindo!',
+    disableBeacon: true,
+    placement: 'center',
+  },
+  {
     target: '[data-tour="filtros"]',
-    content: 'Use os filtros para selecionar macrorregião, microrregião e classificação.',
+    content: (
+      <RoboBalao title="Filtros de Seleção">
+        <b>Filtros de Seleção</b><br/>
+        Aqui você pode escolher a <b>Macrorregião</b>, <b>Microrregião</b> e <b>Classificação</b> que deseja analisar.<br/>
+        Use esses filtros para personalizar todos os dados exibidos no painel, focando apenas nas regiões e classificações do seu interesse.
+      </RoboBalao>
+    ),
     title: 'Filtros de Seleção',
     disableBeacon: true,
   },
   {
     target: '[data-tour="menu"]',
-    content: 'Navegue entre as principais áreas do dashboard por aqui.',
+    content: (
+      <RoboBalao title="Menu de Navegação">
+        <b>Menu de Navegação</b><br/>
+        Utilize este menu para navegar rapidamente entre as principais áreas do dashboard, como gráficos, tabelas e recomendações.<br/>
+        Clique em cada item para ir direto à seção desejada.
+      </RoboBalao>
+    ),
     title: 'Menu de Navegação',
   },
   {
     target: '[data-tour="estatisticas"]',
-    content: 'Veja um resumo geral das microrregiões analisadas.',
+    content: (
+      <RoboBalao title="Estatísticas Gerais">
+        <b>Estatísticas Gerais</b><br/>
+        Veja um resumo dos principais indicadores das microrregiões selecionadas, como população, índice de maturidade e classificação.<br/>
+        Passe o mouse sobre os cards para visualizar mais detalhes e dicas.
+      </RoboBalao>
+    ),
     title: 'Estatísticas Gerais',
   },
   {
     target: '[data-tour="radar"]',
-    content: 'Visualize a maturidade por eixo no gráfico radar.',
+    content: (
+      <RoboBalao title="Gráfico Radar">
+        <b>Gráfico Radar</b><br/>
+        Visualize a maturidade digital por eixo (área de atuação) da microrregião escolhida.<br/>
+        Compare rapidamente pontos fortes e fracos em cada dimensão analisada.
+      </RoboBalao>
+    ),
     title: 'Gráfico Radar',
   },
   {
     target: '[data-tour="barras"]',
-    content: 'Compare o índice geral de maturidade entre microrregiões.',
+    content: (
+      <RoboBalao title="Gráfico de Barras">
+        <b>Gráfico de Barras</b><br/>
+        Compare o índice geral de maturidade entre todas as microrregiões.<br/>
+        Clique em uma barra para selecionar e analisar uma microrregião específica.
+      </RoboBalao>
+    ),
     title: 'Gráfico de Barras',
   },
   {
     target: '[data-tour="eixos"]',
-    content: 'Veja o detalhamento por eixo de maturidade.',
+    content: (
+      <RoboBalao title="Tabela de Eixos">
+        <b>Tabela de Eixos</b><br/>
+        Veja o detalhamento dos resultados por cada eixo de maturidade digital.<br/>
+        Analise os valores individuais e identifique onde estão as maiores oportunidades de melhoria.
+      </RoboBalao>
+    ),
     title: 'Tabela de Eixos',
   },
   {
     target: '[data-tour="populacao"]',
-    content: 'Veja a distribuição populacional das microrregiões.',
+    content: (
+      <RoboBalao title="Gráfico de População">
+        <b>Gráfico de População</b><br/>
+        Veja a distribuição populacional das microrregiões.<br/>
+        Entenda o contexto demográfico para interpretar melhor os resultados.
+      </RoboBalao>
+    ),
     title: 'Gráfico de População',
   },
   {
     target: '[data-tour="recomendacoes"]',
-    content: 'Confira recomendações específicas para cada eixo.',
+    content: (
+      <RoboBalao title="Recomendações">
+        <b>Recomendações</b><br/>
+        Confira recomendações automáticas e personalizadas para cada eixo de maturidade.<br/>
+        Utilize essas dicas para planejar ações de melhoria na sua microrregião.
+      </RoboBalao>
+    ),
     title: 'Recomendações',
   },
   {
     target: '[data-tour="olho"]',
-    content: 'Use este botão para minimizar ou expandir qualquer bloco do dashboard.',
+    content: (
+      <RoboBalao title="Botão de Olho">
+        <b>Botão de Olho</b><br/>
+        Use este botão para minimizar ou expandir qualquer bloco do dashboard.<br/>
+        Assim, você pode focar apenas nas informações que deseja analisar no momento.
+      </RoboBalao>
+    ),
     title: 'Botão de Olho',
+  },
+  {
+    target: '[data-tour="ajuda"]',
+    content: (
+      <RoboBalao title="Botão de Ajuda">
+        <b>Precisa de ajuda?</b><br/>
+        Clique neste botão a qualquer momento para reabrir este tutorial guiado ou acessar o FAQ com explicações detalhadas sobre o sistema.<br/>
+        Assim, você nunca ficará com dúvidas durante o uso!
+      </RoboBalao>
+    ),
+    title: 'Botão de Ajuda',
   },
 ];
 
@@ -136,11 +261,13 @@ const Index = () => {
   const [showAdvanced, setShowAdvanced] = useState(true);
   // Adicionar hooks de tour aqui
   const [runTour, setRunTour] = useState(false);
+
   useEffect(() => {
-    if (!localStorage.getItem(GUIDE_STORAGE_KEY)) {
+    // Só inicia o tour se o modal de boas-vindas já foi fechado
+    if (!guideOpen && !localStorage.getItem(GUIDE_STORAGE_KEY)) {
       setRunTour(true);
     }
-  }, []);
+  }, [guideOpen]);
 
   const handleJoyrideCallback = (data: CallBackProps) => {
     const { status } = data;
@@ -309,14 +436,6 @@ const Index = () => {
         callback={handleJoyrideCallback}
         styles={{ options: { zIndex: 9999 } }}
       />
-      <button
-        className="fixed bottom-6 right-6 z-50 bg-blue-600 text-white rounded-full p-3 shadow-lg hover:bg-blue-700 transition-colors"
-        onClick={() => setRunTour(true)}
-        aria-label="Ajuda"
-        data-tour="ajuda"
-      >
-        <HelpCircle className="h-6 w-6" />
-      </button>
       <div className="min-h-screen bg-dashboard-bg">
       {/* Navigation Menu Fixo */}
       <NavigationMenu
@@ -612,9 +731,8 @@ const Index = () => {
       <footer className={`bg-dashboard-header border-t border-border mt-12 transition-all duration-300 ${getSidebarMargin()}`}>
         <div className="px-4 sm:px-6 lg:px-8 py-4">
           <div className="max-w-6xl mx-auto">
-            <div className="text-center text-sm text-muted-foreground">
-              <p>Painel de Maturidade Digital • Sistema desenvolvido para análise regional</p>
-              <p className="mt-1">Para atualizar os dados, substitua o arquivo Excel mantendo a estrutura das colunas</p>
+            <div className="flex flex-col items-center justify-center">
+              <img src="/sus_digital-removebg-preview.png" alt="SUS Digital SES-MG" style={{ height: 90, maxWidth: '100%', objectFit: 'contain' }} />
             </div>
           </div>
         </div>

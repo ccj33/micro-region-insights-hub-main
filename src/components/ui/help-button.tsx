@@ -141,13 +141,25 @@ export function HelpButton({ className }: HelpButtonProps) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button
-          size="icon"
+        <button
           onClick={handleButtonClick}
-          className={`fixed bottom-6 right-6 w-16 h-16 sm:w-14 sm:h-14 rounded-full shadow-lg bg-blue-600 hover:bg-blue-700 text-white z-[9999] transition-all duration-300 hover:scale-110 hover:shadow-xl ${className}`}
+          className="fixed bottom-6 right-6 z-[9999] transition-all duration-300 hover:scale-110 hover:shadow-xl"
+          style={{
+            width: 56,
+            height: 56,
+            background: 'transparent',
+            border: 'none',
+            padding: 0,
+            cursor: 'pointer',
+          }}
+          aria-label="Ajuda"
+          data-tour="ajuda"
         >
-          <HelpCircle className="h-7 w-7 sm:h-6 sm:w-6" />
-        </Button>
+          <svg width="56" height="56" viewBox="0 0 56 56">
+            <polygon points="28,6 54,50 2,50" fill="#e11d48" />
+            <text x="28" y="40" textAnchor="middle" fontSize="32" fill="#fff" fontWeight="bold" fontFamily="Segoe UI, Arial Rounded MT Bold, Verdana, sans-serif" dominantBaseline="middle">?</text>
+          </svg>
+        </button>
       </DialogTrigger>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden bg-blue-50">
         <DialogHeader>
