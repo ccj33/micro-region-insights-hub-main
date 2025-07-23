@@ -151,11 +151,11 @@ const Index = () => {
   };
 
   // Atualizar microrregião selecionada quando os dados carregarem
-  useMemo(() => {
-    if (data.length > 0 && !selectedMicroregiao) {
-      setSelectedMicroregiao(data[0].microrregiao);
-    }
-  }, [data, selectedMicroregiao]);
+  // useMemo(() => {
+  //   if (data.length > 0 && !selectedMicroregiao) {
+  //     setSelectedMicroregiao(data[0].microrregiao);
+  //   }
+  // }, [data, selectedMicroregiao]);
 
   // Calcular medianas dos eixos
   const medians = useMemo(() => calculateMedians(data), [data]);
@@ -278,16 +278,17 @@ const Index = () => {
     return 'sm:ml-14 lg:ml-72'; // Desktop com sidebar expandido
   };
 
-  if (!selectedData) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-dashboard-bg">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-foreground mb-4">Carregando dados...</h1>
-          <p className="text-muted-foreground">Por favor, aguarde enquanto carregamos as informações.</p>
-        </div>
-      </div>
-    );
-  }
+  // Remover o bloqueio de renderização do dashboard
+  // if (!selectedData) {
+  //   return (
+  //     <div className="min-h-screen flex items-center justify-center bg-dashboard-bg">
+  //       <div className="text-center">
+  //         <h1 className="text-2xl font-bold text-foreground mb-4">Carregando dados...</h1>
+  //         <p className="text-muted-foreground">Por favor, aguarde enquanto carregamos as informações.</p>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <>
@@ -407,7 +408,7 @@ const Index = () => {
         {/* Filtros */}
         <div id="filtros" className="mb-16" data-tour="filtros">
           <Filters
-            data={filteredData}
+            data={data}
             selectedMicroregiao={selectedMicroregiao}
             filters={filters}
             onMicroregiaoChange={handleMicroregiaoChange}
@@ -421,11 +422,17 @@ const Index = () => {
 
         {/* Cabeçalho da Microrregião */}
         <div className="mb-16">
-          <DashboardHeader 
-            data={selectedData} 
-            allData={data} 
-            onMicroregiaoChange={handleMicroregiaoChange}
-          />
+          {selectedData ? (
+            <DashboardHeader 
+              data={selectedData} 
+              allData={data} 
+              onMicroregiaoChange={handleMicroregiaoChange}
+            />
+          ) : (
+            <div className="p-8 bg-card border border-border rounded-lg text-center text-muted-foreground text-lg font-medium">
+              Selecione uma microrregião para visualizar os dados do painel.
+            </div>
+          )}
         </div>
 
         {/* Separador Visual */}
@@ -433,7 +440,13 @@ const Index = () => {
 
         {/* Estatísticas Gerais */}
         <div id="overview" className="mb-16" data-tour="estatisticas">
-          <StatsOverview data={filteredData} selectedData={selectedData} macroFiltro={filters.macrorregiao} />
+          {selectedData ? (
+            <StatsOverview data={filteredData} selectedData={selectedData} macroFiltro={filters.macrorregiao} />
+          ) : (
+            <div className="p-8 bg-card border border-border rounded-lg text-center text-muted-foreground text-lg font-medium">
+              Selecione uma microrregião para visualizar as estatísticas.
+            </div>
+          )}
         </div>
 
         {/* Separador Visual */}
@@ -445,11 +458,17 @@ const Index = () => {
             <h2 className="text-xl font-semibold text-foreground">Gráfico de Radar</h2>
             <p className="text-sm text-muted-foreground">Comparação por Eixos de Maturidade</p>
           </div>
-          <DashboardRadarChart 
-            data={selectedData} 
-            medians={medians}
-            onNavigateToRecommendations={handleNavigateToRecommendations}
-          />
+          {selectedData ? (
+            <DashboardRadarChart 
+              data={selectedData} 
+              medians={medians}
+              onNavigateToRecommendations={handleNavigateToRecommendations}
+            />
+          ) : (
+            <div className="p-8 text-center text-muted-foreground text-lg font-medium">
+              Selecione uma microrregião para visualizar o gráfico radar.
+            </div>
+          )}
         </div>
 
         {/* Separador Visual */}
@@ -461,7 +480,13 @@ const Index = () => {
             <h2 className="text-xl font-semibold text-foreground">Gráfico de Barras</h2>
             <p className="text-sm text-muted-foreground">Comparação entre Microrregiões</p>
           </div>
-          <DashboardBarChart data={filteredData} selectedMicroregiao={selectedMicroregiao} macroFiltro={filters.macrorregiao} />
+          {selectedData ? (
+            <DashboardBarChart data={filteredData} selectedMicroregiao={selectedMicroregiao} macroFiltro={filters.macrorregiao} />
+          ) : (
+            <div className="p-8 text-center text-muted-foreground text-lg font-medium">
+              Selecione uma microrregião para visualizar o gráfico de barras.
+            </div>
+          )}
         </div>
 
         {/* Separador Visual */}
@@ -469,7 +494,13 @@ const Index = () => {
 
         {/* Tabela de Eixos */}
         <div id="tabela" className="mb-16" data-tour="eixos">
-          <EixosTable data={selectedData} medians={medians} />
+          {selectedData ? (
+            <EixosTable data={selectedData} medians={medians} />
+          ) : (
+            <div className="p-8 bg-card border border-border rounded-lg text-center text-muted-foreground text-lg font-medium">
+              Selecione uma microrregião para visualizar a tabela de eixos.
+            </div>
+          )}
         </div>
 
         {/* Separador Visual */}
@@ -481,7 +512,13 @@ const Index = () => {
             <h2 className="text-xl font-semibold text-foreground">Gráfico de População</h2>
             <p className="text-sm text-muted-foreground">Distribuição Populacional</p>
           </div>
-          <PopulationChart data={filteredData} selectedMicroregiao={selectedMicroregiao} />
+          {selectedData ? (
+            <PopulationChart data={filteredData} selectedMicroregiao={selectedMicroregiao} />
+          ) : (
+            <div className="p-8 text-center text-muted-foreground text-lg font-medium">
+              Selecione uma microrregião para visualizar o gráfico de população.
+            </div>
+          )}
         </div>
 
         {/* Separador Visual */}
@@ -489,7 +526,13 @@ const Index = () => {
 
         {/* Recomendações por Eixo */}
         <div id="recomendacoes" className="mb-16" data-tour="recomendacoes">
-          <RecommendationsPanel data={selectedData} />
+          {selectedData ? (
+            <RecommendationsPanel data={selectedData} />
+          ) : (
+            <div className="p-8 bg-card border border-border rounded-lg text-center text-muted-foreground text-lg font-medium">
+              Selecione uma microrregião para visualizar as recomendações.
+            </div>
+          )}
         </div>
 
         {/* Separador Visual */}
@@ -501,11 +544,17 @@ const Index = () => {
             <h2 className="text-xl font-semibold text-foreground">Dashboard Executivo</h2>
             <p className="text-sm text-muted-foreground">Visão estratégica e resumida da maturidade digital</p>
           </div>
-          <ExecutiveDashboard 
-            data={filteredData} 
-            selectedMicroregiao={selectedMicroregiao}
-            medians={medians}
-          />
+          {selectedData ? (
+            <ExecutiveDashboard 
+              data={filteredData} 
+              selectedMicroregiao={selectedMicroregiao}
+              medians={medians}
+            />
+          ) : (
+            <div className="p-8 bg-card border border-border rounded-lg text-center text-muted-foreground text-lg font-medium">
+              Selecione uma microrregião para visualizar o dashboard executivo.
+            </div>
+          )}
         </div>
 
         {/* Separador Visual */}
@@ -526,11 +575,17 @@ const Index = () => {
           </div>
           <p className="text-sm text-muted-foreground">Comparação detalhada entre microrregiões</p>
           <div className={showAdvanced ? '' : 'hidden'}>
-            <AdvancedAnalysis 
-              data={filteredData} 
-              selectedMicroregiao={selectedMicroregiao}
-              medians={medians}
-            />
+            {selectedData ? (
+              <AdvancedAnalysis 
+                data={filteredData} 
+                selectedMicroregiao={selectedMicroregiao}
+                medians={medians}
+              />
+            ) : (
+              <div className="p-8 bg-card border border-border rounded-lg text-center text-muted-foreground text-lg font-medium">
+                Selecione uma microrregião para visualizar a análise avançada.
+              </div>
+            )}
           </div>
         </div>
 

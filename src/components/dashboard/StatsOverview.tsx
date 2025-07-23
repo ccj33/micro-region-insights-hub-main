@@ -36,35 +36,50 @@ export function StatsOverview({ data, selectedData, macroFiltro }: StatsOverview
   }, [data, selectedData]);
 
   // Calcular estatísticas gerais
+  if (!data || data.length === 0 || !selectedData) {
+    return (
+      <div className="p-4 text-center text-muted-foreground">
+        Dados insuficientes para exibir as estatísticas.
+      </div>
+    );
+  }
+
   const filteredData = macroFiltro && macroFiltro !== 'Todas as macrorregiões'
     ? data.filter(item => item.macrorregiao === macroFiltro)
     : data;
 
   const totalPopulation = filteredData.reduce((sum, item) => {
-    return sum + parseInt(String(item.populacao).replace(/\./g, ''));
+    const pop = item?.populacao ? parseInt(String(item.populacao).replace(/\./g, '')) : 0;
+    return sum + pop;
   }, 0);
 
   const averageMaturity = filteredData.reduce((sum, item) => {
-    return sum + parseFloat(String(item.indice_geral).replace(',', '.'));
-  }, 0) / filteredData.length;
+    const ind = item?.indice_geral ? parseFloat(String(item.indice_geral).replace(',', '.')) : 0;
+    return sum + ind;
+  }, 0) / (filteredData.length || 1);
 
-  const selectedMaturity = parseFloat(String(selectedData.indice_geral).replace(',', '.'));
+  const selectedMaturity = selectedData?.indice_geral ? parseFloat(String(selectedData.indice_geral).replace(',', '.')) : 0;
   const isAboveAverage = selectedMaturity > averageMaturity;
 
   const classificationCounts = data.reduce((acc, item) => {
-    acc[item.classificacao_inmsd] = (acc[item.classificacao_inmsd] || 0) + 1;
+    const key = item?.classificacao_inmsd ?? 'Desconhecido';
+    acc[key] = (acc[key] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
 
   const topPerformer = data.reduce((best, current) => {
-    const currentMaturity = parseFloat(String(current.indice_geral).replace(',', '.'));
-    const bestMaturity = parseFloat(String(best.indice_geral).replace(',', '.'));
+    const currentMaturity = current?.indice_geral ? parseFloat(String(current.indice_geral).replace(',', '.')) : 0;
+    const bestMaturity = best?.indice_geral ? parseFloat(String(best.indice_geral).replace(',', '.')) : 0;
     return currentMaturity > bestMaturity ? current : best;
   });
 
   const selectedRanking = data
-    .sort((a, b) => parseFloat(String(b.indice_geral).replace(',', '.')) - parseFloat(String(a.indice_geral).replace(',', '.')))
-    .findIndex(item => item.microrregiao === selectedData.microrregiao) + 1;
+    .sort((a, b) => {
+      const aVal = a?.indice_geral ? parseFloat(String(a.indice_geral).replace(',', '.')) : 0;
+      const bVal = b?.indice_geral ? parseFloat(String(b.indice_geral).replace(',', '.')) : 0;
+      return bVal - aVal;
+    })
+    .findIndex(item => item?.microrregiao === selectedData?.microrregiao) + 1;
 
   // Macroregião ativa
   const macroAtiva = macroFiltro ? macroFiltro : 'Todas as macrorregiões';

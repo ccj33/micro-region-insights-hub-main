@@ -18,24 +18,43 @@ interface AdvancedAnalysisProps {
 // Tooltip personalizado para comparação
 const ComparisonTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
+    // Ordenar os itens conforme solicitado
+    const order = [
+      'Selecionada',
+      'Comparação',
+      'Mediana',
+      'Emergente',
+      'Em Evolução',
+      'Avançado',
+    ];
+    // Mapear para facilitar acesso ao valor
+    const payloadMap = Object.fromEntries(payload.map((entry: any) => [entry.name, entry]));
+    const ponto = payload[0]?.payload;
     return (
       <div className="bg-white border-2 border-blue-200 rounded-lg p-4 shadow-lg max-w-xs">
         <p className="font-bold text-blue-800 text-sm mb-3 border-b border-blue-200 pb-2">{label}</p>
         <div className="space-y-2 text-xs">
-          {payload.map((entry: any, index: number) => (
-            <div key={index} className="flex items-center justify-between">
-              <span className="flex items-center">
-                <div 
-                  className="w-3 h-3 rounded-full mr-2" 
-                  style={{ backgroundColor: entry.color }}
-                />
-                <span className="font-medium">{entry.name}:</span>
-              </span>
-              <span className="font-semibold text-blue-600">
-                {(entry.value * 100).toFixed(1)}%
-              </span>
-            </div>
-          ))}
+          {order.map((name) => {
+            const entry = payloadMap[name];
+            if (!entry) return null;
+            let displayName = name;
+            if (name === 'Selecionada') displayName = ponto?.microrregiaoSelecionada || name;
+            if (name === 'Comparação') displayName = ponto?.microrregiaoComparacao || name;
+            return (
+              <div key={name} className="flex items-center justify-between">
+                <span className="flex items-center">
+                  <div 
+                    className="w-3 h-3 rounded-full mr-2" 
+                    style={{ backgroundColor: entry.color }}
+                  />
+                  <span className="font-medium">{displayName}:</span>
+                </span>
+                <span className="font-semibold text-blue-600">
+                  {(entry.value * 100).toFixed(1)}%
+                </span>
+              </div>
+            );
+          })}
         </div>
       </div>
     );
@@ -88,6 +107,8 @@ export function AdvancedAnalysis({ data, selectedMicroregiao, medians }: Advance
         'Emergente': 0.2,
         'Em Evolução': 0.5,
         'Avançado': 0.8,
+        microrregiaoSelecionada: selectedData.microrregiao,
+        microrregiaoComparacao: comparisonData?.microrregiao || '',
       };
     });
   }, [selectedData, comparisonData, medians]);
@@ -350,8 +371,8 @@ export function AdvancedAnalysis({ data, selectedMicroregiao, medians }: Advance
                   </ResponsiveContainer>
                 </div>
                 <div className="flex flex-wrap gap-4 mt-4 items-center justify-center text-sm">
-                  <span className="flex items-center gap-2"><span className="inline-block w-4 h-2 rounded bg-[#2563eb]"></span>Selecionada</span>
-                  <span className="flex items-center gap-2"><span className="inline-block w-4 h-2 rounded bg-[#22c55e]"></span>Comparação</span>
+                  <span className="flex items-center gap-2"><span className="inline-block w-4 h-2 rounded bg-[#2563eb]"></span>{selectedData?.microrregiao || 'Selecionada'}</span>
+                  <span className="flex items-center gap-2"><span className="inline-block w-4 h-2 rounded bg-[#22c55e]"></span>{comparisonData?.microrregiao || 'Comparação'}</span>
                   <span className="flex items-center gap-2"><span className="inline-block w-4 h-2 rounded bg-[#a21caf]"></span>Mediana</span>
                   <span className="flex items-center gap-2"><span className="inline-block w-4 h-2 rounded border border-[#eab308] bg-transparent"></span>Emergente</span>
                   <span className="flex items-center gap-2"><span className="inline-block w-4 h-2 rounded border border-[#3b82f6] bg-transparent"></span>Em Evolução</span>

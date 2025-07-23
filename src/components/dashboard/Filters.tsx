@@ -54,6 +54,7 @@ export function Filters({
 
   const clearFilters = () => {
     onFiltersChange({});
+    onMicroregiaoChange('');
   };
 
   const activeFiltersCount = Object.values(filters).filter(Boolean).length;
@@ -196,7 +197,7 @@ export function Filters({
                   aria-expanded={openMicroregiao}
                   className="w-full justify-between bg-white border-2 border-primary/20 focus:border-primary transition-colors shadow-sm h-12 sm:h-10"
                 >
-                  {selectedMicroregiao || "Selecione uma microrregião"}
+                  {selectedMicroregiao || "Nenhuma"}
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
@@ -206,31 +207,50 @@ export function Filters({
                   <CommandList>
                     <CommandEmpty>Nenhuma microrregião encontrada.</CommandEmpty>
                     <CommandGroup>
-                      {filteredMicroregioes
-                        .sort((a, b) => a.microrregiao.localeCompare(b.microrregiao, 'pt-BR'))
-                        .map((item) => (
-                        <CommandItem
-                          key={item.microrregiao}
-                          value={item.microrregiao}
-                          onSelect={() => {
-                            onMicroregiaoChange(item.microrregiao);
-                            setOpenMicroregiao(false);
-                          }}
-                        >
-                          <Check
-                            className={cn(
-                              "mr-2 h-4 w-4",
-                              selectedMicroregiao === item.microrregiao ? "opacity-100" : "opacity-0"
-                            )}
-                          />
-                    <div className="flex flex-col">
-                      <span>{item.microrregiao}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {item.macrorregiao} • {item.classificacao_inmsd}
-                      </span>
-                    </div>
-                        </CommandItem>
-                      ))}
+                      <CommandItem
+                        value="nenhuma"
+                        onSelect={() => {
+                          onMicroregiaoChange("");
+                          setOpenMicroregiao(false);
+                        }}
+                      >
+                        <Check
+                          className={cn(
+                            "mr-2 h-4 w-4",
+                            !selectedMicroregiao ? "opacity-100" : "opacity-0"
+                          )}
+                        />
+                        Nenhuma
+                      </CommandItem>
+                      {filteredMicroregioes.length === 0 ? (
+                        <div className="px-4 py-2 text-muted-foreground text-sm">Nenhuma microrregião disponível para os filtros atuais.</div>
+                      ) : (
+                        filteredMicroregioes
+                          .sort((a, b) => a.microrregiao.localeCompare(b.microrregiao, 'pt-BR'))
+                          .map((item) => (
+                            <CommandItem
+                              key={item.microrregiao}
+                              value={item.microrregiao}
+                              onSelect={() => {
+                                onMicroregiaoChange(item.microrregiao);
+                                setOpenMicroregiao(false);
+                              }}
+                            >
+                              <Check
+                                className={cn(
+                                  "mr-2 h-4 w-4",
+                                  selectedMicroregiao === item.microrregiao ? "opacity-100" : "opacity-0"
+                                )}
+                              />
+                              <div className="flex flex-col">
+                                <span>{item.microrregiao}</span>
+                                <span className="text-xs text-muted-foreground">
+                                  {item.macrorregiao} • {item.classificacao_inmsd}
+                                </span>
+                              </div>
+                            </CommandItem>
+                          ))
+                      )}
                     </CommandGroup>
                   </CommandList>
                 </Command>
@@ -281,7 +301,7 @@ export function Filters({
             
             <div className="flex items-center justify-between">
               <span className="font-medium text-foreground">Filtros Ativos:</span>
-              <div className="flex gap-2">
+              <div className="flex gap-2 items-center">
                 {filters.macrorregiao ? (
                   <Badge variant="outline" className="text-xs">
                     {filters.macrorregiao}
@@ -300,6 +320,14 @@ export function Filters({
                     Todas as classificações
                   </Badge>
                 )}
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="text-xs ml-2 px-2 py-1 h-auto"
+                  onClick={clearFilters}
+                >
+                  Limpar Filtros
+                </Button>
               </div>
             </div>
             
