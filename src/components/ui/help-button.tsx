@@ -106,7 +106,218 @@ const faqData: FAQItem[] = [
     answer: "Não se preocupe! Vermelho só significa que há espaço para melhorar. Veja as recomendações no final da página - elas mostram exatamente o que fazer para melhorar.",
     category: "Interpretação",
     tags: ["vermelho", "melhorar", "recomendações", "ação"]
-  }
+  },
+  // --- NOVAS PERGUNTAS E RESPOSTAS --- //
+  {
+    question: "O que é o Dashboard Executivo?",
+    answer: "É uma visão estratégica que mostra os principais indicadores da sua microrregião, pontos fortes, oportunidades de melhoria e recomendações para gestores.",
+    category: "Funcionalidades",
+    tags: ["dashboard executivo", "estratégia", "indicadores", "gestores"]
+  },
+  {
+    question: "O que é Análise Avançada?",
+    answer: "Permite comparar sua microrregião com outra, ver gráficos detalhados e um resumo executivo para decisões rápidas.",
+    category: "Funcionalidades",
+    tags: ["análise avançada", "comparação", "gráficos", "resumo executivo"]
+  },
+  {
+    question: "Como funcionam os filtros?",
+    answer: "Você pode escolher macrorregião, microrregião e classificação para ver só os dados que interessam. Isso ajuda a comparar regiões parecidas.",
+    category: "Funcionalidades",
+    tags: ["filtros", "macrorregião", "microrregião", "classificação"]
+  },
+  {
+    question: "Como funciona a exportação em PDF?",
+    answer: "Clique em ‘Baixar Relatório PDF’, escolha as seções que deseja e salve o arquivo para compartilhar ou imprimir.",
+    category: "Funcionalidades",
+    tags: ["PDF", "exportar", "relatório", "compartilhar"]
+  },
+  {
+    question: "O que significa INMSD?",
+    answer: "É o Índice de Maturidade em Saúde Digital, que mostra o quanto sua região está avançada no uso de tecnologia na saúde.",
+    category: "Conceitos Gerais",
+    tags: ["INMSD", "índice", "maturidade", "saúde digital"]
+  },
+  {
+    question: "O que é Mediana?",
+    answer: "É o valor do meio: metade das regiões está acima, metade está abaixo. Serve para comparar sua região com a média.",
+    category: "Conceitos Gerais",
+    tags: ["mediana", "comparação", "média"]
+  },
+  {
+    question: "O que são os níveis ‘Emergente’, ‘Em Evolução’ e ‘Avançado’?",
+    answer: "São faixas de maturidade digital. ‘Emergente’ está começando, ‘Em Evolução’ está melhorando, ‘Avançado’ já é referência.",
+    category: "Conceitos Gerais",
+    tags: ["emergente", "em evolução", "avançado", "níveis"]
+  },
+  {
+    question: "Qual a diferença entre Progresso e Performance?",
+    answer: "Progresso mostra o quanto sua região avançou em cada área. Performance compara sua região com as outras.",
+    category: "Interpretação",
+    tags: ["progresso", "performance", "diferença", "comparação"]
+  },
+  {
+    question: "O que é Ranking?",
+    answer: "É a posição da sua microrregião em relação às demais, do melhor para o pior índice.",
+    category: "Interpretação",
+    tags: ["ranking", "posição", "comparação"]
+  },
+  {
+    question: "O que é Ferramenta Sugerida?",
+    answer: "É uma dica de solução ou recurso que pode ajudar sua região a melhorar naquele eixo.",
+    category: "Funcionalidades",
+    tags: ["ferramenta sugerida", "solução", "recurso", "dica"]
+  },
+  {
+    question: "O que é Situação Atual?",
+    answer: "É um diagnóstico simples de como está sua região em cada área avaliada.",
+    category: "Funcionalidades",
+    tags: ["situação atual", "diagnóstico", "avaliação"]
+  },
+  {
+    question: "O que é LGPD?",
+    answer: "É a Lei Geral de Proteção de Dados, que protege as informações pessoais dos cidadãos.",
+    category: "Conceitos Gerais",
+    tags: ["LGPD", "proteção de dados", "lei"]
+  },
+  {
+    question: "O que é Macrorregião e Microrregião?",
+    answer: "Macrorregião é uma área grande, formada por várias microrregiões. Microrregião é um grupo de cidades próximas que trabalham juntas.",
+    category: "Conceitos Gerais",
+    tags: ["macrorregião", "microrregião", "divisão territorial"]
+  },
+  {
+    question: "O que é Interoperabilidade?",
+    answer: "É quando diferentes sistemas conseguem trocar informações entre si, facilitando o trabalho.",
+    category: "Eixos",
+    tags: ["interoperabilidade", "sistemas", "troca de informações"]
+  },
+  {
+    question: "Como saber se minha região está bem?",
+    answer: "Veja as cores dos gráficos e o ranking. Verde é bom, amarelo está melhorando, vermelho precisa de atenção.",
+    category: "Interpretação",
+    tags: ["cores", "ranking", "avaliação"]
+  },
+  {
+    question: "O que fazer se minha região está vermelha?",
+    answer: "Veja as recomendações no painel. Elas mostram o que pode ser feito para melhorar.",
+    category: "Recomendações",
+    tags: ["vermelho", "recomendações", "melhorar"]
+  },
+  {
+    question: "Como interpretar a tabela de eixos?",
+    answer: "Cada linha mostra um eixo (área avaliada), o valor da sua região, a mediana e se está acima ou abaixo da média.",
+    category: "Interpretação",
+    tags: ["tabela de eixos", "mediana", "comparação"]
+  },
+  {
+    question: "O que significa ‘Progresso’ na tabela de eixos?",
+    answer: "É o quanto sua região avançou naquele eixo, de 0% a 100%. Quanto mais próximo de 100%, melhor.",
+    category: "Interpretação",
+    tags: ["progresso", "tabela de eixos", "porcentagem"]
+  },
+  {
+    question: "O que significa ‘Performance’ na tabela de eixos?",
+    answer: "Mostra se sua região está acima, na média ou abaixo das outras microrregiões naquele eixo.",
+    category: "Interpretação",
+    tags: ["performance", "tabela de eixos", "comparação"]
+  },
+  {
+    question: "Como comparar minha microrregião com outra?",
+    answer: "Use a Análise Avançada para escolher outra microrregião e ver gráficos comparativos e um resumo executivo.",
+    category: "Funcionalidades",
+    tags: ["comparação", "análise avançada", "microrregião"]
+  },
+  {
+    question: "O que é ‘Resumo Executivo’?",
+    answer: "É um resumo simples dos pontos fortes, oportunidades de melhoria e recomendações para sua microrregião.",
+    category: "Funcionalidades",
+    tags: ["resumo executivo", "recomendações", "pontos fortes"]
+  },
+  {
+    question: "O que é ‘Classificação INMSD’?",
+    answer: "É a categoria em que sua microrregião se encontra de acordo com o índice de maturidade digital: Emergente, Em Evolução ou Avançado.",
+    category: "Conceitos Gerais",
+    tags: ["classificação", "INMSD", "maturidade"]
+  },
+  {
+    question: "O que é ‘Ferramenta Sugerida’ nas recomendações?",
+    answer: "É uma sugestão de solução, plataforma ou recurso que pode ajudar sua microrregião a evoluir naquele eixo.",
+    category: "Recomendações",
+    tags: ["ferramenta sugerida", "recurso", "solução"]
+  },
+  {
+    question: "Como usar as recomendações do painel?",
+    answer: "Leia as recomendações de cada eixo e siga as dicas práticas para melhorar a maturidade digital da sua microrregião.",
+    category: "Recomendações",
+    tags: ["recomendações", "dicas", "melhorias"]
+  },
+  {
+    question: "O que é ‘Situação Atual’ nas recomendações?",
+    answer: "É um resumo do estágio atual da sua microrregião em cada eixo, para você saber onde focar.",
+    category: "Recomendações",
+    tags: ["situação atual", "diagnóstico", "eixo"]
+  },
+  {
+    question: "O que é ‘Exportar PDF’?",
+    answer: "É a função que permite baixar um relatório completo da sua microrregião para compartilhar ou imprimir.",
+    category: "Funcionalidades",
+    tags: ["exportar", "PDF", "relatório"]
+  },
+  {
+    question: "O que é ‘Legenda do Ranking’?",
+    answer: "É uma explicação das cores e símbolos usados no gráfico de barras para mostrar a posição das microrregiões.",
+    category: "Interpretação",
+    tags: ["legenda", "ranking", "gráfico de barras"]
+  },
+  {
+    question: "O que é ‘Índice Geral’?",
+    answer: "É o valor principal que mostra o nível de maturidade digital da sua microrregião, de 0% a 100%.",
+    category: "Conceitos Gerais",
+    tags: ["índice geral", "maturidade", "porcentagem"]
+  },
+  {
+    question: "O que é ‘Eixo’ no contexto do painel?",
+    answer: "É uma das 7 áreas avaliadas para medir a maturidade digital da microrregião.",
+    category: "Eixos",
+    tags: ["eixo", "área", "avaliação"]
+  },
+  {
+    question: "Como saber se estou acima ou abaixo da mediana?",
+    answer: "Veja a coluna ‘Performance’ na tabela de eixos. Se estiver ‘Acima da Mediana’, sua região está melhor que a maioria naquele eixo.",
+    category: "Interpretação",
+    tags: ["mediana", "performance", "comparação"]
+  },
+  {
+    question: "O que é ‘Resumo Executivo’ na Análise Avançada?",
+    answer: "É um relatório simples que mostra onde sua microrregião está melhor, onde pode melhorar e recomendações estratégicas.",
+    category: "Funcionalidades",
+    tags: ["resumo executivo", "análise avançada", "relatório"]
+  },
+  {
+    question: "O que é ‘Comparação Geral’ na Análise Avançada?",
+    answer: "É a comparação direta do índice de maturidade digital entre duas microrregiões.",
+    category: "Funcionalidades",
+    tags: ["comparação geral", "análise avançada", "índice"]
+  },
+  {
+    question: "O que é ‘Emergente 1’, ‘Emergente 2’, ‘Em Evolução 1’, ‘Em Evolução 2’ nos eixos?",
+    answer: "São subdivisões dos níveis de maturidade, para mostrar com mais detalhe o estágio da sua microrregião em cada eixo.",
+    category: "Eixos",
+    tags: ["emergente 1", "emergente 2", "em evolução 1", "em evolução 2", "níveis"]
+  },
+  {
+    question: "O que é ‘Ferramenta’ nas recomendações?",
+    answer: "É uma plataforma, sistema ou recurso sugerido para ajudar sua microrregião a evoluir naquele eixo.",
+    category: "Recomendações",
+    tags: ["ferramenta", "recurso", "sugestão"]
+  },
+  {
+    question: "Como interpretar as cores dos gráficos?",
+    answer: "Verde significa bom, amarelo está melhorando, vermelho precisa de atenção. Quanto mais verde, melhor!",
+    category: "Interpretação",
+    tags: ["cores", "gráficos", "interpretação"]
+  },
 ];
 
 export function HelpButton({ className }: HelpButtonProps) {
@@ -162,17 +373,18 @@ export function HelpButton({ className }: HelpButtonProps) {
           </svg>
         </button>
       </DialogTrigger>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden bg-blue-50">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden bg-gradient-to-br from-blue-50 via-white to-blue-100 shadow-2xl rounded-2xl border-blue-200">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-xl">
-            <BookOpen className="h-6 w-6 text-blue-600" />
-            Dicionário e FAQ - Maturidade Digital
-          </DialogTitle>
-          <DialogDescription>
-            Consulte termos, conceitos e perguntas frequentes sobre maturidade digital em saúde. Use a pesquisa para encontrar informações específicas.
-          </DialogDescription>
+          <div className="flex flex-col items-center gap-2 mb-2">
+            <img src="/logo_sus_digital-removebg-preview.png" alt="AlexSUS" style={{width: 56, height: 56, borderRadius: '50%', boxShadow: '0 2px 12px #2563eb33'}} />
+            <DialogTitle className="flex items-center gap-2 text-2xl text-blue-700 font-extrabold drop-shadow text-center">
+              <span>FAQ & Dicionário do AlexSUS</span>
+            </DialogTitle>
+            <DialogDescription className="text-blue-900 text-base text-center font-medium">
+              Tire suas dúvidas sobre maturidade digital em saúde. Pesquise ou clique nas perguntas para ver respostas simples e diretas!
+            </DialogDescription>
+          </div>
         </DialogHeader>
-        
         <div className="flex flex-col h-full min-h-0">
           {/* Barra de pesquisa */}
           <div className="flex gap-4 mb-4">
@@ -182,7 +394,7 @@ export function HelpButton({ className }: HelpButtonProps) {
                 placeholder="Pesquisar termos, conceitos ou perguntas..."
                 value={searchTerm}
                 onChange={(e) => handleSearch(e.target.value)}
-                className="pl-10 bg-blue-50 border-blue-200 focus:border-blue-400 focus:ring-blue-400"
+                className="pl-10 bg-blue-50 border-blue-200 focus:border-blue-400 focus:ring-blue-400 text-lg"
               />
             </div>
             <Button
@@ -191,7 +403,7 @@ export function HelpButton({ className }: HelpButtonProps) {
                 setSearchTerm("");
                 setSelectedCategory("Todas");
               }}
-              className="flex items-center gap-2 bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
+              className="flex items-center gap-2 bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100 text-base"
             >
               <X className="h-4 w-4" />
               Limpar
@@ -204,11 +416,7 @@ export function HelpButton({ className }: HelpButtonProps) {
               <Badge
                 key={category}
                 variant={selectedCategory === category ? "default" : "outline"}
-                className={`cursor-pointer ${
-                  selectedCategory === category 
-                    ? "bg-blue-600 hover:bg-blue-700" 
-                    : "hover:bg-blue-50"
-                }`}
+                className={`cursor-pointer px-3 py-1 text-base ${selectedCategory === category ? "bg-blue-600 hover:bg-blue-700" : "hover:bg-blue-50"}`}
                 onClick={() => handleCategoryChange(category)}
               >
                 {category}
@@ -220,25 +428,24 @@ export function HelpButton({ className }: HelpButtonProps) {
           <div className="flex-1 overflow-y-auto space-y-4 pr-2 max-h-[500px]">
             {filteredFAQ.length === 0 ? (
               <div className="text-center py-8 text-gray-500">
-                <Lightbulb className="h-12 w-12 mx-auto mb-4 text-blue-300" />
+                <img src="/logo_sus_digital-removebg-preview.png" alt="AlexSUS" className="mx-auto mb-4" style={{width: 48, height: 48}} />
                 <p className="text-lg font-medium">Nenhum resultado encontrado</p>
-                <p className="text-sm">Tente usar termos diferentes ou verificar a categoria selecionada</p>
+                <p className="text-base">Tente usar termos diferentes ou verificar a categoria selecionada</p>
               </div>
             ) : (
               filteredFAQ.map((item, index) => (
                 <div
                   key={index}
-                  className="border rounded-lg p-4 hover:shadow-md transition-shadow"
+                  className="border rounded-2xl p-5 bg-white shadow-lg hover:shadow-xl transition-shadow flex flex-col gap-2"
                 >
-                  <div className="flex items-start justify-between mb-2">
-                    <h3 className="font-semibold text-lg text-gray-900 pr-4">
-                      {item.question}
-                    </h3>
-                    <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-800">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-blue-600 text-2xl">🤖</span>
+                    <h3 className="font-bold text-lg text-blue-800 flex-1">{item.question}</h3>
+                    <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
                       {item.category}
                     </Badge>
                   </div>
-                  <p className="text-gray-700 leading-relaxed mb-3">
+                  <p className="text-blue-900 text-base leading-relaxed mb-1">
                     {item.answer}
                   </p>
                   <div className="flex flex-wrap gap-1">
@@ -258,7 +465,7 @@ export function HelpButton({ className }: HelpButtonProps) {
           </div>
 
           {/* Estatísticas */}
-          <div className="border-t pt-4 mt-4 text-sm text-gray-500">
+          <div className="border-t pt-4 mt-4 text-base text-gray-500">
             <p>
               Mostrando {filteredFAQ.length} de {faqData.length} itens
               {searchTerm && ` para "${searchTerm}"`}

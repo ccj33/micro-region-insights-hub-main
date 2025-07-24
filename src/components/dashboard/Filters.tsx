@@ -140,7 +140,7 @@ export function Filters({
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-[300px] p-0">
+              <PopoverContent className="w-[300px] p-0 max-h-[320px] overflow-y-auto">
                 <Command>
                   <CommandInput placeholder="Buscar macrorregião..." />
                   <CommandList>
@@ -215,7 +215,7 @@ export function Filters({
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-[400px] p-0">
+              <PopoverContent className="w-[400px] p-0 max-h-[320px] overflow-y-auto">
                 <Command>
                   <CommandInput placeholder="Buscar microrregião..." />
                   <CommandList>
