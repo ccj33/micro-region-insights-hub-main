@@ -105,7 +105,7 @@ export function ExecutiveDashboard({ data, selectedMicroregiao, medians }: Execu
   const ClassificationIcon = classification.icon;
 
   return (
-    <div data-section="executive">
+    <div data-section="executivo">
       {/* Cabeçalho Executivo */}
       <Card className="bg-gradient-to-r from-slate-50 to-gray-50 border-2 border-slate-200">
         <CardHeader>
@@ -443,9 +443,9 @@ export function ExecutiveDashboard({ data, selectedMicroregiao, medians }: Execu
                     Priorize o desenvolvimento dos <strong>${stats.emergente} eixos emergentes</strong> e fortaleça as áreas 
                     já em desenvolvimento para acelerar a transformação digital.`
                   ) : (
-                    `🌱 <strong>${selectedData.microrregiao}</strong> está <strong>iniciando sua jornada de transformação digital</strong>. 
-                    Desenvolva um <strong>plano estruturado</strong> focando nos <strong>eixos críticos primeiro</strong> 
-                    e estabeleça uma base sólida para crescimento futuro.`
+                    `🌱 <strong>${selectedData.microrregiao}</strong> tem <strong>grande potencial de crescimento digital</strong>. 
+                    Comece com <strong>ações práticas e mensuráveis</strong> nos <strong>eixos mais críticos</strong> 
+                    para criar momentum e acelerar sua evolução digital!`
               )}
             </p>
               </div>

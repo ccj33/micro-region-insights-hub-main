@@ -1,204 +1,27 @@
 import { useState, useMemo } from 'react';
-import { DashboardHeader } from '@/components/dashboard/DashboardHeader';
-import { Filters } from '@/components/dashboard/Filters';
-import { DashboardRadarChart } from '@/components/dashboard/RadarChart';
-import { DashboardBarChart } from '@/components/dashboard/BarChart';
-import { EixosTable } from '@/components/dashboard/EixosTable';
-import { PopulationChart } from '@/components/dashboard/PopulationChart';
-import { RecommendationsPanel } from '@/components/dashboard/RecommendationsPanel';
-import { StatsOverview } from '@/components/dashboard/StatsOverview';
-import { AdvancedAnalysis } from '@/components/dashboard/AdvancedAnalysis';
-import { ExecutiveDashboard } from '@/components/dashboard/ExecutiveDashboard';
-import { DataUpload } from '@/components/dashboard/DataUpload';
-import { Sidebar } from '@/components/dashboard/Sidebar';
-import { NavigationMenu } from '@/components/dashboard/NavigationMenu';
-import { HelpButton } from '@/components/ui/help-button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Menu, Moon, Sun, RefreshCw } from 'lucide-react';
+import { MicroRegionData, FilterOptions, EIXOS_NAMES } from '@/types/dashboard';
+import { NavigationMenu } from '@/components/dashboard/NavigationMenu';
+import { Filters } from '@/components/dashboard/Filters';
+import { StatsOverview } from '@/components/dashboard/StatsOverview';
+import { DashboardRadarChart } from '@/components/dashboard/RadarChart';
+import { BarChartComponent } from '@/components/dashboard/BarChartComponent';
+import { PopulationChartComponent } from '@/components/dashboard/PopulationChartComponent';
+import { EixosTable } from '@/components/dashboard/EixosTable';
+import { RecommendationsPanel } from '@/components/dashboard/RecommendationsPanel';
+import { ExecutiveDashboard } from '@/components/dashboard/ExecutiveDashboard';
+import { AdvancedAnalysis } from '@/components/dashboard/AdvancedAnalysis';
+import { HelpButton } from '@/components/ui/help-button';
 import { calculateMedians } from '@/data/mockData';
-import { FilterOptions } from '@/types/dashboard';
 import { toast } from 'sonner';
 import { useExcelData } from '@/hooks/useExcelData';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
-import { HelpCircle, X } from 'lucide-react';
+import { HelpCircle, X, ChevronRight, Home, ArrowUp, Download, Settings, Target } from 'lucide-react';
 import { useEffect } from 'react';
-import { Eye, EyeOff } from 'lucide-react';
-import Joyride, { CallBackProps, STATUS, Step } from 'react-joyride';
 
 const GUIDE_STORAGE_KEY = 'mrh-guide-dismissed';
-const RoboBalao = ({ title, children }) => (
-  <div style={{ position: 'relative', minHeight: 60 }}>
-    {/* Robô fora do balão */}
-    <img
-      src="/logo_sus_digital-removebg-preview.png"
-      alt="Robô Assistente"
-      style={{
-        position: 'absolute',
-        left: -56,
-        top: -24,
-        width: 48,
-        height: 48,
-        borderRadius: '50%',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.10)',
-        background: '#fff',
-        zIndex: 2
-      }}
-    />
-    {/* Balão de fala */}
-    <div style={{
-      marginLeft: 32,
-      position: 'relative',
-      background: '#fff',
-      borderRadius: 12,
-      padding: '8px 0 0 0',
-      zIndex: 1
-    }}>
-      {/* Triângulo do balão */}
-      <div style={{
-        position: 'absolute',
-        left: -16,
-        top: 24,
-        width: 0,
-        height: 0,
-        borderTop: '10px solid transparent',
-        borderBottom: '10px solid transparent',
-        borderRight: '16px solid #fff',
-        zIndex: 1
-      }} />
-      <div>
-        {children}
-      </div>
-    </div>
-  </div>
-);
-
-const TOUR_STEPS: Step[] = [
-  {
-    target: 'body',
-    content: (
-      <RoboBalao title="Bem-vindo!">
-        <b>Olá! Eu sou o <span style={{color:'#2563eb'}}>AlexSUS</span>, seu assistente digital.</b><br/>
-        Estou aqui para te auxiliar a explorar o Radar NSDIGI.<br/>
-        Vou te mostrar os principais blocos e funcionalidades do painel.<br/><br/>
-        Clique em <b>Próximo</b> para começar o tour!
-      </RoboBalao>
-    ),
-    title: 'Bem-vindo!',
-    disableBeacon: true,
-    placement: 'center',
-  },
-  {
-    target: '[data-tour="filtros"]',
-    content: (
-      <RoboBalao title="Filtros de Seleção">
-        <b>Filtros de Seleção</b><br/>
-        Aqui você pode escolher a <b>Macrorregião</b>, <b>Microrregião</b> e <b>Classificação</b> que deseja analisar.<br/>
-        Use esses filtros para personalizar todos os dados exibidos no painel, focando apenas nas regiões e classificações do seu interesse.
-      </RoboBalao>
-    ),
-    title: 'Filtros de Seleção',
-    disableBeacon: true,
-  },
-  {
-    target: '[data-tour="menu"]',
-    content: (
-      <RoboBalao title="Menu de Navegação">
-        <b>Menu de Navegação</b><br/>
-        Utilize este menu para navegar rapidamente entre as principais áreas do dashboard, como gráficos, tabelas e recomendações.<br/>
-        Clique em cada item para ir direto à seção desejada.
-      </RoboBalao>
-    ),
-    title: 'Menu de Navegação',
-  },
-  {
-    target: '[data-tour="estatisticas"]',
-    content: (
-      <RoboBalao title="Estatísticas Gerais">
-        <b>Estatísticas Gerais</b><br/>
-        Veja um resumo dos principais indicadores das microrregiões selecionadas, como população, índice de maturidade e classificação.<br/>
-        Passe o mouse sobre os cards para visualizar mais detalhes e dicas.
-      </RoboBalao>
-    ),
-    title: 'Estatísticas Gerais',
-  },
-  {
-    target: '[data-tour="radar"]',
-    content: (
-      <RoboBalao title="Gráfico Radar">
-        <b>Gráfico Radar</b><br/>
-        Visualize a maturidade digital por eixo (área de atuação) da microrregião escolhida.<br/>
-        Compare rapidamente pontos fortes e fracos em cada dimensão analisada.
-      </RoboBalao>
-    ),
-    title: 'Gráfico Radar',
-  },
-  {
-    target: '[data-tour="barras"]',
-    content: (
-      <RoboBalao title="Gráfico de Barras">
-        <b>Gráfico de Barras</b><br/>
-        Compare o índice geral de maturidade entre todas as microrregiões.<br/>
-        Clique em uma barra para selecionar e analisar uma microrregião específica.
-      </RoboBalao>
-    ),
-    title: 'Gráfico de Barras',
-  },
-  {
-    target: '[data-tour="eixos"]',
-    content: (
-      <RoboBalao title="Tabela de Eixos">
-        <b>Tabela de Eixos</b><br/>
-        Veja o detalhamento dos resultados por cada eixo de maturidade digital.<br/>
-        Analise os valores individuais e identifique onde estão as maiores oportunidades de melhoria.
-      </RoboBalao>
-    ),
-    title: 'Tabela de Eixos',
-  },
-  {
-    target: '[data-tour="populacao"]',
-    content: (
-      <RoboBalao title="Gráfico de População">
-        <b>Gráfico de População</b><br/>
-        Veja a distribuição populacional das microrregiões.<br/>
-        Entenda o contexto demográfico para interpretar melhor os resultados.
-      </RoboBalao>
-    ),
-    title: 'Gráfico de População',
-  },
-  {
-    target: '[data-tour="recomendacoes"]',
-    content: (
-      <RoboBalao title="Recomendações">
-        <b>Recomendações</b><br/>
-        Confira recomendações automáticas e personalizadas para cada eixo de maturidade.<br/>
-        Utilize essas dicas para planejar ações de melhoria na sua microrregião.
-      </RoboBalao>
-    ),
-    title: 'Recomendações',
-  },
-  {
-    target: '[data-tour="olho"]',
-    content: (
-      <RoboBalao title="Botão de Olho">
-        <b>Botão de Olho</b><br/>
-        Use este botão para minimizar ou expandir qualquer bloco do dashboard.<br/>
-        Assim, você pode focar apenas nas informações que deseja analisar no momento.
-      </RoboBalao>
-    ),
-    title: 'Botão de Olho',
-  },
-  {
-    target: '[data-tour="ajuda"]',
-    content: (
-      <RoboBalao title="Botão de Ajuda">
-        <b>Precisa de ajuda?</b><br/>
-        Clique neste botão a qualquer momento para reabrir este tutorial guiado ou acessar o FAQ com explicações detalhadas sobre o sistema.<br/>
-        Assim, você nunca ficará com dúvidas durante o uso!
-      </RoboBalao>
-    ),
-    title: 'Botão de Ajuda',
-  },
-];
 
 function UserGuideModal({ open, setOpen }: { open: boolean, setOpen: (v: boolean) => void }) {
   return (
@@ -255,36 +78,22 @@ const Index = () => {
   const [selectedMicroregiao, setSelectedMicroregiao] = useState('');
   const [filters, setFilters] = useState<FilterOptions>({});
   const [activeSection, setActiveSection] = useState('overview');
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const [showSidebar, setShowSidebar] = useState(false);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [guideOpen, setGuideOpen] = useState(true);
   const [showAdvanced, setShowAdvanced] = useState(true);
-  // Adicionar hooks de tour aqui
-  const [runTour, setRunTour] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
   useEffect(() => {
-    // Só inicia o tour se o modal de boas-vindas já foi fechado
-    if (!guideOpen && !localStorage.getItem(GUIDE_STORAGE_KEY)) {
-      setRunTour(true);
-    }
-  }, [guideOpen]);
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 300);
+    };
 
-  const handleJoyrideCallback = (data: CallBackProps) => {
-    const { status } = data;
-    if (status === STATUS.FINISHED || status === STATUS.SKIPPED) {
-      setRunTour(false);
-      localStorage.setItem(GUIDE_STORAGE_KEY, '1');
-    }
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
-
-  // Atualizar microrregião selecionada quando os dados carregarem
-  // useMemo(() => {
-  //   if (data.length > 0 && !selectedMicroregiao) {
-  //     setSelectedMicroregiao(data[0].microrregiao);
-  //   }
-  // }, [data, selectedMicroregiao]);
 
   // Calcular medianas dos eixos
   const medians = useMemo(() => calculateMedians(data), [data]);
@@ -300,447 +109,313 @@ const Index = () => {
       return (!filters.macrorregiao || item.macrorregiao === filters.macrorregiao) &&
              (!filters.classificacao_inmsd || item.classificacao_inmsd === filters.classificacao_inmsd);
     });
-  }, [filters, data]);
+  }, [data, filters]);
 
   const handleMicroregiaoChange = (microrregiao: string) => {
     setSelectedMicroregiao(microrregiao);
-    toast.success(`Microrregião selecionada: ${microrregiao}`, {
-      className: 'bg-blue-600 text-white'
-    });
+    if (microrregiao) {
+      toast.success(`Microrregião selecionada: ${microrregiao}`);
+    }
   };
 
   const handleFiltersChange = (newFilters: FilterOptions) => {
     setFilters(newFilters);
-    
-    // Se a microrregião selecionada não estiver mais nos dados filtrados, selecionar a primeira disponível
-    const filtered = data.filter(item => {
-      return (!newFilters.macrorregiao || item.macrorregiao === newFilters.macrorregiao) &&
-             (!newFilters.classificacao_inmsd || item.classificacao_inmsd === newFilters.classificacao_inmsd);
-    });
-    
-    if (filtered.length > 0 && !filtered.find(item => item.microrregiao === selectedMicroregiao)) {
-      setSelectedMicroregiao(filtered[0].microrregiao);
+    // Limpar microrregião selecionada se não estiver nos dados filtrados
+    if (selectedMicroregiao && !filteredData.find(item => item.microrregiao === selectedMicroregiao)) {
+      setSelectedMicroregiao('');
     }
   };
 
   const handleNavigate = (section: string) => {
-    console.log('Navegando para seção:', section);
     setActiveSection(section);
-    
     // Scroll suave para a seção
-    setTimeout(() => {
-      const element = document.getElementById(section);
-      if (element) {
-        console.log('Elemento encontrado, fazendo scroll para:', section);
-        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      } else {
-        console.log('Elemento não encontrado para seção:', section);
-      }
-    }, 100);
+    const element = document.querySelector(`[data-section="${section}"]`);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   };
 
-  // Função para navegar para recomendações específicas de eixos
   const handleNavigateToRecommendations = (eixoIndex: number) => {
-    console.log('Navegando para recomendações do eixo:', eixoIndex + 1);
     setActiveSection('recomendacoes');
-    // Scroll para a seção de recomendações
     setTimeout(() => {
-      const element = document.getElementById('recomendacoes');
+      const element = document.querySelector(`#eixo-${eixoIndex + 1}`);
       if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
-        
-        // Após um pequeno delay, destacar o eixo específico
-        setTimeout(() => {
-          const eixoElement = document.getElementById(`eixo-${eixoIndex + 1}`);
-          console.log('Procurando elemento com ID:', `eixo-${eixoIndex + 1}`, 'Encontrado:', !!eixoElement);
-          if (eixoElement) {
-            eixoElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            // Adicionar destaque visual temporário
-            eixoElement.classList.add('ring-2', 'ring-primary', 'ring-opacity-50');
-            setTimeout(() => {
-              eixoElement.classList.remove('ring-2', 'ring-primary', 'ring-opacity-50');
-            }, 3000);
-          }
-        }, 500);
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     }, 100);
   };
 
-  const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
-    if (!isDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
+  // Breadcrumbs dinâmicos
+  const getBreadcrumbs = () => {
+    const sections = [
+      { id: 'overview', label: 'Visão Geral', icon: Home },
+      { id: 'radar', label: 'Gráfico Radar', icon: Target },
+      { id: 'barras', label: 'Gráfico Barras', icon: Target },
+      { id: 'populacao', label: 'População', icon: Target },
+      { id: 'tabela', label: 'Tabela Eixos', icon: Target },
+      { id: 'recomendacoes', label: 'Recomendações', icon: Target },
+      { id: 'executivo', label: 'Dashboard Executivo', icon: Target },
+      { id: 'analise-avancada', label: 'Análise Avançada', icon: Target },
+    ];
+    
+    const currentSection = sections.find(s => s.id === activeSection);
+    
+    // Se estamos na seção overview, mostrar apenas "Dashboard"
+    if (activeSection === 'overview') {
+      return [{ label: 'Dashboard', icon: Home, id: 'dashboard-home' }];
     }
+    
+    // Para outras seções, mostrar "Dashboard > Seção Atual"
+    return [
+      { label: 'Dashboard', icon: Home, id: 'dashboard-home' },
+      ...(currentSection ? [{ label: currentSection.label, icon: currentSection.icon, id: currentSection.id }] : [])
+    ];
   };
 
-  // Detectar seção ativa baseada no scroll
-  const handleScroll = () => {
-    const sections = ['filtros', 'overview', 'radar', 'barras', 'populacao', 'tabela', 'recomendacoes', 'executivo', 'analise-avancada'];
-    const scrollPosition = window.scrollY + 100;
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <h2 className="text-2xl font-semibold text-blue-900 mb-2">Carregando Dashboard</h2>
+          <p className="text-blue-700">Preparando sua análise de maturidade digital...</p>
+        </div>
+      </div>
+    );
+  }
 
-    for (const section of sections) {
-      const element = document.getElementById(section);
-      if (element) {
-        const offsetTop = element.offsetTop;
-        const offsetHeight = element.offsetHeight;
-        
-        if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
-          setActiveSection(section);
-          break;
-        }
-      }
-    }
-  };
-
-  // Adicionar listener de scroll
-  useMemo(() => {
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Calcular margem dinâmica baseada no estado do sidebar
-  const getSidebarMargin = () => {
-    if (showSidebar) return 'ml-72'; // Mobile com sidebar aberto
-    if (sidebarCollapsed) return 'sm:ml-14'; // Desktop com sidebar colapsado
-    return 'sm:ml-14 lg:ml-72'; // Desktop com sidebar expandido
-  };
-
-  // Remover o bloqueio de renderização do dashboard
-  // if (!selectedData) {
-  //   return (
-  //     <div className="min-h-screen flex items-center justify-center bg-dashboard-bg">
-  //       <div className="text-center">
-  //         <h1 className="text-2xl font-bold text-foreground mb-4">Carregando dados...</h1>
-  //         <p className="text-muted-foreground">Por favor, aguarde enquanto carregamos as informações.</p>
-  //       </div>
-  //     </div>
-  //   );
-  // }
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-red-50 to-pink-100 flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto p-6">
+          <div className="text-red-500 text-6xl mb-4">⚠️</div>
+          <h2 className="text-2xl font-semibold text-red-900 mb-2">Erro ao Carregar Dados</h2>
+          <p className="text-red-700 mb-4">{error}</p>
+          <Button onClick={refreshData} className="bg-red-600 hover:bg-red-700">
+            Tentar Novamente
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <>
-      <UserGuideModal open={guideOpen} setOpen={setGuideOpen} />
-      <div className="fixed top-4 right-4 z-50">
-        <button onClick={() => setGuideOpen(true)} className="bg-blue-600 hover:bg-blue-700 text-white rounded-full p-2 shadow-lg flex items-center gap-2">
-          <HelpCircle className="h-5 w-5" />
-          <span className="hidden sm:inline">Ajuda</span>
-        </button>
-      </div>
-      <Joyride
-        steps={TOUR_STEPS}
-        run={runTour}
-        continuous
-        showSkipButton
-        showProgress
-        locale={{ last: 'Finalizar', skip: 'Pular', next: 'Próximo', back: 'Voltar' }}
-        callback={handleJoyrideCallback}
-        styles={{ options: { zIndex: 9999 } }}
-      />
-      <div className="min-h-screen bg-dashboard-bg">
-      {/* Navigation Menu Fixo */}
-      <NavigationMenu
-        activeSection={activeSection}
-        onNavigate={handleNavigate}
-      />
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+      {/* Menu de Navegação Superior */}
+      <NavigationMenu activeSection={activeSection} onNavigate={handleNavigate} />
 
-      {/* Sidebar */}
-      <Sidebar 
-        onNavigate={handleNavigate} 
-        activeSection={activeSection}
-        showMobile={showSidebar}
-        onCloseMobile={() => setShowSidebar(false)}
-        onCollapseChange={setSidebarCollapsed}
-      />
-      
-      {/* Botões de controle móvel */}
-      <div className="fixed top-20 left-4 z-50 lg:hidden flex gap-2">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="bg-white shadow-md border"
-          onClick={() => setShowSidebar(!showSidebar)}
-        >
-          <Menu className="h-5 w-5" />
-        </Button>
-
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={toggleDarkMode}
-          className="bg-white shadow-md border"
-          title={isDarkMode ? "Ativar modo claro" : "Ativar modo escuro"}
-        >
-          {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-        </Button>
-      </div>
-
-      {/* Mobile Sidebar Overlay */}
-      {showSidebar && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 sm:hidden"
-          onClick={() => setShowSidebar(false)}
-        />
-      )}
-
-      {/* Header Simplificado */}
-      <header className={`bg-dashboard-header shadow-sm border-b border-border transition-all duration-300 ${getSidebarMargin()}`}>
-        <div className="px-4 sm:px-6 lg:px-8 py-3">
-          <div className="max-w-6xl mx-auto">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="text-sm text-muted-foreground">
-                  {loading ? 'Carregando...' : `${data.length} microrregiões • ${filteredData.length} exibidas`}
-                </div>
-                {dataSource === 'excel' && (
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <span className="text-xs text-green-600 font-medium">Dados do Excel</span>
-                  </div>
-                )}
-                {dataSource === 'mock' && (
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                    <span className="text-xs text-blue-600 font-medium">Dados de Exemplo</span>
-                  </div>
-                )}
-              </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={refreshData}
-                  disabled={loading}
-                  className="text-xs"
+      {/* Breadcrumbs Modernos */}
+      <div className="bg-white/80 backdrop-blur-sm border-b border-blue-200 sticky top-24 z-40">
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex items-center space-x-2 text-sm">
+            {getBreadcrumbs().map((item, index) => (
+              <div key={item.id} className="flex items-center">
+                {index > 0 && <ChevronRight className="h-4 w-4 text-blue-400 mx-2" />}
+                <button
+                  onClick={() => handleNavigate(item.id)}
+                  className={`flex items-center gap-2 px-3 py-1 rounded-lg transition-all duration-200 ${
+                    index === getBreadcrumbs().length - 1
+                      ? 'bg-blue-100 text-blue-700 font-semibold'
+                      : 'hover:bg-blue-50 text-blue-600 hover:text-blue-700'
+                  }`}
                 >
-                  <RefreshCw className={`h-3 w-3 mr-1 ${loading ? 'animate-spin' : ''}`} />
-                  Atualizar
-                </Button>
+                  <item.icon className="h-4 w-4" />
+                  <span>{item.label}</span>
+                </button>
               </div>
-            </div>
+            ))}
           </div>
         </div>
-      </header>
+      </div>
 
-      {/* Main Content */}
-      <main className={`px-4 sm:px-6 lg:px-8 py-8 transition-all duration-300 ${getSidebarMargin()}`}>
-        <div id="dashboard-content" className="max-w-6xl mx-auto">
+      {/* Conteúdo Principal */}
+      <main className="container mx-auto px-4 py-8">
         {/* Filtros */}
-        <div id="filtros" className="mb-16" data-tour="filtros">
-          <Filters
-            data={data}
-            selectedMicroregiao={selectedMicroregiao}
-            filters={filters}
-            onMicroregiaoChange={handleMicroregiaoChange}
-            onFiltersChange={handleFiltersChange}
-            selectedData={selectedData}
-          />
-        </div>
+        <Filters
+          data={data}
+          selectedMicroregiao={selectedMicroregiao}
+          filters={filters}
+          onMicroregiaoChange={handleMicroregiaoChange}
+          onFiltersChange={handleFiltersChange}
+          selectedData={selectedData}
+        />
 
-        {/* Separador Visual */}
-        <div className="border-t border-border/50 my-16"></div>
-
-        {/* Cabeçalho da Microrregião */}
-        <div className="mb-16">
-          {selectedData ? (
-            <DashboardHeader 
-              data={selectedData} 
-              allData={data} 
-              onMicroregiaoChange={handleMicroregiaoChange}
-            />
-          ) : (
-            <div className="p-8 bg-card border border-border rounded-lg text-center text-muted-foreground text-lg font-medium">
-              Selecione uma microrregião para visualizar os dados do painel.
-            </div>
-          )}
-        </div>
-
-        {/* Separador Visual */}
-        <div className="border-t border-border/50 my-16"></div>
-
-        {/* Estatísticas Gerais */}
-        <div id="overview" className="mb-16" data-tour="estatisticas">
-          {selectedData ? (
-            <StatsOverview data={filteredData} selectedData={selectedData} macroFiltro={filters.macrorregiao} />
-          ) : (
-            <div className="p-8 bg-card border border-border rounded-lg text-center text-muted-foreground text-lg font-medium">
-              Selecione uma microrregião para visualizar as estatísticas.
-            </div>
-          )}
-        </div>
-
-        {/* Separador Visual */}
-        <div className="border-t border-border/50 my-16"></div>
-
-        {/* Gráfico Radar */}
-        <div id="radar" className="bg-card rounded-lg border border-border p-6 mb-16" data-tour="radar">
-          <div className="mb-4">
-            <h2 className="text-xl font-semibold text-foreground">Gráfico de Radar</h2>
-            <p className="text-sm text-muted-foreground">Comparação por Eixos de Maturidade</p>
+        {/* Seções do Dashboard */}
+        {activeSection === 'overview' && (
+          <div className="space-y-8">
+            <StatsOverview data={data} selectedData={selectedData} macroFiltro={filters.macrorregiao} />
+            {selectedData ? (
+              <>
+                <DashboardRadarChart
+                  data={selectedData}
+                  medians={medians}
+                  onNavigateToRecommendations={handleNavigateToRecommendations}
+                />
+                <BarChartComponent
+                  data={filteredData}
+                  selectedMicroregiao={selectedMicroregiao}
+                  macroFiltro={filters.macrorregiao}
+                />
+                <PopulationChartComponent
+                  data={filteredData}
+                  selectedMicroregiao={selectedMicroregiao}
+                />
+                <EixosTable data={selectedData} medians={medians} />
+                <RecommendationsPanel data={selectedData} />
+                <ExecutiveDashboard
+                  data={data}
+                  selectedMicroregiao={selectedMicroregiao}
+                  medians={medians}
+                />
+                <AdvancedAnalysis
+                  data={data}
+                  selectedMicroregiao={selectedMicroregiao}
+                  medians={medians}
+                />
+              </>
+            ) : (
+              <div className="text-center py-12">
+                <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-8 max-w-md mx-auto">
+                  <div className="text-blue-600 text-6xl mb-4">📊</div>
+                  <h3 className="text-xl font-semibold text-blue-900 mb-2">
+                    Selecione uma Microrregião
+                  </h3>
+                  <p className="text-blue-700 mb-4">
+                    Use os filtros acima para escolher uma microrregião e visualizar todos os dados do dashboard.
+                  </p>
+                  <div className="text-sm text-blue-600">
+                    💡 <strong>Dica:</strong> Você pode filtrar por macrorregião ou classificação para encontrar a região desejada.
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
-          {selectedData ? (
-            <DashboardRadarChart 
-              data={selectedData} 
+        )}
+
+        {activeSection === 'radar' && (
+          selectedData ? (
+            <DashboardRadarChart
+              data={selectedData}
               medians={medians}
               onNavigateToRecommendations={handleNavigateToRecommendations}
             />
           ) : (
-            <div className="p-8 text-center text-muted-foreground text-lg font-medium">
-              Selecione uma microrregião para visualizar o gráfico radar.
+            <div className="text-center py-12">
+              <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-8 max-w-md mx-auto">
+                <div className="text-blue-600 text-6xl mb-4">📊</div>
+                <h3 className="text-xl font-semibold text-blue-900 mb-2">Selecione uma Microrregião</h3>
+                <p className="text-blue-700">Para visualizar o gráfico radar, selecione uma microrregião nos filtros.</p>
+              </div>
             </div>
-          )}
-        </div>
+          )
+        )}
 
-        {/* Separador Visual */}
-        <div className="border-t border-border/50 my-16"></div>
+        {activeSection === 'barras' && (
+          <BarChartComponent
+            data={filteredData}
+            selectedMicroregiao={selectedMicroregiao}
+            macroFiltro={filters.macrorregiao}
+          />
+        )}
 
-        {/* Gráfico de Barras */}
-        <div id="barras" className="bg-card rounded-lg border border-border p-6 mb-16" data-tour="barras">
-          <div className="mb-4">
-            <h2 className="text-xl font-semibold text-foreground">Gráfico de Barras</h2>
-            <p className="text-sm text-muted-foreground">Comparação entre Microrregiões</p>
-          </div>
-          {selectedData ? (
-            <DashboardBarChart data={filteredData} selectedMicroregiao={selectedMicroregiao} macroFiltro={filters.macrorregiao} />
-          ) : (
-            <div className="p-8 text-center text-muted-foreground text-lg font-medium">
-              Selecione uma microrregião para visualizar o gráfico de barras.
-            </div>
-          )}
-        </div>
+        {activeSection === 'populacao' && (
+          <PopulationChartComponent
+            data={filteredData}
+            selectedMicroregiao={selectedMicroregiao}
+          />
+        )}
 
-        {/* Separador Visual */}
-        <div className="border-t border-border/50 my-16"></div>
-
-        {/* Tabela de Eixos */}
-        <div id="tabela" className="mb-16" data-tour="eixos">
-          {selectedData ? (
+        {activeSection === 'tabela' && (
+          selectedData ? (
             <EixosTable data={selectedData} medians={medians} />
           ) : (
-            <div className="p-8 bg-card border border-border rounded-lg text-center text-muted-foreground text-lg font-medium">
-              Selecione uma microrregião para visualizar a tabela de eixos.
+            <div className="text-center py-12">
+              <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-8 max-w-md mx-auto">
+                <div className="text-blue-600 text-6xl mb-4">📊</div>
+                <h3 className="text-xl font-semibold text-blue-900 mb-2">Selecione uma Microrregião</h3>
+                <p className="text-blue-700">Para visualizar a tabela de eixos, selecione uma microrregião nos filtros.</p>
+              </div>
             </div>
-          )}
-        </div>
+          )
+        )}
 
-        {/* Separador Visual */}
-        <div className="border-t border-border/50 my-16"></div>
-
-        {/* Gráfico de População */}
-        <div id="populacao" className="bg-card rounded-lg border border-border p-6 mb-16" data-tour="populacao">
-          <div className="mb-4">
-            <h2 className="text-xl font-semibold text-foreground">Gráfico de População</h2>
-            <p className="text-sm text-muted-foreground">Distribuição Populacional</p>
-          </div>
-          {selectedData ? (
-            <PopulationChart data={filteredData} selectedMicroregiao={selectedMicroregiao} />
-          ) : (
-            <div className="p-8 text-center text-muted-foreground text-lg font-medium">
-              Selecione uma microrregião para visualizar o gráfico de população.
-            </div>
-          )}
-        </div>
-
-        {/* Separador Visual */}
-        <div className="border-t border-border/50 my-16"></div>
-
-        {/* Recomendações por Eixo */}
-        <div id="recomendacoes" className="mb-16" data-tour="recomendacoes">
-          {selectedData ? (
+        {activeSection === 'recomendacoes' && (
+          selectedData ? (
             <RecommendationsPanel data={selectedData} />
           ) : (
-            <div className="p-8 bg-card border border-border rounded-lg text-center text-muted-foreground text-lg font-medium">
-              Selecione uma microrregião para visualizar as recomendações.
+            <div className="text-center py-12">
+              <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-8 max-w-md mx-auto">
+                <div className="text-blue-600 text-6xl mb-4">📊</div>
+                <h3 className="text-xl font-semibold text-blue-900 mb-2">Selecione uma Microrregião</h3>
+                <p className="text-blue-700">Para visualizar as recomendações, selecione uma microrregião nos filtros.</p>
+              </div>
             </div>
-          )}
-        </div>
+          )
+        )}
 
-        {/* Separador Visual */}
-        <div className="border-t border-border/50 my-16"></div>
-
-        {/* Dashboard Executivo Resumido */}
-        <div id="executivo" className="mb-16">
-          <div className="mb-4">
-            <h2 className="text-xl font-semibold text-foreground">Dashboard Executivo</h2>
-            <p className="text-sm text-muted-foreground">Visão estratégica e resumida da maturidade digital</p>
-          </div>
-          {selectedData ? (
-            <ExecutiveDashboard 
-              data={filteredData} 
+        {activeSection === 'executivo' && (
+          selectedData ? (
+            <ExecutiveDashboard
+              data={data}
               selectedMicroregiao={selectedMicroregiao}
               medians={medians}
             />
           ) : (
-            <div className="p-8 bg-card border border-border rounded-lg text-center text-muted-foreground text-lg font-medium">
-              Selecione uma microrregião para visualizar o dashboard executivo.
-            </div>
-          )}
-        </div>
-
-        {/* Separador Visual */}
-        <div className="border-t border-border/50 my-16"></div>
-
-        {/* Análise Avançada */}
-        <div id="analise-avancada" className="mb-16">
-          <div className="mb-4 flex items-center gap-2">
-            <h2 className="text-xl font-semibold text-foreground">Análise Avançada</h2>
-            <button
-              className="ml-2 p-1 rounded hover:bg-muted transition-colors"
-              onClick={() => setShowAdvanced((v) => !v)}
-              aria-label={showAdvanced ? 'Minimizar bloco' : 'Expandir bloco'}
-              type="button"
-            >
-              {showAdvanced ? <Eye className="h-5 w-5 text-primary" /> : <EyeOff className="h-5 w-5 text-primary" />}
-            </button>
-          </div>
-          <p className="text-sm text-muted-foreground">Comparação detalhada entre microrregiões</p>
-          <div className={showAdvanced ? '' : 'hidden'}>
-            {selectedData ? (
-              <AdvancedAnalysis 
-                data={filteredData} 
-                selectedMicroregiao={selectedMicroregiao}
-                medians={medians}
-              />
-            ) : (
-              <div className="p-8 bg-card border border-border rounded-lg text-center text-muted-foreground text-lg font-medium">
-                Selecione uma microrregião para visualizar a análise avançada.
+            <div className="text-center py-12">
+              <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-8 max-w-md mx-auto">
+                <div className="text-blue-600 text-6xl mb-4">📊</div>
+                <h3 className="text-xl font-semibold text-blue-900 mb-2">Selecione uma Microrregião</h3>
+                <p className="text-blue-700">Para visualizar o dashboard executivo, selecione uma microrregião nos filtros.</p>
               </div>
-            )}
-          </div>
-        </div>
+            </div>
+          )
+        )}
 
-        {/* Separador Visual */}
-        <div className="border-t border-border/50 my-16"></div>
-
-        {/* Upload de Dados */}
-        <div>
-          <DataUpload onDataUpdate={(newData) => {
-            // Resetar para a primeira microrregião dos novos dados
-            if (newData.length > 0) {
-              setSelectedMicroregiao(newData[0].microrregiao);
-            }
-            setFilters({});
-          }} />
-        </div>
-        </div>
+        {activeSection === 'analise-avancada' && (
+          selectedData ? (
+            <AdvancedAnalysis
+              data={data}
+              selectedMicroregiao={selectedMicroregiao}
+              medians={medians}
+            />
+          ) : (
+            <div className="text-center py-12">
+              <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-8 max-w-md mx-auto">
+                <div className="text-blue-600 text-6xl mb-4">📊</div>
+                <h3 className="text-xl font-semibold text-blue-900 mb-2">Selecione uma Microrregião</h3>
+                <p className="text-blue-700">Para visualizar a análise avançada, selecione uma microrregião nos filtros.</p>
+              </div>
+            </div>
+          )
+        )}
       </main>
 
-      {/* Botão de Ajuda Flutuante */}
+      {/* Botão de Configurações */}
+      <Button
+        size="icon"
+        className="fixed bottom-6 left-6 w-14 h-14 rounded-full shadow-lg bg-white hover:bg-gray-50 text-blue-600 border-2 border-blue-200 transition-all duration-300 hover:scale-110 z-50"
+        onClick={() => setGuideOpen(true)}
+      >
+        <Settings className="w-6 h-6" />
+      </Button>
+
+      {/* Botão de Ajuda */}
       <HelpButton />
 
-      {/* Footer */}
-      <footer className={`bg-dashboard-header border-t border-border mt-12 transition-all duration-300 ${getSidebarMargin()}`}>
-        <div className="px-4 sm:px-6 lg:px-8 py-4">
-          <div className="max-w-6xl mx-auto">
-            <div className="flex flex-col items-center justify-center">
-              <img src="/sus_digital-removebg-preview.png" alt="SUS Digital SES-MG" style={{ height: 90, maxWidth: '100%', objectFit: 'contain' }} />
-            </div>
-          </div>
-        </div>
-      </footer>
+      {/* Botão Voltar ao Topo */}
+      {showScrollTop && (
+        <Button
+          onClick={scrollToTop}
+          size="icon"
+          className="fixed bottom-6 right-20 w-14 h-14 rounded-full shadow-lg bg-blue-600 hover:bg-blue-700 text-white z-40 transition-all duration-300 hover:scale-110"
+        >
+          <ArrowUp className="w-6 h-6" />
+        </Button>
+      )}
+
+      {/* Modal de Boas-vindas */}
+      <UserGuideModal open={guideOpen} setOpen={setGuideOpen} />
     </div>
-    </>
   );
 };
 

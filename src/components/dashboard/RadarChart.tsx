@@ -87,7 +87,7 @@ export function DashboardRadarChart({ data, medians, onNavigateToRecommendations
   };
 
   return (
-    <div className="bg-card rounded-lg border p-6 shadow-sm" data-section="radar">
+    <div data-section="radar" className="bg-card rounded-lg border p-6 shadow-sm">
       {/* Cabeçalho */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">

@@ -5,6 +5,10 @@ export async function readExcelFile(): Promise<any[]> {
   try {
     // Tentar carregar o arquivo Excel da pasta public
     const response = await fetch('/database.xlsx');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
     const arrayBuffer = await response.arrayBuffer();
     
     // Ler o arquivo Excel
@@ -14,6 +18,10 @@ export async function readExcelFile(): Promise<any[]> {
     
     // Converter para JSON
     const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+    
+    if (!jsonData || jsonData.length < 2) {
+      throw new Error('Arquivo Excel vazio ou sem dados válidos');
+    }
     
     // Pular o cabeçalho (primeira linha)
     const headers = jsonData[0] as string[];
@@ -28,7 +36,7 @@ export async function readExcelFile(): Promise<any[]> {
         }
       });
       return eixoData;
-    });
+    }).filter(item => Object.keys(item).length > 0); // Remover linhas vazias
 
     console.log('Dados carregados do Excel (vertical):', mappedData.length, 'registros');
     return mappedData;
@@ -55,6 +63,10 @@ export async function readMacrosExcelFile(): Promise<any[]> {
   try {
     // Carregar o arquivo macros.xlsx da pasta public
     const response = await fetch('/macros.xlsx');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
     const arrayBuffer = await response.arrayBuffer();
     const workbook = XLSX.read(arrayBuffer, { type: 'array' });
     // Usar a primeira aba
@@ -62,6 +74,10 @@ export async function readMacrosExcelFile(): Promise<any[]> {
     const worksheet = workbook.Sheets[sheetName];
     // Converter para JSON (primeira linha como cabeçalho)
     let jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: '', raw: false });
+
+    if (!jsonData || jsonData.length === 0) {
+      throw new Error('Arquivo macros.xlsx vazio ou sem dados válidos');
+    }
 
     // Limpar espaços dos nomes das colunas e dos valores
     jsonData = jsonData.map((row: any) => {
@@ -76,7 +92,7 @@ export async function readMacrosExcelFile(): Promise<any[]> {
         cleanedRow[cleanKey] = value;
       });
       return cleanedRow;
-    });
+    }).filter(item => Object.keys(item).length > 0); // Remover linhas vazias
 
     return jsonData;
   } catch (error) {

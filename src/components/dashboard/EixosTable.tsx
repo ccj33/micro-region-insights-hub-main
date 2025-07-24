@@ -104,7 +104,8 @@ export function EixosTable({ data, medians }: EixosTableProps) {
   const [showEixos, setShowEixos] = useState(true);
 
   return (
-    <Card className="shadow-lg border-0 bg-gradient-to-r from-dashboard-header to-primary-light">
+    <div data-section="tabela">
+      <Card className="shadow-lg border-0 bg-gradient-to-r from-dashboard-header to-primary-light">
       <CardHeader className="pb-4 flex items-center gap-2">
         <CardTitle className="text-lg font-semibold flex items-center gap-2">
           <BarChart3 className="h-5 w-5 text-primary" />
@@ -273,5 +274,6 @@ export function EixosTable({ data, medians }: EixosTableProps) {
         </CardContent>
       )}
     </Card>
+    </div>
   );
 }

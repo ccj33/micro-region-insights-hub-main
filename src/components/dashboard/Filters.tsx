@@ -188,10 +188,20 @@ export function Filters({
 
           {/* Filtro Microrregião - AGORA SEGUNDO */}
           <div className="lg:col-span-2">
-            <label className="text-sm font-semibold text-foreground mb-2 block flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-primary" />
-              Microrregião (Principal)
-            </label>
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-sm font-semibold text-foreground flex items-center gap-2">
+                <MapPin className="h-4 w-4 text-primary" />
+                Microrregião (Principal)
+              </label>
+              <Button
+                size="sm"
+                variant="outline"
+                className="text-xs px-2 py-1 h-auto border-primary/50 hover:bg-primary/5"
+                onClick={clearFilters}
+              >
+                Limpar Filtros
+              </Button>
+            </div>
             <Popover open={openMicroregiao} onOpenChange={setOpenMicroregiao}>
               <PopoverTrigger asChild>
                 <Button
@@ -323,14 +333,6 @@ export function Filters({
                     Todas as classificações
                   </Badge>
                 )}
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="text-xs ml-2 px-2 py-1 h-auto"
-                  onClick={clearFilters}
-                >
-                  Limpar Filtros
-                </Button>
               </div>
             </div>
             

@@ -106,7 +106,7 @@ export function PopulationChartComponent({ data, selectedMicroregiao, onLoad }: 
     .filter(Boolean);
 
   return (
-    <div data-section="population" style={{ width: '100%', height: '100%', position: 'relative' }}>
+    <div data-section="populacao" style={{ width: '100%', height: '100%', position: 'relative' }}>
       {selectedMicroregiao && selectedData && (
         <div style={{ position: 'absolute', top: -20, left: '50%', transform: 'translateX(-50%)', zIndex: 10, background: 'rgba(255,255,255,0.92)', borderRadius: 8, padding: '6px 18px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', fontWeight: 600, fontSize: 16, color: '#1e3a8a', textAlign: 'center' }}>
           {selectedMicroregiao}
@@ -116,18 +116,29 @@ export function PopulationChartComponent({ data, selectedMicroregiao, onLoad }: 
         </div>
       )}
       {/* Legenda customizada dentro do gráfico */}
-      <div style={{ position: 'absolute', top: 30, right: 40, zIndex: 10, background: 'rgba(255,255,255,0.85)', borderRadius: 8, padding: '6px 10px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', fontSize: '12px', minWidth: 160 }}>
-        <ul className="space-y-1 text-xs">
+      <div style={{ position: 'absolute', top: 30, right: 40, zIndex: 10, background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(8px)', borderRadius: 8, padding: '8px 12px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', fontSize: '12px', minWidth: 180, border: '1px solid rgba(0,0,0,0.1)' }}>
+        <div style={{ fontWeight: 600, color: '#1e3a8a', marginBottom: 8, fontSize: 13, textAlign: 'center', borderBottom: '1px solid #e5e7eb', paddingBottom: 4 }}>
+          Distribuição Populacional
+        </div>
+        <ul className="space-y-2 text-xs">
           {POPULATION_ORDER.map((category, idx) => {
             const entry = pyramidData.find(e => e.category === category);
             if (!entry) return null;
             return (
-              <li key={category} className="flex items-center gap-2">
-                <span style={{ display: 'inline-block', width: 12, height: 12, borderRadius: 3, background: CATEGORY_COLORS[category] || '#bdbdbd', border: entry.isSelected ? '2px solid #1e3a8a' : '1px solid #ccc' }}></span>
-                <span className={entry.isSelected ? 'font-semibold text-blue-900' : ''} style={{ fontSize: '12px' }}>
-                  {entry.isSelected && <span role="img" aria-label="pin">📍</span>}
+              <li key={category} className="flex items-center gap-3">
+                <span style={{ 
+                  display: 'inline-block', 
+                  width: 12, 
+                  height: 12, 
+                  borderRadius: 3, 
+                  background: CATEGORY_COLORS[category] || '#bdbdbd', 
+                  border: entry.isSelected ? '2px solid #1e3a8a' : '1px solid #ccc',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+                }}></span>
+                <span className={entry.isSelected ? 'font-semibold text-blue-900' : 'text-gray-700'} style={{ fontSize: '11px' }}>
+                  {entry.isSelected && <span role="img" aria-label="pin" style={{ marginRight: 4 }}>📍</span>}
                   {category}
-                  {entry.isSelected && <span className="ml-1 text-xs text-blue-900">(Sua microrregião)</span>}
+                  {entry.isSelected && <span className="ml-1 text-xs text-blue-900 font-medium">(Sua microrregião)</span>}
                 </span>
               </li>
             );

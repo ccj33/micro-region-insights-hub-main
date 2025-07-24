@@ -20,13 +20,43 @@ export function BarChartComponent({ data, selectedMicroregiao, macroFiltro, onLo
     return () => clearTimeout(timer);
   }, [onLoad]);
 
+  // Debug: verificar se há dados
+  console.log('BarChartComponent - Dados recebidos:', data?.length, 'Microrregião selecionada:', selectedMicroregiao);
+  console.log('BarChartComponent - Primeiros dados:', data?.slice(0, 3));
+
   const chartData = data
-    .map(item => ({
-      microrregiao: item.microrregiao,
-      indice: parseFloat(String(item.indice_geral).replace(',', '.')),
-      isSelected: item.microrregiao === selectedMicroregiao
-    }))
+    .map(item => {
+      // Tratamento robusto do índice geral
+      let indice = 0;
+      if (item.indice_geral) {
+        const cleanValue = String(item.indice_geral).replace(/[,]/g, '.').replace(/[^\d.]/g, '');
+        indice = parseFloat(cleanValue) || 0;
+      }
+      
+      return {
+        microrregiao: item.microrregiao,
+        indice: indice,
+        isSelected: item.microrregiao === selectedMicroregiao
+      };
+    })
+    .filter(item => item.indice > 0) // Filtrar apenas itens com índice válido
     .sort((a, b) => b.indice - a.indice);
+
+  // Verificar se há dados para exibir
+  if (!chartData || chartData.length === 0) {
+    return (
+      <div data-section="barras" className="bg-card rounded-lg border p-6 shadow-sm" style={{ width: '100%', height: '500px', position: 'relative' }}>
+        <div className="flex items-center justify-center h-full">
+          <div className="text-center">
+            <div className="text-blue-600 text-6xl mb-4">📊</div>
+            <h3 className="text-xl font-semibold text-blue-900 mb-2">Nenhum Dado Disponível</h3>
+            <p className="text-blue-700">Não há dados para exibir no gráfico de barras.</p>
+            <p className="text-sm text-blue-600 mt-2">Verifique os filtros aplicados.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
@@ -86,7 +116,7 @@ export function BarChartComponent({ data, selectedMicroregiao, macroFiltro, onLo
   };
 
   return (
-    <div data-section="bar" style={{ width: '100%', height: '100%', position: 'relative' }}>
+    <div data-section="barras" className="bg-card rounded-lg border p-6 shadow-sm" style={{ width: '100%', height: '500px', position: 'relative' }}>
       {selectedMicroregiao && (
         <div style={{ position: 'absolute', top: 16, left: '50%', transform: 'translateX(-50%)', zIndex: 10, background: 'rgba(255,255,255,0.92)', borderRadius: 8, padding: '6px 18px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', fontWeight: 600, fontSize: 16, color: '#1e3a8a', textAlign: 'center' }}>
           {selectedMicroregiao}
@@ -95,26 +125,31 @@ export function BarChartComponent({ data, selectedMicroregiao, macroFiltro, onLo
           </div>
         </div>
       )}
-      <div style={{ position: 'absolute', top: 24, right: 8, zIndex: 9, background: 'rgba(255,255,255,0.92)', borderRadius: 6, padding: '6px 10px 6px 12px', boxShadow: '0 1px 4px rgba(0,0,0,0.03)', fontSize: 12, color: '#444', textAlign: 'left', minWidth: 200, maxWidth: 260 }}>
+      <div style={{ position: 'absolute', top: 24, right: 8, zIndex: 9, background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(8px)', borderRadius: 8, padding: '8px 12px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', fontSize: 12, color: '#444', textAlign: 'left', minWidth: 220, maxWidth: 280, border: '1px solid rgba(0,0,0,0.1)' }}>
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
-            <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-              <span style={{ display: 'inline-block', width: 11, height: 11, borderRadius: 2, background: '#3b82f6', border: '1px solid #2563eb' }}></span>
+          <div style={{ fontWeight: 600, color: '#1e3a8a', marginBottom: 8, fontSize: 13, textAlign: 'center', borderBottom: '1px solid #e5e7eb', paddingBottom: 4 }}>
+            Legenda do Ranking
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 8 }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ display: 'inline-block', width: 12, height: 12, borderRadius: 3, background: '#3b82f6', border: '2px solid #2563eb', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}></span>
               <span style={{ fontWeight: 500, color: '#222', fontSize: 11 }}>Outras Microrregiões</span>
             </span>
-            <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-              <span style={{ display: 'inline-block', width: 11, height: 11, borderRadius: 2, background: '#fde047', border: '1px solid #facc15' }}></span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ display: 'inline-block', width: 12, height: 12, borderRadius: 3, background: '#fde047', border: '2px solid #facc15', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}></span>
               <span style={{ fontWeight: 500, color: '#222', fontSize: 11 }}>Microrregião Selecionada</span>
             </span>
           </div>
-          <div style={{ fontWeight: 500, color: '#eab308', marginBottom: 1, fontSize: 11 }}>Dica:</div>
-          <div style={{ fontSize: 11, color: '#444', lineHeight: 1.2 }}>
-            Quanto mais alta a barra, melhor.<br />
-            A barra amarela é a selecionada.
+          <div style={{ fontWeight: 600, color: '#eab308', marginBottom: 4, fontSize: 11, display: 'flex', alignItems: 'center', gap: 4 }}>
+            💡 Dica:
+          </div>
+          <div style={{ fontSize: 11, color: '#444', lineHeight: 1.3 }}>
+            Quanto mais alta a barra, melhor a maturidade digital.<br />
+            A barra amarela representa sua microrregião selecionada.
           </div>
         </div>
       </div>
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer width="100%" height={400}>
         <BarChart
           data={chartData}
           margin={{ top: 20, right: 30, left: 20, bottom: 60 }}

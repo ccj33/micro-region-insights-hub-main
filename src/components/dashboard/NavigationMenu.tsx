@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { ChevronRight, Home, BarChart3, PieChart, Users, Table, FileText, Upload, ArrowUp, Menu, X, Target, TrendingUp } from 'lucide-react';
+import { ChevronRight, Home, BarChart3, PieChart, Users, Table, FileText, Menu, X, Target, TrendingUp, Activity, MapPin, BookOpen } from 'lucide-react';
 
 interface NavigationMenuProps {
   activeSection: string;
@@ -8,41 +8,18 @@ interface NavigationMenuProps {
 }
 
 const sections = [
-  { id: 'overview', label: 'Visão Geral', icon: Home },
-  { id: 'radar', label: 'Gráfico Radar', icon: PieChart },
-  { id: 'barras', label: 'Gráfico Barras', icon: BarChart3 },
-  { id: 'populacao', label: 'População', icon: Users },
-  { id: 'tabela', label: 'Tabela Eixos', icon: Table },
-  { id: 'recomendacoes', label: 'Recomendações', icon: FileText },
-  { id: 'executivo', label: 'Dashboard Executivo', icon: Target },
-  { id: 'analise-avancada', label: 'Análise Avançada', icon: TrendingUp },
-  { id: 'upload', label: 'Upload Dados', icon: Upload },
+  { id: 'overview', label: 'Visão Geral', icon: Home, description: 'Resumo completo' },
+  { id: 'radar', label: 'Gráfico Radar', icon: PieChart, description: 'Comparação por eixos' },
+  { id: 'barras', label: 'Gráfico Barras', icon: BarChart3, description: 'Ranking de maturidade' },
+  { id: 'populacao', label: 'População', icon: Users, description: 'Distribuição demográfica' },
+  { id: 'tabela', label: 'Tabela Eixos', icon: Table, description: 'Detalhamento por eixos' },
+  { id: 'recomendacoes', label: 'Recomendações', icon: BookOpen, description: 'Sugestões por eixo' },
+  { id: 'executivo', label: 'Dashboard Executivo', icon: Target, description: 'Visão estratégica' },
+  { id: 'analise-avancada', label: 'Análise Avançada', icon: TrendingUp, description: 'Comparação entre regiões' },
 ];
 
 export function NavigationMenu({ activeSection, onNavigate }: NavigationMenuProps) {
-  const [showScrollTop, setShowScrollTop] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setShowScrollTop(window.scrollY > 300);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const getBreadcrumbPath = () => {
-    const currentSection = sections.find(s => s.id === activeSection);
-    return [
-      { label: 'Dashboard', icon: Home },
-      ...(currentSection ? [{ label: currentSection.label, icon: currentSection.icon }] : [])
-    ];
-  };
 
   const handleNavigate = (sectionId: string) => {
     onNavigate(sectionId);
@@ -52,18 +29,35 @@ export function NavigationMenu({ activeSection, onNavigate }: NavigationMenuProp
   return (
     <>
       {/* Menu de Navegação Fixo */}
-      <div className="sticky top-0 z-50 bg-blue-50 border-b border-blue-200 shadow-sm">
+      <div className="sticky top-0 z-50 bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 shadow-lg">
         <div className="container mx-auto px-4">
-          <div className="flex items-center h-16 w-full">
+          <div className="flex items-center h-24 w-full">
             {/* Logo/Título */}
             <div className="flex-shrink-0 flex items-center pl-4">
-              <div className="w-10 h-10 flex items-center justify-center">
-                <img src="/logo%20sus%20digital.png" alt="SUS Digital SES-MG" className="h-10 w-auto" />
+              <div className="w-16 h-16 flex items-center justify-center rounded-full bg-gradient-to-br from-white to-blue-50 shadow-xl border-4 border-blue-200 relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-blue-600 opacity-20"></div>
+                <svg className="h-12 w-12 text-blue-600 relative z-10" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+                  <path d="M12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z"/>
+                  <path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                </svg>
+                <div className="absolute top-1 right-1 w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
               </div>
-              <h1 className="text-lg font-semibold text-blue-900 ml-2">Radar NSDIGI</h1>
+              <div className="ml-4">
+                <h1 className="text-4xl font-black text-white drop-shadow-2xl tracking-wider bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent">
+                  RADAR NSDIGI
+                </h1>
+                <div className="flex items-center gap-2 mt-1">
+                  <div className="w-2 h-2 bg-yellow-300 rounded-full animate-pulse"></div>
+                  <span className="text-sm font-medium text-blue-100 drop-shadow-md tracking-wide uppercase">
+                    Sistema de Monitoramento Digital
+                  </span>
+                </div>
+              </div>
             </div>
-            {/* Menu Centralizado */}
-            <div className="flex-1 flex justify-center">
+
+            {/* Menu Centralizado - Desktop */}
+            <div className="flex-1 flex justify-center hidden lg:block">
               <div className="flex items-center gap-4">
                 {sections.map((section) => {
                   const Icon = section.icon;
@@ -71,39 +65,48 @@ export function NavigationMenu({ activeSection, onNavigate }: NavigationMenuProp
                     <button
                       key={section.id}
                       onClick={() => handleNavigate(section.id)}
-                      className={`flex flex-col items-center justify-center py-2 px-2 rounded transition-colors duration-200 cursor-pointer ${activeSection === section.id ? 'bg-blue-100 text-blue-700 font-semibold' : 'hover:bg-blue-50 text-blue-700'}`}
-                      style={{ minWidth: 64 }}
+                      className={`flex flex-col items-center justify-center py-2 px-3 rounded-lg transition-all duration-200 cursor-pointer group ${
+                        activeSection === section.id 
+                          ? 'bg-white/20 text-yellow-200 font-bold shadow-md' 
+                          : 'hover:bg-white/10 text-white hover:text-yellow-100'
+                      } hover:scale-105`}
+                      style={{ minWidth: 80 }}
                     >
-                      <Icon className="w-6 h-6 mb-1" />
-                      <span className="text-xs leading-tight">{section.label.split(' ')[1] || section.label}</span>
+                      <Icon className="w-6 h-6 mb-1 group-hover:scale-110 transition-transform" />
+                      <span className="text-xs leading-tight font-medium tracking-wide drop-shadow-sm">
+                        {section.label.split(' ')[1] || section.label}
+                      </span>
+                      <span className="text-xs opacity-70 hidden group-hover:block transition-opacity">
+                        {section.description}
+                      </span>
                     </button>
                   );
                 })}
               </div>
             </div>
+
+            {/* Botão Hambúrguer - Mobile */}
+            <div className="lg:hidden flex-shrink-0">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowMobileMenu(!showMobileMenu)}
+                className="p-2 text-white hover:bg-white/10"
+              >
+                {showMobileMenu ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </Button>
+            </div>
+
             {/* Espaço à direita para balancear */}
-            <div className="flex-shrink-0 w-40" />
+            <div className="flex-shrink-0 w-40 hidden lg:block" />
           </div>
         </div>
-
-        {/* Botão Hambúrguer - Mobile */}
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setShowMobileMenu(!showMobileMenu)}
-          className="lg:hidden p-2 text-blue-700 hover:bg-blue-100"
-        >
-          {showMobileMenu ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-        </Button>
 
         {/* Menu Mobile Dropdown */}
         {showMobileMenu && (
           <div className="lg:hidden bg-white border-t border-blue-200 shadow-lg">
-            <div className="container mx-auto px-4 py-2">
-              {/* Removido: Breadcrumbs Mobile */}
-              {/* Removido: <div className="mb-3 pb-2 border-b border-blue-100"> ... </div> */}
-              {/* Menu Items Mobile */}
-              <div className="grid grid-cols-3 gap-2 justify-center">
+            <div className="container mx-auto px-4 py-4">
+              <div className="grid grid-cols-2 gap-3">
                 {sections.map((section) => {
                   const Icon = section.icon;
                   return (
@@ -112,14 +115,15 @@ export function NavigationMenu({ activeSection, onNavigate }: NavigationMenuProp
                       variant={activeSection === section.id ? "default" : "outline"}
                       size="sm"
                       onClick={() => handleNavigate(section.id)}
-                      className={`h-12 flex flex-col items-center justify-center space-y-1 ${
+                      className={`h-16 flex flex-col items-center justify-center space-y-1 ${
                         activeSection === section.id 
                           ? "bg-blue-600 hover:bg-blue-700 text-white" 
                           : "text-blue-700 border-blue-200 hover:bg-blue-50"
                       }`}
                     >
-                      <Icon className="w-4 h-4" />
-                      <span className="text-xs">{section.label}</span>
+                      <Icon className="w-5 h-5" />
+                      <span className="text-xs font-medium">{section.label}</span>
+                      <span className="text-xs opacity-70">{section.description}</span>
                     </Button>
                   );
                 })}
@@ -129,16 +133,7 @@ export function NavigationMenu({ activeSection, onNavigate }: NavigationMenuProp
         )}
       </div>
 
-      {/* Botão Voltar ao Topo */}
-      {showScrollTop && (
-        <Button
-          onClick={scrollToTop}
-          size="icon"
-          className="fixed bottom-20 right-6 w-14 h-14 rounded-full shadow-lg bg-blue-600 hover:bg-blue-700 text-white z-40 transition-all duration-300 hover:scale-110"
-        >
-          <ArrowUp className="w-6 h-6" />
-        </Button>
-      )}
+
     </>
   );
 } 

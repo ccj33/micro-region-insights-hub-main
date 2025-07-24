@@ -166,7 +166,7 @@ export function AdvancedAnalysis({ data, selectedMicroregiao, medians }: Advance
   }
 
   return (
-    <div className="space-y-6">
+    <div data-section="analise-avancada" className="space-y-6">
       {/* Cabeçalho da Análise */}
       <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-100">
         <CardHeader>

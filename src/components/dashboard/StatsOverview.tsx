@@ -26,6 +26,13 @@ export function StatsOverview({ data, selectedData, macroFiltro }: StatsOverview
   const [showStats, setShowStats] = useState(true);
   const [showDistribuicao, setShowDistribuicao] = useState(true);
 
+  // Debug: verificar props recebidas
+  console.log('StatsOverview - Props:', {
+    totalData: data?.length,
+    macroFiltro,
+    selectedData: selectedData?.microrregiao
+  });
+
   useEffect(() => {
     // Simular carregamento dos dados
     const timer = setTimeout(() => {
@@ -61,19 +68,19 @@ export function StatsOverview({ data, selectedData, macroFiltro }: StatsOverview
   const selectedMaturity = selectedData?.indice_geral ? parseFloat(String(selectedData.indice_geral).replace(',', '.')) : 0;
   const isAboveAverage = selectedMaturity > averageMaturity;
 
-  const classificationCounts = data.reduce((acc, item) => {
+  const classificationCounts = filteredData.reduce((acc, item) => {
     const key = item?.classificacao_inmsd ?? 'Desconhecido';
     acc[key] = (acc[key] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
 
-  const topPerformer = data.reduce((best, current) => {
+  const topPerformer = filteredData.reduce((best, current) => {
     const currentMaturity = current?.indice_geral ? parseFloat(String(current.indice_geral).replace(',', '.')) : 0;
     const bestMaturity = best?.indice_geral ? parseFloat(String(best.indice_geral).replace(',', '.')) : 0;
     return currentMaturity > bestMaturity ? current : best;
   });
 
-  const selectedRanking = data
+  const selectedRanking = filteredData
     .sort((a, b) => {
       const aVal = a?.indice_geral ? parseFloat(String(a.indice_geral).replace(',', '.')) : 0;
       const bVal = b?.indice_geral ? parseFloat(String(b.indice_geral).replace(',', '.')) : 0;
@@ -104,7 +111,7 @@ export function StatsOverview({ data, selectedData, macroFiltro }: StatsOverview
   }
 
   return (
-    <div data-section="stats">
+    <div data-section="overview" className="space-y-6">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div className="col-span-full flex justify-between items-center mb-2">
           <h2 className="text-lg font-semibold">Estatísticas Gerais</h2>
@@ -124,7 +131,7 @@ export function StatsOverview({ data, selectedData, macroFiltro }: StatsOverview
               </CardHeader>
               <div className="text-xs text-muted-foreground mb-2 ml-4"><em>Macrorregião selecionada:</em> <strong>{macroAtiva}</strong></div>
               <CardContent>
-                <div className="text-2xl font-bold text-foreground mb-3">{data.length}</div>
+                <div className="text-2xl font-bold text-foreground mb-3">{filteredData.length}</div>
                 <p className="text-xs text-muted-foreground mt-2">
                   Microrregiões analisadas
                 </p>
@@ -207,7 +214,7 @@ export function StatsOverview({ data, selectedData, macroFiltro }: StatsOverview
                   {selectedRanking}º
                 </div>
                 <p className="text-xs text-muted-foreground mt-2">
-                  de <strong>{data.length}</strong> microrregiões analisadas
+                  de <strong>{filteredData.length}</strong> microrregiões analisadas
                 </p>
               </CardContent>
             </Card>

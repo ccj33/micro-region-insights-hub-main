@@ -143,7 +143,7 @@ export function HelpButton({ className }: HelpButtonProps) {
       <DialogTrigger asChild>
         <button
           onClick={handleButtonClick}
-          className="fixed bottom-6 right-6 z-[9999] transition-all duration-300 hover:scale-110 hover:shadow-xl"
+          className="fixed bottom-6 right-6 z-40 transition-all duration-300 hover:scale-110 hover:shadow-xl"
           style={{
             width: 56,
             height: 56,

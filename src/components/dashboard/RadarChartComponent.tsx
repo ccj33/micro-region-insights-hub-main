@@ -27,45 +27,53 @@ const CustomTooltip = ({ active, payload, label }: any) => {
     });
 
     return (
-      <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4 shadow-lg max-w-xs">
-        <p className="font-bold text-blue-800 text-sm mb-3 border-b border-blue-200 pb-2">{label}</p>
+      <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-xl max-w-xs">
+        <p className="font-bold text-gray-800 text-sm mb-3 border-b border-gray-200 pb-2">{label}</p>
         
-        <div className="space-y-2 text-xs">
+        <div className="space-y-3 text-xs">
           {reorderedPayload.map((entry: any, index: number) => {
             let description = '';
             let colorClass = '';
+            let icon = '';
             
             // Definir descrições e cores baseadas no nome da série
             switch(entry.name) {
               case 'Microrregião':
                 description = 'Valor atual da microrregião selecionada';
                 colorClass = 'text-blue-600 font-bold';
+                icon = '📍';
                 break;
               case 'Mediana Geral':
                 description = 'Valor médio de todas as microrregiões';
                 colorClass = 'text-green-700 font-bold';
+                icon = '📊';
                 break;
               case 'Emergente':
                 description = 'Nível básico de maturidade (0-30%)';
-                colorClass = 'text-yellow-600';
+                colorClass = 'text-red-600';
+                icon = '🌱';
                 break;
               case 'Em Evolução':
                 description = 'Nível intermediário (31-70%)';
                 colorClass = 'text-yellow-600';
+                icon = '📈';
                 break;
               case 'Avançado':
                 description = 'Nível alto de maturidade (71-100%)';
                 colorClass = 'text-green-600';
+                icon = '🚀';
                 break;
               default:
                 description = '';
                 colorClass = 'text-gray-700';
+                icon = '•';
             }
             
             return (
               <div key={index} className="space-y-1">
                 <div className="flex items-center justify-between">
                   <span className="flex items-center">
+                    <span className="mr-2">{icon}</span>
                     <div 
                       className="w-3 h-3 rounded-full mr-2" 
                       style={{ backgroundColor: entry.color }}
@@ -77,7 +85,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
                   </span>
                 </div>
                 {description && (
-                  <div className="text-gray-600 text-xs ml-5">
+                  <div className="text-gray-600 text-xs ml-7">
                     {description}
                   </div>
                 )}
@@ -197,26 +205,31 @@ export function RadarChartComponent({ data, medians, onNavigateToRecommendations
   return (
     <div className="relative w-full h-full">
       {/* Legenda customizada dentro do gráfico */}
-      <div className="absolute top-4 right-4 bg-white/90 rounded-lg shadow-md p-3 z-10 text-xs flex flex-col gap-2 border border-blue-100">
-        <div className="flex items-center gap-2">
-          <span className="w-3 h-3 rounded-full bg-blue-500 inline-block" />
-          <span>Microrregião</span>
+      <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-4 z-10 text-xs border border-gray-200 min-w-[180px]">
+        <div className="font-semibold text-gray-800 mb-3 text-center border-b border-gray-200 pb-2">
+          Legenda do Gráfico
         </div>
-        <div className="flex items-center gap-2">
-          <span className="w-3 h-3 rounded-full bg-green-600 inline-block" />
-          <span>Mediana Geral</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="w-3 h-3 rounded-full border border-red-500 border-dashed inline-block" />
-          <span>Emergente (0.2)</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="w-3 h-3 rounded-full border border-blue-500 border-dashed inline-block" />
-          <span>Em Evolução (0.5)</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="w-3 h-3 rounded-full border border-emerald-500 border-dashed inline-block" />
-          <span>Avançado (0.8)</span>
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <span className="w-3 h-3 rounded-full bg-blue-500 inline-block shadow-sm" />
+            <span className="font-medium">Microrregião</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="w-3 h-3 rounded-full bg-green-600 inline-block shadow-sm" />
+            <span className="font-medium">Mediana Geral</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="w-3 h-3 rounded-full border-2 border-red-400 border-dashed inline-block" />
+            <span>Emergente (20%)</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="w-3 h-3 rounded-full border-2 border-yellow-500 border-dashed inline-block" />
+            <span>Em Evolução (50%)</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="w-3 h-3 rounded-full border-2 border-green-500 border-dashed inline-block" />
+            <span>Avançado (80%)</span>
+          </div>
         </div>
       </div>
       <div
@@ -247,29 +260,29 @@ export function RadarChartComponent({ data, medians, onNavigateToRecommendations
             <Radar
               name="Emergente"
               dataKey="Emergente"
-              stroke="hsl(0, 70%, 50%)"
+              stroke="#ef4444"
               fill="transparent"
-              strokeWidth={0.3}
-              strokeDasharray="1 1"
-              dot={{ r: 0.5, fill: "hsl(0, 70%, 50%)" }}
+              strokeWidth={1}
+              strokeDasharray="3 3"
+              dot={{ r: 1, fill: "#ef4444" }}
             />
             <Radar
               name="Em Evolução"
               dataKey="Em Evolução"
-              stroke="hsl(45, 100%, 50%)"
+              stroke="#eab308"
               fill="transparent"
-              strokeWidth={0.3}
-              strokeDasharray="1 1"
-              dot={{ r: 0.5, fill: "hsl(45, 100%, 50%)" }}
+              strokeWidth={1}
+              strokeDasharray="3 3"
+              dot={{ r: 1, fill: "#eab308" }}
             />
             <Radar
               name="Avançado"
               dataKey="Avançado"
-              stroke="hsl(120, 70%, 40%)"
+              stroke="#22c55e"
               fill="transparent"
-              strokeWidth={0.3}
-              strokeDasharray="1 1"
-              dot={{ r: 0.5, fill: "hsl(120, 70%, 40%)" }}
+              strokeWidth={1}
+              strokeDasharray="3 3"
+              dot={{ r: 1, fill: "#22c55e" }}
             />
             {/* Dados principais */}
             <Radar
