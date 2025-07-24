@@ -22,6 +22,7 @@ import { HelpCircle, X, Home, ArrowUp, Download, Settings, Target } from 'lucide
 import { useEffect } from 'react';
 import React from 'react'; // Added missing import for React
 import Joyride, { CallBackProps, STATUS, Step } from 'react-joyride';
+import { DashboardHeader } from '@/components/dashboard/DashboardHeader';
 
 const GUIDE_STORAGE_KEY = 'mrh-guide-dismissed';
 
@@ -545,6 +546,13 @@ const Index = () => {
             selectedData={selectedData}
           />
         </div>
+
+        {/* Cabeçalho detalhado da microrregião - só na aba Geral */}
+        {activeSection === 'overview' && selectedData && (
+          <div className="mb-8">
+            <DashboardHeader data={selectedData} allData={data} />
+          </div>
+        )}
 
         {/* Seções do Dashboard */}
         {activeSection === 'overview' && (
