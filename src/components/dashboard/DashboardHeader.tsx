@@ -46,9 +46,10 @@ export function DashboardHeader({ data, allData, onMicroregiaoChange }: Dashboar
             <div className="lg:col-span-2 space-y-4">
               <div className="flex flex-wrap items-center gap-3 mb-4">
                 <h1 className="text-title font-bold text-foreground">{data.microrregiao}</h1>
-                <Badge className={getClassificationColor(data.classificacao_inmsd)}>
+                {/* Removido o Badge de classificação */}
+                {/* <Badge className={getClassificationColor(data.classificacao_inmsd)}>
                   {data.classificacao_inmsd}
-                </Badge>
+                </Badge> */}
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
@@ -95,12 +96,13 @@ export function DashboardHeader({ data, allData, onMicroregiaoChange }: Dashboar
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mt-4">
                 <div className="flex items-center gap-2">
                   <span className="font-medium">Status INMSD:</span>
-                  <span>{data.status_inmsd || <span className="text-muted-foreground">Não informado</span>}</span>
+                  <span>{data.classificacao_inmsd || <span className="text-muted-foreground">Não informado</span>}</span>
                 </div>
-                <div className="flex items-center gap-2">
+                {/* Removido: Pontuação Geral */}
+                {/* <div className="flex items-center gap-2">
                   <span className="font-medium">Pontuação Geral:</span>
                   <span>{data.pontuacao_geral || <span className="text-muted-foreground">Não informado</span>}</span>
-                </div>
+                </div> */}
               </div>
               
               {/* Ponto Focal */}
@@ -197,11 +199,6 @@ export function DashboardHeader({ data, allData, onMicroregiaoChange }: Dashboar
                   </CardContent>
                 </Card>
               ))}
-            </div>
-            <div className="mt-4 p-3 bg-primary/5 rounded-lg border border-primary/20">
-              <p className="text-xs text-primary font-medium text-center">
-                💡 <strong>Clique em uma microrregião</strong> para analisá-la em detalhes
-              </p>
             </div>
           </CardContent>
         </Card>

@@ -569,6 +569,14 @@ const Index = () => {
                     onNavigateToRecommendations={handleNavigateToRecommendations}
                   />
                 </div>
+                <ExecutiveDashboard
+                  data={data}
+                  selectedMicroregiao={selectedMicroregiao}
+                  medians={medians}
+                />
+                <div data-tour="tabela-eixos">
+                  <EixosTable data={selectedData} medians={medians} />
+                </div>
                 <div data-tour="barras">
                   <BarChartComponent
                     data={filteredData}
@@ -582,17 +590,9 @@ const Index = () => {
                     selectedMicroregiao={selectedMicroregiao}
                   />
                 </div>
-                <div data-tour="tabela-eixos">
-                  <EixosTable data={selectedData} medians={medians} />
-                </div>
                 <div data-tour="recomendacoes">
                   <RecommendationsPanel data={selectedData} />
                 </div>
-                <ExecutiveDashboard
-                  data={data}
-                  selectedMicroregiao={selectedMicroregiao}
-                  medians={medians}
-                />
                 <AdvancedAnalysis
                   data={data}
                   selectedMicroregiao={selectedMicroregiao}
