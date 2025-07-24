@@ -19,18 +19,18 @@ export function useExcelData() {
         const excelExists = await checkExcelFile();
         
         if (excelExists) {
-          console.log('Arquivo Excel encontrado, carregando dados...');
+          // console.log('Arquivo Excel encontrado, carregando dados...');
           const excelData = await readExcelFile();
           
           if (excelData.length > 0) {
             setData(excelData);
             setDataSource('excel');
-            console.log('Dados do Excel carregados com sucesso:', excelData.length, 'registros');
+            // console.log('Dados do Excel carregados com sucesso:', excelData.length, 'registros');
           } else {
             throw new Error('Arquivo Excel vazio ou inválido');
           }
         } else {
-          console.log('Arquivo Excel não encontrado, usando dados mock');
+          // console.log('Arquivo Excel não encontrado, usando dados mock');
           setData(mockData);
           setDataSource('mock');
         }
@@ -56,18 +56,18 @@ export function useExcelData() {
       const excelExists = await checkExcelFile();
       
       if (excelExists) {
-        console.log('Arquivo Excel encontrado, carregando dados...');
+        // console.log('Arquivo Excel encontrado, carregando dados...');
         const excelData = await readExcelFile();
         
         if (excelData.length > 0) {
           setData(excelData);
           setDataSource('excel');
-          console.log('Dados do Excel carregados com sucesso:', excelData.length, 'registros');
+          // console.log('Dados do Excel carregados com sucesso:', excelData.length, 'registros');
         } else {
           throw new Error('Arquivo Excel vazio ou inválido');
         }
       } else {
-        console.log('Arquivo Excel não encontrado, usando dados mock');
+        // console.log('Arquivo Excel não encontrado, usando dados mock');
         setData(mockData);
         setDataSource('mock');
       }

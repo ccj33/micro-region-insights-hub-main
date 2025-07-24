@@ -45,7 +45,7 @@ export function DashboardHeader({ data, allData, onMicroregiaoChange }: Dashboar
             {/* Identificação Principal */}
             <div className="lg:col-span-2 space-y-4">
               <div className="flex flex-wrap items-center gap-3 mb-4">
-                <h1 className="text-2xl font-bold text-foreground">{data.microrregiao}</h1>
+                <h1 className="text-title font-bold text-foreground">{data.microrregiao}</h1>
                 <Badge className={getClassificationColor(data.classificacao_inmsd)}>
                   {data.classificacao_inmsd}
                 </Badge>
@@ -54,26 +54,26 @@ export function DashboardHeader({ data, allData, onMicroregiaoChange }: Dashboar
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <div className="flex items-center gap-2">
                   <MapPin className="h-4 w-4 text-primary" />
-                  <span className="font-medium">Macrorregião:</span>
-                  <span>{data.macrorregiao}</span>
+                  <span className="text-caption font-medium">Macrorregião:</span>
+                  <span className="text-body-small">{data.macrorregiao}</span>
                 </div>
                 
                 <div className="flex items-center gap-2">
                   <Target className="h-4 w-4 text-primary" />
-                  <span className="font-medium">Regional de Saúde:</span>
-                  <span>{data.regional_saude}</span>
+                  <span className="text-caption font-medium">Regional de Saúde:</span>
+                  <span className="text-body-small">{data.regional_saude}</span>
                 </div>
                 
                 <div className="flex items-center gap-2">
                   <User className="h-4 w-4 text-primary" />
-                  <span className="font-medium">Analista:</span>
-                  <span>{data.analista}</span>
+                  <span className="text-caption font-medium">Analista:</span>
+                  <span className="text-body-small">{data.analista}</span>
                 </div>
                 
                 <div className="flex items-center gap-2">
                   <Mail className="h-4 w-4 text-primary" />
-                  <span className="font-medium">Email:</span>
-                  <span className="text-primary hover:underline">{data.email_analista}</span>
+                  <span className="text-caption font-medium">Email:</span>
+                  <span className="text-body-small text-primary hover:underline">{data.email_analista}</span>
                 </div>
                 
                 <div className="flex items-center gap-2">

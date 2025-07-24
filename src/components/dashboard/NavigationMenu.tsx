@@ -31,26 +31,26 @@ export function NavigationMenu({ activeSection, onNavigate }: NavigationMenuProp
       {/* Menu de Navegação Fixo */}
       <div className="sticky top-0 z-50 bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 shadow-lg">
         <div className="container mx-auto px-4">
-          <div className="flex items-center h-24 w-full">
+          <div className="flex items-center h-16 w-full">
             {/* Logo/Título */}
             <div className="flex-shrink-0 flex items-center pl-4">
-              <div className="w-16 h-16 flex items-center justify-center rounded-full bg-gradient-to-br from-white to-blue-50 shadow-xl border-4 border-blue-200 relative overflow-hidden">
+              <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-br from-white to-blue-50 shadow-lg border-2 border-blue-200 relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-blue-600 opacity-20"></div>
-                <svg className="h-12 w-12 text-blue-600 relative z-10" fill="currentColor" viewBox="0 0 24 24">
+                <svg className="h-6 w-6 text-blue-600 relative z-10" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
                   <path d="M12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z"/>
                   <path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
                 </svg>
-                <div className="absolute top-1 right-1 w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                <div className="absolute top-0.5 right-0.5 w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
               </div>
-              <div className="ml-4">
-                <h1 className="text-4xl font-black text-white drop-shadow-2xl tracking-wider bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent">
+              <div className="ml-3">
+                <h1 className="text-xl font-bold text-white drop-shadow-lg tracking-tight">
                   RADAR NSDIGI
                 </h1>
-                <div className="flex items-center gap-2 mt-1">
-                  <div className="w-2 h-2 bg-yellow-300 rounded-full animate-pulse"></div>
-                  <span className="text-sm font-medium text-blue-100 drop-shadow-md tracking-wide uppercase">
-                    Sistema de Monitoramento Digital
+                <div className="flex items-center gap-1 mt-0.5">
+                  <div className="w-1.5 h-1.5 bg-yellow-300 rounded-full animate-pulse"></div>
+                  <span className="text-xs font-medium text-blue-100 drop-shadow-sm tracking-wide uppercase">
+                    Sistema de Transformação Digital
                   </span>
                 </div>
               </div>
@@ -65,14 +65,14 @@ export function NavigationMenu({ activeSection, onNavigate }: NavigationMenuProp
                     <button
                       key={section.id}
                       onClick={() => handleNavigate(section.id)}
-                      className={`flex flex-col items-center justify-center py-2 px-3 rounded-lg transition-all duration-200 cursor-pointer group ${
+                      className={`flex flex-col items-center justify-center py-1.5 px-2.5 rounded-md transition-all duration-200 cursor-pointer group ${
                         activeSection === section.id 
-                          ? 'bg-white/20 text-yellow-200 font-bold shadow-md' 
-                          : 'hover:bg-white/10 text-white hover:text-yellow-100'
-                      } hover:scale-105`}
-                      style={{ minWidth: 80 }}
+                          ? 'bg-white/25 text-white font-semibold shadow-md' 
+                          : 'hover:bg-white/15 text-white hover:text-white'
+                      }`}
+                      style={{ minWidth: 70 }}
                     >
-                      <Icon className="w-6 h-6 mb-1 group-hover:scale-110 transition-transform" />
+                      <Icon className="w-5 h-5 mb-0.5 group-hover:scale-105 transition-transform duration-200 text-white" />
                       <span className="text-xs leading-tight font-medium tracking-wide drop-shadow-sm">
                         {section.label.split(' ')[1] || section.label}
                       </span>
@@ -98,7 +98,7 @@ export function NavigationMenu({ activeSection, onNavigate }: NavigationMenuProp
             </div>
 
             {/* Espaço à direita para balancear */}
-            <div className="flex-shrink-0 w-40 hidden lg:block" />
+            <div className="flex-shrink-0 w-32 hidden lg:block" />
           </div>
         </div>
 

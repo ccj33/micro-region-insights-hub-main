@@ -60,7 +60,7 @@ export function Filters({
     onMicroregiaoChange('');
   };
 
-  const activeFiltersCount = Object.values(filters).filter(Boolean).length;
+  const activeFiltersCount = Object.values(filters).filter(Boolean).length + (selectedMicroregiao ? 1 : 0);
 
   return (
     <Card className="mb-6 shadow-lg border-0 bg-gradient-to-r from-dashboard-header to-primary-light">
@@ -200,6 +200,7 @@ export function Filters({
                 onClick={clearFilters}
               >
                 Limpar Filtros
+                <span className="ml-2 text-muted-foreground font-semibold">({activeFiltersCount})</span>
               </Button>
             </div>
             <Popover open={openMicroregiao} onOpenChange={setOpenMicroregiao}>

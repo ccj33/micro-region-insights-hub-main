@@ -1,6 +1,7 @@
 import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Tooltip } from 'recharts';
 import { MicroRegionData, EIXOS_NAMES } from "@/types/dashboard";
 import { useState, useEffect } from "react";
+import React from "react";
 
 interface RadarChartComponentProps {
   data: MicroRegionData;
@@ -11,9 +12,10 @@ interface RadarChartComponentProps {
   setHoveredEixo?: (index: number | null) => void;
 }
 
-// Tooltip personalizado
-const CustomTooltip = ({ active, payload, label }: any) => {
-  if (active && payload && payload.length) {
+// Tooltip personalizado inteligente
+const CustomTooltip = (props: any) => {
+  const { active, payload, label, coordinate, chartWidth, chartHeight } = props;
+  if (active && payload && payload.length && coordinate) {
     // Reorganizar payload para a ordem desejada
     const reorderedPayload = payload.sort((a: any, b: any) => {
       const order = {
@@ -26,17 +28,42 @@ const CustomTooltip = ({ active, payload, label }: any) => {
       return (order[a.name as keyof typeof order] || 999) - (order[b.name as keyof typeof order] || 999);
     });
 
+    // Tamanho do tooltip
+    const TOOLTIP_WIDTH = 320;
+    const TOOLTIP_HEIGHT = 220;
+    // Posição do mouse
+    let x = coordinate.x;
+    let y = coordinate.y;
+    // Ajuste para não sair da tela
+    const padding = 16;
+    const winW = window.innerWidth;
+    const winH = window.innerHeight;
+    // Preferir direita/abaixo, mas ajustar se necessário
+    if (x + TOOLTIP_WIDTH + padding > winW) x = winW - TOOLTIP_WIDTH - padding;
+    if (y + TOOLTIP_HEIGHT + padding > winH) y = winH - TOOLTIP_HEIGHT - padding;
+    if (x < padding) x = padding;
+    if (y < padding) y = padding;
+
     return (
-      <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-xl max-w-xs">
+      <div
+        className="bg-white border border-gray-200 rounded-lg p-4 shadow-xl max-w-xs"
+        style={{
+          position: 'fixed',
+          left: x,
+          top: y,
+          zIndex: 9999,
+          pointerEvents: 'none',
+          width: TOOLTIP_WIDTH,
+          maxWidth: '95vw',
+          minWidth: 220,
+        }}
+      >
         <p className="font-bold text-gray-800 text-sm mb-3 border-b border-gray-200 pb-2">{label}</p>
-        
         <div className="space-y-3 text-xs">
           {reorderedPayload.map((entry: any, index: number) => {
             let description = '';
             let colorClass = '';
             let icon = '';
-            
-            // Definir descrições e cores baseadas no nome da série
             switch(entry.name) {
               case 'Microrregião':
                 description = 'Valor atual da microrregião selecionada';
@@ -68,7 +95,6 @@ const CustomTooltip = ({ active, payload, label }: any) => {
                 colorClass = 'text-gray-700';
                 icon = '•';
             }
-            
             return (
               <div key={index} className="space-y-1">
                 <div className="flex items-center justify-between">
@@ -81,7 +107,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
                     <span className="font-medium">{entry.name}:</span>
                   </span>
                   <span className={`font-semibold ${colorClass}`}>
-                    {(entry.value * 100).toFixed(1)}%
+                    {entry.value.toFixed(2)}
                   </span>
                 </div>
                 {description && (
@@ -202,6 +228,23 @@ export function RadarChartComponent({ data, medians, onNavigateToRecommendations
     );
   };
 
+  // Função para calcular a posição ideal do tooltip
+  const getTooltipPosition = (eixoIndex: number | null) => {
+    // Posições relativas para 7 eixos (ajuste conforme necessário)
+    // 0: topo, 1-2: direita, 3: baixo, 4-5: esquerda, 6: topo-esquerda
+    if (eixoIndex === null) return undefined;
+    const positions = [
+      { x: 200, y: 60 },    // Eixo 1 (topo)
+      { x: 370, y: 120 },   // Eixo 2 (direita superior)
+      { x: 370, y: 260 },   // Eixo 3 (direita inferior)
+      { x: 200, y: 340 },   // Eixo 4 (baixo)
+      { x: 40, y: 260 },    // Eixo 5 (esquerda inferior)
+      { x: 40, y: 120 },    // Eixo 6 (esquerda superior)
+      { x: 120, y: 60 },    // Eixo 7 (topo-esquerda)
+    ];
+    return positions[eixoIndex] || { x: 200, y: 60 };
+  };
+
   return (
     <div className="relative w-full h-full">
       {/* Legenda customizada dentro do gráfico */}
@@ -220,15 +263,15 @@ export function RadarChartComponent({ data, medians, onNavigateToRecommendations
           </div>
           <div className="flex items-center gap-2">
             <span className="w-3 h-3 rounded-full border-2 border-red-400 border-dashed inline-block" />
-            <span>Emergente (20%)</span>
+            <span>Emergente (0.20)</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="w-3 h-3 rounded-full border-2 border-yellow-500 border-dashed inline-block" />
-            <span>Em Evolução (50%)</span>
+            <span>Em Evolução (0.50)</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="w-3 h-3 rounded-full border-2 border-green-500 border-dashed inline-block" />
-            <span>Avançado (80%)</span>
+            <span>Avançado (0.80)</span>
           </div>
         </div>
       </div>
@@ -239,7 +282,9 @@ export function RadarChartComponent({ data, medians, onNavigateToRecommendations
             data={currentHoveredEixoValue !== null ? modifiedData : chartData} 
             margin={{ top: 20, right: 30, bottom: 20, left: 30 }}
           >
-            <Tooltip content={<CustomTooltip />} />
+            <Tooltip 
+              content={<CustomTooltip />} 
+            />
             <PolarGrid 
               stroke="hsl(var(--border))" 
               strokeWidth={1}

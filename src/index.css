@@ -8,75 +8,75 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Dashboard color scheme - Professional health analytics theme */
-    --background: 245 248 255%;
-    --foreground: 215 25% 15%;
+    /* Dashboard color scheme - 2024 Modern Professional Analytics Theme */
+    --background: 220 14% 98%;
+    --foreground: 222 84% 4%;
 
     --card: 0 0% 100%;
-    --card-foreground: 215 25% 15%;
+    --card-foreground: 222 84% 4%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 215 25% 15%;
+    --popover-foreground: 222 84% 4%;
 
-    /* Primary - Health/Medical blue theme */
-    --primary: 210 100% 45%;
+    /* Primary - 2024 Modern Blue (mais sofisticado) */
+    --primary: 221 83% 53%;
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 210 100% 40%;
-    --primary-light: 210 100% 95%;
+    --primary-hover: 221 83% 48%;
+    --primary-light: 221 83% 98%;
 
-    /* Secondary - Professional gray */
-    --secondary: 215 15% 92%;
-    --secondary-foreground: 215 25% 15%;
-    --secondary-hover: 215 15% 88%;
+    /* Secondary - Professional Gray 2024 */
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 222 84% 4%;
+    --secondary-hover: 220 14% 92%;
 
     /* Dashboard specific colors */
-    --dashboard-bg: 210 100% 95%;
+    --dashboard-bg: 220 14% 98%;
     --dashboard-sidebar: 0 0% 100%;
     --dashboard-header: 0 0% 100%;
     
-    /* Data visualization colors */
-    --chart-primary: 210 100% 45%;
-    --chart-secondary: 147 68% 45%;
-    --chart-tertiary: 45 93% 55%;
-    --chart-quaternary: 271 91% 65%;
-    --chart-fifth: 15 86% 55%;
-    --chart-sixth: 195 100% 45%;
-    --chart-seventh: 330 85% 55%;
+    /* Data visualization colors - Paleta 2024 moderna e acessível */
+    --chart-primary: 221 83% 53%;
+    --chart-secondary: 142 71% 45%;
+    --chart-tertiary: 38 92% 50%;
+    --chart-quaternary: 262 83% 58%;
+    --chart-fifth: 0 84% 60%;
+    --chart-sixth: 199 89% 48%;
+    --chart-seventh: 330 81% 60%;
     
-    /* Status colors */
-    --success: 147 68% 45%;
+    /* Status colors - 2024 mais sofisticados */
+    --success: 142 71% 45%;
     --success-foreground: 0 0% 100%;
-    --warning: 45 93% 55%;
-    --warning-foreground: 0 0% 0%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 222 84% 4%;
     --error: 0 84% 60%;
     --error-foreground: 0 0% 100%;
-    --info: 210 100% 45%;
+    --info: 221 83% 53%;
     --info-foreground: 0 0% 100%;
 
-    --muted: 215 15% 92%;
-    --muted-foreground: 215 15% 45%;
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 9% 46%;
 
-    --accent: 210 100% 95%;
-    --accent-foreground: 210 100% 45%;
+    --accent: 221 83% 98%;
+    --accent-foreground: 221 83% 53%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 215 15% 85%;
-    --input: 215 15% 85%;
-    --ring: 210 100% 45%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 221 83% 53%;
 
     --radius: 0.75rem;
 
-    /* Gradients */
+    /* Gradients - 2024 mais sutis e profissionais */
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--chart-secondary)));
-    --gradient-chart: linear-gradient(180deg, hsl(var(--chart-primary) / 0.1), transparent);
+    --gradient-chart: linear-gradient(180deg, hsl(var(--chart-primary) / 0.06), transparent);
     --gradient-dashboard: linear-gradient(135deg, hsl(var(--dashboard-bg)), hsl(var(--primary-light)));
 
-    /* Shadows */
-    --shadow-card: 0 4px 6px -1px hsl(var(--primary) / 0.1), 0 2px 4px -1px hsl(var(--primary) / 0.06);
-    --shadow-elevated: 0 10px 15px -3px hsl(var(--primary) / 0.1), 0 4px 6px -2px hsl(var(--primary) / 0.05);
-    --shadow-header: 0 1px 3px 0 hsl(var(--primary) / 0.1), 0 1px 2px 0 hsl(var(--primary) / 0.06);
+    /* Shadows - 2024 mais refinados */
+    --shadow-card: 0 1px 2px 0 hsl(var(--primary) / 0.08), 0 1px 1px 0 hsl(var(--primary) / 0.04);
+    --shadow-elevated: 0 4px 6px -1px hsl(var(--primary) / 0.08), 0 2px 4px -1px hsl(var(--primary) / 0.04);
+    --shadow-header: 0 1px 2px 0 hsl(var(--primary) / 0.04);
 
     /* Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -97,6 +97,33 @@ All colors MUST be HSL.
     --sidebar-border: 220 13% 91%;
 
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Typography - 2024 Modern Professional Font Stack */
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', monospace;
+    --font-display: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    
+    /* Font weights - 2024 Complete scale */
+    --font-weight-thin: 100;
+    --font-weight-extralight: 200;
+    --font-weight-light: 300;
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+    --font-weight-extrabold: 800;
+    --font-weight-black: 900;
+    
+    /* Line heights - 2024 Professional ratios */
+    --line-height-tight: 1.2;
+    --line-height-normal: 1.5;
+    --line-height-relaxed: 1.75;
+    
+    /* Letter spacing - 2024 Improved readability */
+    --letter-spacing-tight: -0.025em;
+    --letter-spacing-normal: 0;
+    --letter-spacing-wide: 0.025em;
+    --letter-spacing-wider: 0.05em;
   }
 
   /* Animações globais */
@@ -310,5 +337,91 @@ All colors MUST be HSL.
   
   .hover-lift {
     @apply hover:shadow-lg hover:-translate-y-1 transition-all duration-200;
+  }
+
+  /* Typography utilities - 2024 Modern professional styles */
+  .text-display {
+    @apply font-display font-black tracking-tight;
+  }
+  
+  .text-heading {
+    @apply font-sans font-bold tracking-wide;
+  }
+  
+  .text-body {
+    @apply font-sans font-normal leading-relaxed;
+  }
+  
+  .text-caption {
+    @apply font-sans font-medium text-sm tracking-wide;
+  }
+  
+  .text-mono {
+    @apply font-mono font-medium;
+  }
+  
+  /* 2024 Professional text sizes */
+  .text-hero {
+    @apply text-5xl md:text-6xl lg:text-7xl font-black tracking-tight leading-tight;
+  }
+  
+  .text-title {
+    @apply text-3xl md:text-4xl font-bold tracking-tight;
+  }
+  
+  .text-subtitle {
+    @apply text-xl md:text-2xl font-semibold tracking-wide;
+  }
+  
+  .text-headline {
+    @apply text-lg md:text-xl font-semibold tracking-wide;
+  }
+  
+  .text-body-large {
+    @apply text-base md:text-lg font-normal leading-relaxed;
+  }
+  
+  .text-body-small {
+    @apply text-sm font-normal leading-normal;
+  }
+  
+  .text-caption-small {
+    @apply text-xs font-medium tracking-wide;
+  }
+  
+  /* 2024 Modern text utilities */
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary to-chart-secondary bg-clip-text text-transparent;
+  }
+  
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .text-pretty {
+    text-wrap: pretty;
+  }
+}
+
+/* Enhanced accessibility and readability */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .text-pretty {
+    text-wrap: pretty;
+  }
+  
+  .prose-headings {
+    @apply font-sans font-semibold tracking-wide text-foreground;
+  }
+  
+  .prose-body {
+    @apply font-sans font-normal leading-relaxed text-foreground;
+  }
+  
+  .prose-caption {
+    @apply font-sans font-medium text-sm tracking-wide text-muted-foreground;
   }
 }

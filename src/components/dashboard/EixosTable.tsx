@@ -135,17 +135,17 @@ export function EixosTable({ data, medians }: EixosTableProps) {
                     <TableRow key={index} className="hover:bg-muted/50">
                       <TableCell className="font-medium">
                         <div>
-                          <div className="text-sm font-semibold">{row.eixo}</div>
-                          <div className="text-xs text-muted-foreground">Eixo {index + 1}</div>
+                          <div className="text-headline font-semibold">{row.eixo}</div>
+                          <div className="text-caption-small text-muted-foreground">Eixo {index + 1}</div>
                         </div>
                       </TableCell>
                       <TableCell className="text-center">
-                        <span className="font-mono text-lg font-bold text-primary">
+                        <span className="text-mono text-lg font-bold text-primary">
                           {row.valor.toFixed(2)}
                         </span>
                       </TableCell>
                       <TableCell className="text-center">
-                        <span className="font-mono text-sm text-muted-foreground">
+                        <span className="text-mono text-sm text-muted-foreground">
                           {row.mediana.toFixed(2)}
                         </span>
                       </TableCell>

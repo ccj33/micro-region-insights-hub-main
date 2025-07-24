@@ -38,12 +38,12 @@ export async function readExcelFile(): Promise<any[]> {
       return eixoData;
     }).filter(item => Object.keys(item).length > 0); // Remover linhas vazias
 
-    console.log('Dados carregados do Excel (vertical):', mappedData.length, 'registros');
+    // console.log('Dados carregados do Excel (vertical):', mappedData.length, 'registros');
     return mappedData;
   } catch (error) {
     console.error('Erro ao carregar arquivo Excel:', error);
     // Se não conseguir carregar o Excel, usar dados mock
-    console.log('Usando dados mock como fallback');
+    // console.log('Usando dados mock como fallback');
     return [];
   }
 }
@@ -57,6 +57,16 @@ export async function checkExcelFile(): Promise<boolean> {
     return false;
   }
 } 
+
+// Função utilitária para normalizar nomes de colunas
+function normalizeColumnName(name: string): string {
+  return name
+    .normalize('NFD').replace(/[ -]/g, '') // Remove acentos
+    .replace(/[^a-zA-Z0-9]+/g, '_') // Troca qualquer coisa que não seja letra/número por _
+    .replace(/_+/g, '_') // Troca múltiplos _ por um só
+    .replace(/^_|_$/g, '') // Remove _ do início/fim
+    .toLowerCase();
+}
 
 // Função para ler o arquivo macros.xlsx e retornar recomendações por eixo e tier
 export async function readMacrosExcelFile(): Promise<any[]> {
@@ -79,12 +89,12 @@ export async function readMacrosExcelFile(): Promise<any[]> {
       throw new Error('Arquivo macros.xlsx vazio ou sem dados válidos');
     }
 
-    // Limpar espaços dos nomes das colunas e dos valores
+    // Limpar e normalizar nomes das colunas e valores
     jsonData = jsonData.map((row: any) => {
       const cleanedRow: any = {};
       Object.keys(row).forEach((key) => {
-        // Remove espaços extras do nome da coluna e do valor
-        const cleanKey = key.trim().replace(/\s+/g, '_').toLowerCase();
+        // Normaliza o nome da coluna
+        const cleanKey = normalizeColumnName(key);
         let value = row[key];
         if (typeof value === 'string') {
           value = value.trim();

@@ -32,7 +32,7 @@ export function useMacrosRecommendations() {
       try {
         const result = await readMacrosExcelFile();
         setData(result as MacrosRecommendation[]);
-        console.log('Dados macros carregados:', result);
+        // console.log('Dados macros carregados:', result);
       } catch (err) {
         setError('Erro ao carregar recomendações do macros.xlsx');
       } finally {

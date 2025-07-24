@@ -96,6 +96,33 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				}
 			},
+			fontFamily: {
+				sans: ['var(--font-sans)'],
+				mono: ['var(--font-mono)'],
+				display: ['var(--font-display)']
+			},
+			fontWeight: {
+				thin: 'var(--font-weight-thin)',
+				extralight: 'var(--font-weight-extralight)',
+				light: 'var(--font-weight-light)',
+				normal: 'var(--font-weight-normal)',
+				medium: 'var(--font-weight-medium)',
+				semibold: 'var(--font-weight-semibold)',
+				bold: 'var(--font-weight-bold)',
+				extrabold: 'var(--font-weight-extrabold)',
+				black: 'var(--font-weight-black)'
+			},
+			lineHeight: {
+				tight: 'var(--line-height-tight)',
+				normal: 'var(--line-height-normal)',
+				relaxed: 'var(--line-height-relaxed)'
+			},
+			letterSpacing: {
+				tight: 'var(--letter-spacing-tight)',
+				normal: 'var(--letter-spacing-normal)',
+				wide: 'var(--letter-spacing-wide)',
+				wider: 'var(--letter-spacing-wider)'
+			},
 			borderRadius: {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',

@@ -127,7 +127,7 @@ export function RecommendationsPanel({ data }: RecommendationsPanelProps) {
     const eixoKey = `eixo_${eixoIndex + 1}`;
     const eixoObj = macrosData.find(e => (e.eixo || '').toLowerCase().trim() === eixoKey);
     if (!eixoObj) {
-      console.warn(`Não encontrado objeto de macro para ${eixoKey}`);
+      // console.warn(`Não encontrado objeto de macro para ${eixoKey}`);
       return { situacao: 'Não informado', recomendacao: 'Não informado', ferramenta: 'Não informado' };
     }
     // Mapear tier para os campos do objeto
@@ -143,9 +143,9 @@ export function RecommendationsPanel({ data }: RecommendationsPanelProps) {
     const situacao = eixoObj[`${prefix}_situacao`];
     const recomendacao = eixoObj[`${prefix}_recomendacoes`];
     const ferramenta = eixoObj[`${prefix}_ferramentas`];
-    if (!situacao || situacao.trim() === '') console.warn(`Situação vazia para ${eixoKey} - ${prefix}`);
-    if (!recomendacao || recomendacao.trim() === '') console.warn(`Recomendação vazia para ${eixoKey} - ${prefix}`);
-    if (!ferramenta || ferramenta.trim() === '') console.warn(`Ferramenta vazia para ${eixoKey} - ${prefix}`);
+    // if (!situacao || situacao.trim() === '') console.warn(`Situação vazia para ${eixoKey} - ${prefix}`);
+    // if (!recomendacao || recomendacao.trim() === '') console.warn(`Recomendação vazia para ${eixoKey} - ${prefix}`);
+    // if (!ferramenta || ferramenta.trim() === '') console.warn(`Ferramenta vazia para ${eixoKey} - ${prefix}`);
     return {
       situacao: situacao && situacao.trim() !== '' ? situacao : 'Não informado',
       recomendacao: recomendacao && recomendacao.trim() !== '' ? recomendacao : 'Não informado',

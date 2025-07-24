@@ -18,7 +18,7 @@ import { calculateMedians } from '@/data/mockData';
 import { toast } from 'sonner';
 import { useExcelData } from '@/hooks/useExcelData';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
-import { HelpCircle, X, ChevronRight, Home, ArrowUp, Download, Settings, Target } from 'lucide-react';
+import { HelpCircle, X, Home, ArrowUp, Download, Settings, Target } from 'lucide-react';
 import { useEffect } from 'react';
 
 const GUIDE_STORAGE_KEY = 'mrh-guide-dismissed';
@@ -26,44 +26,38 @@ const GUIDE_STORAGE_KEY = 'mrh-guide-dismissed';
 function UserGuideModal({ open, setOpen }: { open: boolean, setOpen: (v: boolean) => void }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="max-w-2xl p-0 overflow-hidden border border-blue-200 bg-white shadow-lg shadow-blue-100">
-        <div className="bg-gradient-to-br from-blue-50 to-white p-6 relative">
-          <button onClick={() => setOpen(false)} className="absolute top-4 right-4 text-blue-900 hover:text-blue-600"><X size={22} /></button>
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-2xl font-bold text-blue-900 mb-2">
-              <HelpCircle className="h-7 w-7 text-blue-700" />
-              Bem-vindo ao Micro-Region Insights Hub!
-            </DialogTitle>
-            <DialogDescription className="text-blue-900 text-lg mb-4">
-              Seu painel de inteligência para maturidade digital das microrregiões.
-            </DialogDescription>
-          </DialogHeader>
-          <ol className="space-y-4 text-blue-900 text-base">
-            <li>
-              <b>1. Selecione a Região:</b> Use os filtros no topo para escolher a <b>Macrorregião</b> e depois a <b>Microrregião</b> que deseja analisar.
-            </li>
-            <li>
-              <b>2. Explore os Indicadores:</b> Veja cards com <b>população</b>, <b>índice de maturidade</b> e <b>classificação</b>. Passe o mouse para mais detalhes.
-            </li>
-            <li>
-              <b>3. Analise os Gráficos:</b> O <b>Radar</b> mostra forças e fraquezas por eixo. O <b>Ranking</b> compara todas as microrregiões. A <b>Tabela</b> detalha cada eixo.
-            </li>
-            <li>
-              <b>4. Veja Recomendações:</b> Receba dicas automáticas para evoluir em cada eixo de maturidade digital.
-            </li>
-            <li>
-              <b>5. Exporte Relatórios:</b> Gere um PDF completo do dashboard para compartilhar ou arquivar.
-            </li>
+      <DialogContent className="max-w-md p-0 overflow-hidden border border-blue-200 bg-white shadow-lg shadow-blue-100">
+        <div className="bg-gradient-to-br from-blue-50 via-white to-blue-100 p-2 sm:p-3 relative">
+          <div className="flex items-center justify-center gap-1 mb-1">
+            <HelpCircle className="h-4 w-4 sm:h-5 sm:w-5 text-blue-700" />
+            <span className="text-base sm:text-lg font-bold text-blue-900 drop-shadow-sm flex items-center gap-1">
+              Radar do Núcleo de Saúde Digital-MG
+              <img src="/logo_sus_digital-removebg-preview.png" alt="Logo Micro-Region Insights Hub" className="inline-block w-6 h-6 sm:w-7 sm:h-7 align-middle" />
+            </span>
+          </div>
+          <button onClick={() => setOpen(false)} className="fixed sm:absolute top-2 right-2 sm:top-3 sm:right-3 z-50 bg-white/80 rounded-full p-1 shadow hover:bg-blue-100 text-blue-900 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"><X size={18} /></button>
+          <div className="text-blue-900 text-[13px] sm:text-xs mb-2 text-center">
+            <span className="font-semibold">Transforme dados em ação!</span> Descubra o potencial digital das microrregiões com insights práticos, comparativos e recomendações personalizadas. Aqui você vai além do básico: mergulhe nos dados, encontre oportunidades e lidere a transformação digital da sua região.
+          </div>
+          <ol className="space-y-1 text-blue-900 text-[13px] sm:text-xs">
+            <li className="flex items-start gap-1"><span className="text-blue-600 text-base">🔎</span> <span><b>Filtre e compare:</b> Selecione rapidamente a <b>macrorregião</b> e <b>microrregião</b> de interesse. Veja como sua região se posiciona frente às demais.</span></li>
+            <li className="flex items-start gap-1"><span className="text-green-600 text-base">📊</span> <span><b>Explore indicadores-chave:</b> Analise população, maturidade digital e classificação em cards dinâmicos. Passe o mouse para detalhes extras.</span></li>
+            <li className="flex items-start gap-1"><span className="text-yellow-500 text-base">📈</span> <span><b>Visualize tendências:</b> Use gráficos interativos para identificar forças, fraquezas e oportunidades. O radar revela padrões, o ranking mostra quem lidera e a tabela detalha cada eixo.</span></li>
+            <li className="flex items-start gap-1"><span className="text-pink-500 text-base">💡</span> <span><b>Aja com recomendações:</b> Receba sugestões automáticas e práticas para acelerar a transformação digital da sua microrregião.</span></li>
+            <li className="flex items-start gap-1"><span className="text-indigo-500 text-base">📄</span> <span><b>Compartilhe resultados:</b> Exporte relatórios em PDF e leve os insights para reuniões, planejamentos e decisões estratégicas.</span></li>
           </ol>
-          <div className="mt-6 p-4 bg-blue-100 rounded-lg border border-blue-200 text-blue-800 text-sm">
+          <button className="mt-3 w-full bg-gradient-to-r from-blue-600 to-blue-400 text-white font-semibold py-1.5 rounded-lg shadow hover:from-blue-700 hover:to-blue-500 transition-all text-xs sm:text-sm" onClick={() => setOpen(false)}>
+            🚀 Explorar Dashboard
+          </button>
+          <div className="mt-2 sm:mt-3 p-2 sm:p-3 bg-blue-100 rounded-lg border border-blue-200 text-blue-800 text-[11px] sm:text-xs">
             <b>Dicas rápidas:</b>
             <ul className="list-disc ml-5 mt-1 space-y-1">
-              <li>Passe o mouse nos gráficos para ver explicações.</li>
-              <li>Clique em uma microrregião no ranking para analisá-la.</li>
-              <li>Use o botão <HelpCircle className="inline h-4 w-4" /> no topo para reabrir este guia a qualquer momento.</li>
+              <li>Passe o mouse nos gráficos para ver explicações e insights extras.</li>
+              <li>Clique em uma microrregião no ranking para mergulhar nos detalhes.</li>
+              <li>Reabra este guia a qualquer momento pelo botão <HelpCircle className="inline h-4 w-4" /> no topo.</li>
             </ul>
           </div>
-          <div className="mt-4 text-xs text-blue-700 text-center">
+          <div className="mt-2 sm:mt-3 text-[10px] sm:text-xs text-blue-700 text-center">
             Dúvidas? Fale com o suporte ou consulte o manual completo.<br/>
             <a href="mailto:suporte@microregionhub.com" className="underline text-blue-900">suporte@microregionhub.com</a>
           </div>
@@ -145,32 +139,7 @@ const Index = () => {
     }, 100);
   };
 
-  // Breadcrumbs dinâmicos
-  const getBreadcrumbs = () => {
-    const sections = [
-      { id: 'overview', label: 'Visão Geral', icon: Home },
-      { id: 'radar', label: 'Gráfico Radar', icon: Target },
-      { id: 'barras', label: 'Gráfico Barras', icon: Target },
-      { id: 'populacao', label: 'População', icon: Target },
-      { id: 'tabela', label: 'Tabela Eixos', icon: Target },
-      { id: 'recomendacoes', label: 'Recomendações', icon: Target },
-      { id: 'executivo', label: 'Dashboard Executivo', icon: Target },
-      { id: 'analise-avancada', label: 'Análise Avançada', icon: Target },
-    ];
-    
-    const currentSection = sections.find(s => s.id === activeSection);
-    
-    // Se estamos na seção overview, mostrar apenas "Dashboard"
-    if (activeSection === 'overview') {
-      return [{ label: 'Dashboard', icon: Home, id: 'dashboard-home' }];
-    }
-    
-    // Para outras seções, mostrar "Dashboard > Seção Atual"
-    return [
-      { label: 'Dashboard', icon: Home, id: 'dashboard-home' },
-      ...(currentSection ? [{ label: currentSection.label, icon: currentSection.icon, id: currentSection.id }] : [])
-    ];
-  };
+
 
   if (loading) {
     return (
@@ -204,29 +173,7 @@ const Index = () => {
       {/* Menu de Navegação Superior */}
       <NavigationMenu activeSection={activeSection} onNavigate={handleNavigate} />
 
-      {/* Breadcrumbs Modernos */}
-      <div className="bg-white/80 backdrop-blur-sm border-b border-blue-200 sticky top-24 z-40">
-        <div className="container mx-auto px-4 py-3">
-          <div className="flex items-center space-x-2 text-sm">
-            {getBreadcrumbs().map((item, index) => (
-              <div key={item.id} className="flex items-center">
-                {index > 0 && <ChevronRight className="h-4 w-4 text-blue-400 mx-2" />}
-                <button
-                  onClick={() => handleNavigate(item.id)}
-                  className={`flex items-center gap-2 px-3 py-1 rounded-lg transition-all duration-200 ${
-                    index === getBreadcrumbs().length - 1
-                      ? 'bg-blue-100 text-blue-700 font-semibold'
-                      : 'hover:bg-blue-50 text-blue-600 hover:text-blue-700'
-                  }`}
-                >
-                  <item.icon className="h-4 w-4" />
-                  <span>{item.label}</span>
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+
 
       {/* Conteúdo Principal */}
       <main className="container mx-auto px-4 py-8">

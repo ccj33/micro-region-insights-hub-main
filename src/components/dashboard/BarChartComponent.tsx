@@ -21,8 +21,8 @@ export function BarChartComponent({ data, selectedMicroregiao, macroFiltro, onLo
   }, [onLoad]);
 
   // Debug: verificar se há dados
-  console.log('BarChartComponent - Dados recebidos:', data?.length, 'Microrregião selecionada:', selectedMicroregiao);
-  console.log('BarChartComponent - Primeiros dados:', data?.slice(0, 3));
+  // console.log('BarChartComponent - Dados recebidos:', data?.length, 'Microrregião selecionada:', selectedMicroregiao);
+  // console.log('BarChartComponent - Primeiros dados:', data?.slice(0, 3));
 
   const chartData = data
     .map(item => {
