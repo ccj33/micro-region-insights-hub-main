@@ -121,7 +121,7 @@ export function Filters({
           )}
         </div> */}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 items-end">
           {/* Filtro Macrorregião - AGORA PRIMEIRO */}
           <div>
             <label className="text-sm font-semibold text-foreground mb-2 block flex items-center gap-2">
@@ -187,7 +187,7 @@ export function Filters({
           </div>
 
           {/* Filtro Microrregião - AGORA SEGUNDO */}
-          <div className="lg:col-span-2">
+          <div className="sm:col-span-2">
             <div className="flex items-center justify-between mb-2">
               <label className="text-sm font-semibold text-foreground flex items-center gap-2">
                 <MapPin className="h-4 w-4 text-primary" />
