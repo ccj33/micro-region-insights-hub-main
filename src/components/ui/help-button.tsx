@@ -153,7 +153,8 @@ export function HelpButton({ className }: HelpButtonProps) {
             cursor: 'pointer',
           }}
           aria-label="Ajuda"
-          data-tour="ajuda"
+          data-tour="faq"
+          id="faq-fab"
         >
           <svg width="56" height="56" viewBox="0 0 56 56">
             <polygon points="28,6 54,50 2,50" fill="#e11d48" />

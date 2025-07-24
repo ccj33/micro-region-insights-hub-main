@@ -20,46 +20,277 @@ import { useExcelData } from '@/hooks/useExcelData';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
 import { HelpCircle, X, Home, ArrowUp, Download, Settings, Target } from 'lucide-react';
 import { useEffect } from 'react';
+import React from 'react'; // Added missing import for React
+import Joyride, { CallBackProps, STATUS, Step } from 'react-joyride';
 
 const GUIDE_STORAGE_KEY = 'mrh-guide-dismissed';
 
+const joyrideSteps: Step[] = [
+  {
+    target: 'body',
+    content: ( 
+      <div className="flex items-center gap-3">
+        <span style={{fontSize: 32}}>🤖</span>
+        <div>
+          <b>Olá! Eu sou o DigiBot</b> <br/>
+          Bem-vindo ao Radar do Núcleo de Saúde Digital!<br/>
+          Vou te mostrar como navegar por aqui. Vamos juntos? 🚀
+        </div>
+      </div>
+    ),
+    placement: 'center',
+    disableBeacon: true,
+  },
+  {
+    target: '[data-tour="menu-overview"]',
+    content: <span>🏠 <b>Geral:</b> Aqui você vê um resumo completo da sua microrregião.</span>,
+    title: 'Menu: Geral',
+    placement: 'bottom',
+  },
+  {
+    target: '[data-tour="menu-radar"]',
+    content: <span>📊 <b>Radar:</b> Veja forças e fraquezas em cada área avaliada.</span>,
+    title: 'Menu: Radar',
+    placement: 'bottom',
+  },
+  {
+    target: '[data-tour="menu-barras"]',
+    content: <span>📈 <b>Barras:</b> Compare o ranking das microrregiões.</span>,
+    title: 'Menu: Barras',
+    placement: 'bottom',
+  },
+  {
+    target: '[data-tour="menu-populacao"]',
+    content: <span>👥 <b>População:</b> Veja quantas pessoas vivem em cada região.</span>,
+    title: 'Menu: População',
+    placement: 'bottom',
+  },
+  {
+    target: '[data-tour="menu-tabela"]',
+    content: <span>📋 <b>Eixos:</b> Detalhe de cada área avaliada.</span>,
+    title: 'Menu: Eixos',
+    placement: 'bottom',
+  },
+  {
+    target: '[data-tour="menu-recomendacoes"]',
+    content: <span>💡 <b>Recomendações:</b> Dicas práticas para melhorar sua microrregião.</span>,
+    title: 'Menu: Recomendações',
+    placement: 'bottom',
+  },
+  {
+    target: '[data-tour="menu-executivo"]',
+    content: <span>🎯 <b>Executivo:</b> Visão estratégica para gestores.</span>,
+    title: 'Menu: Executivo',
+    placement: 'bottom',
+  },
+  {
+    target: '[data-tour="menu-analise-avancada"]',
+    content: <span>📊 <b>Avançada:</b> Compare regiões em detalhes.</span>,
+    title: 'Menu: Avançada',
+    placement: 'bottom',
+  },
+  {
+    target: '[data-tour="filtros"]',
+    content: <span>🔎 <b>Filtros:</b> Selecione a macrorregião e microrregião que deseja analisar.</span>,
+    title: 'Filtros',
+    placement: 'bottom',
+  },
+  {
+    target: '[data-tour="cards-overview"]',
+    content: <span>📦 <b>Indicadores:</b> Veja os principais números da sua microrregião.</span>,
+    title: 'Indicadores',
+    placement: 'bottom',
+  },
+  {
+    target: '[data-tour="radar"]',
+    content: <span>🕸️ <b>Radar:</b> Visualize forças e fraquezas de forma gráfica.</span>,
+    title: 'Gráfico Radar',
+    placement: 'top',
+  },
+  {
+    target: '[data-tour="barras"]',
+    content: <span>📊 <b>Barras:</b> Veja o ranking das microrregiões.</span>,
+    title: 'Gráfico Barras',
+    placement: 'top',
+  },
+  {
+    target: '[data-tour="populacao"]',
+    content: <span>👥 <b>População:</b> Compare o tamanho das regiões.</span>,
+    title: 'População',
+    placement: 'top',
+  },
+  {
+    target: '[data-tour="tabela-eixos"]',
+    content: <span>📋 <b>Tabela:</b> Detalhe de cada eixo avaliado.</span>,
+    title: 'Tabela de Eixos',
+    placement: 'top',
+  },
+  {
+    target: '[data-tour="recomendacoes"]',
+    content: <span>💡 <b>Recomendações:</b> Veja dicas práticas para evoluir.</span>,
+    title: 'Recomendações',
+    placement: 'top',
+  },
+  {
+    target: '#faq-fab',
+    content: <span>❓ <b>FAQ:</b> Este botão vermelho no <b>canto inferior direito</b> abre o Dicionário e Perguntas Frequentes. Clique sempre que tiver dúvidas!</span>,
+    title: 'Ajuda e FAQ',
+    placement: 'top',
+  },
+  {
+    target: '[data-tour="scroll-top"]',
+    content: <span>⬆️ <b>Voltar ao Topo:</b> Este botão azul no <b>canto inferior direito</b> faz você subir rapidamente para o início da página.</span>,
+    title: 'Voltar ao Topo',
+    placement: 'top',
+  },
+  {
+    target: 'body',
+    content: (
+      <div className="flex items-center gap-3">
+        <span style={{fontSize: 32}}>🤖</span>
+        <div>
+          Pronto! Agora você já sabe navegar pelo Radar NSDIGI.<br/>
+          Sempre que quiser, clique na engrenagem para rever este tour.<br/>
+          Conte comigo para ajudar! 💙
+        </div>
+      </div>
+    ),
+    placement: 'center',
+  },
+];
+
 function UserGuideModal({ open, setOpen }: { open: boolean, setOpen: (v: boolean) => void }) {
+  const steps = [
+    {
+      title: 'Bem-vindo ao Radar Digital!',
+      emoji: '👋',
+      content: (
+        <>
+          <div className="text-blue-900 text-center text-base sm:text-lg font-bold mb-2 flex flex-col items-center gap-2">
+            <span>Descubra o potencial digital da sua região!</span>
+            <img src="/logo_sus_digital-removebg-preview.png" alt="Logo Micro-Region Insights Hub" className="inline-block w-10 h-10 sm:w-12 sm:h-12 align-middle mx-auto" />
+          </div>
+          <div className="text-blue-800 text-sm sm:text-base text-center mb-2">
+            Este painel mostra, de forma simples, onde sua microrregião está bem e onde pode melhorar no mundo digital.
+          </div>
+        </>
+      )
+    },
+    {
+      title: 'Filtre e Compare',
+      emoji: '🔎',
+      content: (
+        <div className="text-blue-900 text-sm sm:text-base text-center">
+          <b>Escolha a macrorregião e microrregião</b> que deseja analisar.<br />
+          Veja como sua região se compara com as outras.
+        </div>
+      )
+    },
+    {
+      title: 'Veja os Indicadores',
+      emoji: '📊',
+      content: (
+        <div className="text-blue-900 text-sm sm:text-base text-center">
+          <b>População, maturidade digital e classificação</b> aparecem em cartões coloridos.<br />
+          <span className="text-blue-700">Passe o mouse</span> para ver detalhes extras!
+        </div>
+      )
+    },
+    {
+      title: 'Explore os Gráficos',
+      emoji: '📈',
+      content: (
+        <div className="text-blue-900 text-sm sm:text-base text-center">
+          <b>Radar</b> mostra forças e fraquezas.<br />
+          <b>Barras</b> mostram o ranking.<br />
+          <b>Tabela</b> detalha cada área.
+        </div>
+      )
+    },
+    {
+      title: 'Receba Recomendações',
+      emoji: '💡',
+      content: (
+        <div className="text-blue-900 text-sm sm:text-base text-center">
+          <b>Dicas automáticas</b> para melhorar cada área.<br />
+          Veja o que fazer para avançar!
+        </div>
+      )
+    },
+    {
+      title: 'Compartilhe Resultados',
+      emoji: '📄',
+      content: (
+        <div className="text-blue-900 text-sm sm:text-base text-center">
+          <b>Exporte relatórios em PDF</b> para reuniões e decisões.<br />
+          Fácil de salvar e compartilhar.
+        </div>
+      )
+    },
+    {
+      title: 'Dúvidas? Consulte o FAQ!',
+      emoji: '❓',
+      content: (
+        <div className="text-blue-900 text-sm sm:text-base text-center">
+          <b>Tem alguma dúvida?</b> Clique no botão abaixo para abrir o Dicionário e Perguntas Frequentes.<br />
+          <span className="text-blue-700">Tudo explicado de forma simples!</span>
+        </div>
+      )
+    },
+  ];
+  const [step, setStep] = useState(0);
+  // Lembrar se já viu o guia
+  React.useEffect(() => {
+    if (open) {
+      localStorage.setItem('mrh-guide-dismissed', '1');
+    }
+  }, [open]);
+  // Abrir FAQ externo
+  const openFAQ = () => {
+    const helpBtn = document.querySelector('[data-tour="ajuda"]') as HTMLElement;
+    if (helpBtn) helpBtn.click();
+    setOpen(false);
+  };
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="max-w-md p-0 overflow-hidden border border-blue-200 bg-white shadow-lg shadow-blue-100">
-        <div className="bg-gradient-to-br from-blue-50 via-white to-blue-100 p-2 sm:p-3 relative">
-          <div className="flex items-center justify-center gap-1 mb-1">
-            <HelpCircle className="h-4 w-4 sm:h-5 sm:w-5 text-blue-700" />
-            <span className="text-base sm:text-lg font-bold text-blue-900 drop-shadow-sm flex items-center gap-1">
-              Radar do Núcleo de Saúde Digital-MG
-              <img src="/logo_sus_digital-removebg-preview.png" alt="Logo Micro-Region Insights Hub" className="inline-block w-6 h-6 sm:w-7 sm:h-7 align-middle" />
-            </span>
+      <DialogContent className="max-w-md p-0 overflow-hidden border border-blue-200 bg-white shadow-lg shadow-blue-100 animate-fade-in-up">
+        <div className="bg-gradient-to-br from-blue-50 via-white to-blue-100 p-4 sm:p-6 relative min-h-[340px] flex flex-col justify-between">
+          <button onClick={() => setOpen(false)} className="absolute top-3 right-3 z-50 bg-white/80 rounded-full p-1 shadow hover:bg-blue-100 text-blue-900 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"><X size={20} /></button>
+          <div className="flex flex-col items-center gap-2">
+            <div className="text-4xl sm:text-5xl mb-1 drop-shadow">{steps[step].emoji}</div>
+            <div className="font-bold text-blue-900 text-lg sm:text-xl mb-1 text-center">{steps[step].title}</div>
+            <div className="w-full">{steps[step].content}</div>
           </div>
-          <button onClick={() => setOpen(false)} className="fixed sm:absolute top-2 right-2 sm:top-3 sm:right-3 z-50 bg-white/80 rounded-full p-1 shadow hover:bg-blue-100 text-blue-900 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"><X size={18} /></button>
-          <div className="text-blue-900 text-[13px] sm:text-xs mb-2 text-center">
-            <span className="font-semibold">Transforme dados em ação!</span> Descubra o potencial digital das microrregiões com insights práticos, comparativos e recomendações personalizadas. Aqui você vai além do básico: mergulhe nos dados, encontre oportunidades e lidere a transformação digital da sua região.
-          </div>
-          <ol className="space-y-1 text-blue-900 text-[13px] sm:text-xs">
-            <li className="flex items-start gap-1"><span className="text-blue-600 text-base">🔎</span> <span><b>Filtre e compare:</b> Selecione rapidamente a <b>macrorregião</b> e <b>microrregião</b> de interesse. Veja como sua região se posiciona frente às demais.</span></li>
-            <li className="flex items-start gap-1"><span className="text-green-600 text-base">📊</span> <span><b>Explore indicadores-chave:</b> Analise população, maturidade digital e classificação em cards dinâmicos. Passe o mouse para detalhes extras.</span></li>
-            <li className="flex items-start gap-1"><span className="text-yellow-500 text-base">📈</span> <span><b>Visualize tendências:</b> Use gráficos interativos para identificar forças, fraquezas e oportunidades. O radar revela padrões, o ranking mostra quem lidera e a tabela detalha cada eixo.</span></li>
-            <li className="flex items-start gap-1"><span className="text-pink-500 text-base">💡</span> <span><b>Aja com recomendações:</b> Receba sugestões automáticas e práticas para acelerar a transformação digital da sua microrregião.</span></li>
-            <li className="flex items-start gap-1"><span className="text-indigo-500 text-base">📄</span> <span><b>Compartilhe resultados:</b> Exporte relatórios em PDF e leve os insights para reuniões, planejamentos e decisões estratégicas.</span></li>
-          </ol>
-          <button className="mt-3 w-full bg-gradient-to-r from-blue-600 to-blue-400 text-white font-semibold py-1.5 rounded-lg shadow hover:from-blue-700 hover:to-blue-500 transition-all text-xs sm:text-sm" onClick={() => setOpen(false)}>
-            🚀 Explorar Dashboard
-          </button>
-          <div className="mt-2 sm:mt-3 p-2 sm:p-3 bg-blue-100 rounded-lg border border-blue-200 text-blue-800 text-[11px] sm:text-xs">
-            <b>Dicas rápidas:</b>
-            <ul className="list-disc ml-5 mt-1 space-y-1">
-              <li>Passe o mouse nos gráficos para ver explicações e insights extras.</li>
-              <li>Clique em uma microrregião no ranking para mergulhar nos detalhes.</li>
-              <li>Reabra este guia a qualquer momento pelo botão <HelpCircle className="inline h-4 w-4" /> no topo.</li>
-            </ul>
-          </div>
-          <div className="mt-2 sm:mt-3 text-[10px] sm:text-xs text-blue-700 text-center">
-            Dúvidas? Fale com o suporte ou consulte o manual completo.<br/>
-            <a href="mailto:suporte@microregionhub.com" className="underline text-blue-900">suporte@microregionhub.com</a>
+          <div className="flex flex-col gap-2 mt-4">
+            <div className="flex items-center justify-center gap-1 mb-2">
+              {steps.map((_, i) => (
+                <span key={i} className={`w-2 h-2 rounded-full ${i === step ? 'bg-blue-600' : 'bg-blue-200'} transition-all`} />
+              ))}
+            </div>
+            <div className="flex gap-2 justify-between">
+              <button
+                className="flex-1 py-2 rounded-lg bg-blue-100 text-blue-700 font-semibold shadow hover:bg-blue-200 transition-all text-xs sm:text-sm disabled:opacity-50"
+                onClick={() => setStep(s => Math.max(0, s - 1))}
+                disabled={step === 0}
+              >Voltar</button>
+              {step === steps.length - 1 ? (
+                <button
+                  className="flex-1 py-2 rounded-lg bg-pink-600 text-white font-semibold shadow hover:bg-pink-700 transition-all text-xs sm:text-sm"
+                  onClick={openFAQ}
+                >Abrir FAQ</button>
+              ) : (
+                <button
+                  className="flex-1 py-2 rounded-lg bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 transition-all text-xs sm:text-sm"
+                  onClick={() => setStep(s => Math.min(steps.length - 1, s + 1))}
+                >Próximo</button>
+              )}
+            </div>
+            {step === steps.length - 2 && (
+              <button
+                className="mt-2 w-full bg-gradient-to-r from-blue-600 to-blue-400 text-white font-semibold py-2 rounded-lg shadow hover:from-blue-700 hover:to-blue-500 transition-all text-xs sm:text-sm"
+                onClick={() => setOpen(false)}
+              >🚀 Explorar Dashboard</button>
+            )}
           </div>
         </div>
       </DialogContent>
@@ -72,7 +303,7 @@ const Index = () => {
   const [selectedMicroregiao, setSelectedMicroregiao] = useState('');
   const [filters, setFilters] = useState<FilterOptions>({});
   const [activeSection, setActiveSection] = useState('overview');
-  const [guideOpen, setGuideOpen] = useState(true);
+  const [runTour, setRunTour] = useState(() => !localStorage.getItem(GUIDE_STORAGE_KEY));
   const [showAdvanced, setShowAdvanced] = useState(true);
   const [showScrollTop, setShowScrollTop] = useState(false);
 
@@ -139,6 +370,13 @@ const Index = () => {
     }, 100);
   };
 
+  const handleJoyrideCallback = (data: CallBackProps) => {
+    const { status } = data;
+    if (["finished", "skipped"].includes(status)) {
+      setRunTour(false);
+      localStorage.setItem(GUIDE_STORAGE_KEY, '1');
+    }
+  };
 
 
   if (loading) {
@@ -170,6 +408,28 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+      <Joyride
+        steps={joyrideSteps}
+        run={runTour}
+        continuous
+        showSkipButton
+        locale={{
+          back: 'Voltar',
+          close: 'Fechar',
+          last: 'Finalizar',
+          next: 'Próximo',
+          skip: 'Pular Guia',
+        }}
+        styles={{
+          options: {
+            zIndex: 9999,
+            primaryColor: '#2563eb',
+            textColor: '#1e293b',
+            arrowColor: '#fff',
+          },
+        }}
+        callback={handleJoyrideCallback}
+      />
       {/* Menu de Navegação Superior */}
       <NavigationMenu activeSection={activeSection} onNavigate={handleNavigate} />
 
@@ -178,37 +438,51 @@ const Index = () => {
       {/* Conteúdo Principal */}
       <main className="container mx-auto px-4 py-8">
         {/* Filtros */}
-        <Filters
-          data={data}
-          selectedMicroregiao={selectedMicroregiao}
-          filters={filters}
-          onMicroregiaoChange={handleMicroregiaoChange}
-          onFiltersChange={handleFiltersChange}
-          selectedData={selectedData}
-        />
+        <div data-tour="filtros">
+          <Filters
+            data={data}
+            selectedMicroregiao={selectedMicroregiao}
+            filters={filters}
+            onMicroregiaoChange={handleMicroregiaoChange}
+            onFiltersChange={handleFiltersChange}
+            selectedData={selectedData}
+          />
+        </div>
 
         {/* Seções do Dashboard */}
         {activeSection === 'overview' && (
           <div className="space-y-8">
-            <StatsOverview data={data} selectedData={selectedData} macroFiltro={filters.macrorregiao} />
+            <div data-tour="cards-overview">
+              <StatsOverview data={data} selectedData={selectedData} macroFiltro={filters.macrorregiao} />
+            </div>
             {selectedData ? (
               <>
-                <DashboardRadarChart
-                  data={selectedData}
-                  medians={medians}
-                  onNavigateToRecommendations={handleNavigateToRecommendations}
-                />
-                <BarChartComponent
-                  data={filteredData}
-                  selectedMicroregiao={selectedMicroregiao}
-                  macroFiltro={filters.macrorregiao}
-                />
-                <PopulationChartComponent
-                  data={filteredData}
-                  selectedMicroregiao={selectedMicroregiao}
-                />
-                <EixosTable data={selectedData} medians={medians} />
-                <RecommendationsPanel data={selectedData} />
+                <div data-tour="radar">
+                  <DashboardRadarChart
+                    data={selectedData}
+                    medians={medians}
+                    onNavigateToRecommendations={handleNavigateToRecommendations}
+                  />
+                </div>
+                <div data-tour="barras">
+                  <BarChartComponent
+                    data={filteredData}
+                    selectedMicroregiao={selectedMicroregiao}
+                    macroFiltro={filters.macrorregiao}
+                  />
+                </div>
+                <div data-tour="populacao">
+                  <PopulationChartComponent
+                    data={filteredData}
+                    selectedMicroregiao={selectedMicroregiao}
+                  />
+                </div>
+                <div data-tour="tabela-eixos">
+                  <EixosTable data={selectedData} medians={medians} />
+                </div>
+                <div data-tour="recomendacoes">
+                  <RecommendationsPanel data={selectedData} />
+                </div>
                 <ExecutiveDashboard
                   data={data}
                   selectedMicroregiao={selectedMicroregiao}
@@ -241,11 +515,13 @@ const Index = () => {
 
         {activeSection === 'radar' && (
           selectedData ? (
-            <DashboardRadarChart
-              data={selectedData}
-              medians={medians}
-              onNavigateToRecommendations={handleNavigateToRecommendations}
-            />
+            <div data-tour="radar">
+              <DashboardRadarChart
+                data={selectedData}
+                medians={medians}
+                onNavigateToRecommendations={handleNavigateToRecommendations}
+              />
+            </div>
           ) : (
             <div className="text-center py-12">
               <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-8 max-w-md mx-auto">
@@ -258,23 +534,29 @@ const Index = () => {
         )}
 
         {activeSection === 'barras' && (
-          <BarChartComponent
-            data={filteredData}
-            selectedMicroregiao={selectedMicroregiao}
-            macroFiltro={filters.macrorregiao}
-          />
+          <div data-tour="barras">
+            <BarChartComponent
+              data={filteredData}
+              selectedMicroregiao={selectedMicroregiao}
+              macroFiltro={filters.macrorregiao}
+            />
+          </div>
         )}
 
         {activeSection === 'populacao' && (
-          <PopulationChartComponent
-            data={filteredData}
-            selectedMicroregiao={selectedMicroregiao}
-          />
+          <div data-tour="populacao">
+            <PopulationChartComponent
+              data={filteredData}
+              selectedMicroregiao={selectedMicroregiao}
+            />
+          </div>
         )}
 
         {activeSection === 'tabela' && (
           selectedData ? (
-            <EixosTable data={selectedData} medians={medians} />
+            <div data-tour="tabela-eixos">
+              <EixosTable data={selectedData} medians={medians} />
+            </div>
           ) : (
             <div className="text-center py-12">
               <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-8 max-w-md mx-auto">
@@ -288,7 +570,9 @@ const Index = () => {
 
         {activeSection === 'recomendacoes' && (
           selectedData ? (
-            <RecommendationsPanel data={selectedData} />
+            <div data-tour="recomendacoes">
+              <RecommendationsPanel data={selectedData} />
+            </div>
           ) : (
             <div className="text-center py-12">
               <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-8 max-w-md mx-auto">
@@ -341,17 +625,20 @@ const Index = () => {
       <Button
         size="icon"
         className="fixed bottom-6 left-6 w-14 h-14 rounded-full shadow-lg bg-white hover:bg-gray-50 text-blue-600 border-2 border-blue-200 transition-all duration-300 hover:scale-110 z-50"
-        onClick={() => setGuideOpen(true)}
+        onClick={() => setRunTour(true)}
       >
         <Settings className="w-6 h-6" />
       </Button>
 
       {/* Botão de Ajuda */}
-      <HelpButton />
+      <div data-tour="faq">
+        <HelpButton />
+      </div>
 
       {/* Botão Voltar ao Topo */}
       {showScrollTop && (
         <Button
+          data-tour="scroll-top"
           onClick={scrollToTop}
           size="icon"
           className="fixed bottom-6 right-20 w-14 h-14 rounded-full shadow-lg bg-blue-600 hover:bg-blue-700 text-white z-40 transition-all duration-300 hover:scale-110"
@@ -359,9 +646,6 @@ const Index = () => {
           <ArrowUp className="w-6 h-6" />
         </Button>
       )}
-
-      {/* Modal de Boas-vindas */}
-      <UserGuideModal open={guideOpen} setOpen={setGuideOpen} />
     </div>
   );
 };

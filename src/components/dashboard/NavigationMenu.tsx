@@ -71,6 +71,7 @@ export function NavigationMenu({ activeSection, onNavigate }: NavigationMenuProp
                           : 'hover:bg-white/15 text-white hover:text-white'
                       }`}
                       style={{ minWidth: 70 }}
+                      data-tour={`menu-${section.id}`}
                     >
                       <Icon className="w-5 h-5 mb-0.5 group-hover:scale-105 transition-transform duration-200 text-white" />
                       <span className="text-xs leading-tight font-medium tracking-wide drop-shadow-sm">
