@@ -205,9 +205,9 @@ export function RecommendationsPanel({ data }: RecommendationsPanelProps) {
                       </div>
                     </div>
                   </div>
-                  <Badge className={status.color}>
+                  {/* <Badge className={status.color}>
                     {status.text}
-                  </Badge>
+                  </Badge> */}
                 </div>
               </CardHeader>
               

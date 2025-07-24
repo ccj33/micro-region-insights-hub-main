@@ -50,7 +50,7 @@ const ComparisonTooltip = ({ active, payload, label }: any) => {
                   <span className="font-medium">{displayName}:</span>
                 </span>
                 <span className="font-semibold text-blue-600">
-                  {(entry.value * 100).toFixed(1)}%
+                  {Number(entry.value).toFixed(2)}
                 </span>
               </div>
             );
@@ -373,10 +373,10 @@ export function AdvancedAnalysis({ data, selectedMicroregiao, medians }: Advance
                 <div className="flex flex-wrap gap-4 mt-4 items-center justify-center text-sm">
                   <span className="flex items-center gap-2"><span className="inline-block w-4 h-2 rounded bg-[#2563eb]"></span>{selectedData?.microrregiao || 'Selecionada'}</span>
                   <span className="flex items-center gap-2"><span className="inline-block w-4 h-2 rounded bg-[#22c55e]"></span>{comparisonData?.microrregiao || 'Comparação'}</span>
-                  <span className="flex items-center gap-2"><span className="inline-block w-4 h-2 rounded bg-[#a21caf]"></span>Mediana</span>
-                  <span className="flex items-center gap-2"><span className="inline-block w-4 h-2 rounded border border-[#eab308] bg-transparent"></span>Emergente</span>
-                  <span className="flex items-center gap-2"><span className="inline-block w-4 h-2 rounded border border-[#3b82f6] bg-transparent"></span>Em Evolução</span>
-                  <span className="flex items-center gap-2"><span className="inline-block w-4 h-2 rounded border border-[#10b981] bg-transparent"></span>Avançado</span>
+                  <span className="flex items-center gap-2"><span className="inline-block w-4 h-2 rounded bg-[#a21caf]"></span>Mediana: <b>{chartData[0]?.Mediana?.toFixed(2)}</b></span>
+                  <span className="flex items-center gap-2"><span className="inline-block w-4 h-2 rounded border border-[#eab308] bg-transparent"></span>Emergente: <b>0.20</b></span>
+                  <span className="flex items-center gap-2"><span className="inline-block w-4 h-2 rounded border border-[#3b82f6] bg-transparent"></span>Em Evolução: <b>0.50</b></span>
+                  <span className="flex items-center gap-2"><span className="inline-block w-4 h-2 rounded border border-[#10b981] bg-transparent"></span>Avançado: <b>0.80</b></span>
                 </div>
               </CardContent>
             </Card>
