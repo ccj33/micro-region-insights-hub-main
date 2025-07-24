@@ -275,13 +275,11 @@ export function RadarChartComponent({ data, medians, onNavigateToRecommendations
           </div>
         </div>
       </div>
-      <div
-      >
-        <ResponsiveContainer width="100%" height={400}>
-          <RadarChart 
-            data={currentHoveredEixoValue !== null ? modifiedData : chartData} 
-            margin={{ top: 20, right: 30, bottom: 20, left: 30 }}
-          >
+      <ResponsiveContainer width="100%" height={400}>
+        <RadarChart 
+          data={currentHoveredEixoValue !== null ? modifiedData : chartData} 
+          margin={{ top: 20, right: 30, bottom: 20, left: 30 }}
+        >
             <Tooltip 
               content={<CustomTooltip />} 
             />
@@ -339,7 +337,6 @@ export function RadarChartComponent({ data, medians, onNavigateToRecommendations
               strokeWidth={4}
               dot={<CustomDot />}
             />
-            
             {/* Mediana Geral */}
             <Radar
               name="Mediana Geral"
@@ -352,6 +349,5 @@ export function RadarChartComponent({ data, medians, onNavigateToRecommendations
           </RadarChart>
         </ResponsiveContainer>
       </div>
-    </div>
-  );
+    );
 } 

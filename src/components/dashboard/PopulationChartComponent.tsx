@@ -69,9 +69,9 @@ export function PopulationChartComponent({ data, selectedMicroregiao, onLoad }: 
           <p className="font-medium text-foreground">{data.category}</p>
           <p className="text-primary">Microrregiões: {data.count}</p>
           <p className="text-muted-foreground text-sm">
-            Pop. Total: {data.totalPop.toLocaleString('pt-BR')}
+            Pop. Total: {typeof data.totalPop === 'number' ? data.totalPop.toLocaleString('pt-BR') : '-'}
           </p>
-          {selectedMicroregiao && data.microrregioes.includes(selectedMicroregiao) && (
+          {selectedMicroregiao && Array.isArray(data.microrregioes) && data.microrregioes.includes(selectedMicroregiao) && (
             <p className="text-primary text-sm mt-1">
               ✓ Inclui {selectedMicroregiao}
             </p>
@@ -177,4 +177,6 @@ export function PopulationChartComponent({ data, selectedMicroregiao, onLoad }: 
       </ResponsiveContainer>
     </div>
   );
-} 
+}
+
+export default PopulationChartComponent; 
