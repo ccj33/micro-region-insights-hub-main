@@ -158,7 +158,61 @@ export function PopulationChartComponent({ data, selectedMicroregiao, onLoad }: 
             formatter={(value, name, props) => [`${value} microrregiões (${props.payload.percent}%)`, '']}
           />
           <Bar dataKey="count" radius={10} onMouseLeave={() => setHoveredBar(null)}>
-            <LabelList dataKey="count" position="right" formatter={(v:number) => `${v} microrreg.`} fill="#0f172a" fontSize={13} fontWeight={700} />
+            <LabelList 
+              dataKey="count" 
+              position="right" 
+              content={(props) => {
+                const { x, y, value, index } = props;
+                const entry = pyramidData[index];
+                if (!entry) return null;
+                const xNum = typeof x === 'number' ? x : 0;
+                const yNum = typeof y === 'number' ? y : 0;
+                if (entry.isSelected) {
+                  return (
+                    <g>
+                      <rect
+                        x={xNum + 4}
+                        y={yNum - 6}
+                        width={120}
+                        height={32}
+                        rx={6}
+                        fill="#fff"
+                        opacity={0.92}
+                      />
+                      <text
+                        x={xNum + 12}
+                        y={yNum + 8}
+                        fill="#0ea5e9"
+                        fontWeight={900}
+                        fontSize={15}
+                      >
+                        {value} microrreg.
+                      </text>
+                      <text
+                        x={xNum + 12}
+                        y={yNum + 24}
+                        fill="#0ea5e9"
+                        fontWeight={700}
+                        fontSize={12}
+                      >
+                        (Sua microrregião)
+                      </text>
+                    </g>
+                  );
+                }
+                return (
+                  <text
+                    x={xNum + 8}
+                    y={yNum + 10}
+                    fill="#0f172a"
+                    fontWeight={700}
+                    fontSize={13}
+                  >
+                    {value} microrreg.
+                  </text>
+                );
+              }}
+            />
             {pyramidData.map((entry, idx) => (
               <Cell
                 key={`cell-${idx}`}
@@ -179,4 +233,4 @@ export function PopulationChartComponent({ data, selectedMicroregiao, onLoad }: 
   );
 }
 
-export default PopulationChartComponent; 
+export default PopulationChartComponent;

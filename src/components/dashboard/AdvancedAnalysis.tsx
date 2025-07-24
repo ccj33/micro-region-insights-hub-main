@@ -374,9 +374,9 @@ export function AdvancedAnalysis({ data, selectedMicroregiao, medians }: Advance
                   <span className="flex items-center gap-2"><span className="inline-block w-4 h-2 rounded bg-[#2563eb]"></span>{selectedData?.microrregiao || 'Selecionada'}</span>
                   <span className="flex items-center gap-2"><span className="inline-block w-4 h-2 rounded bg-[#22c55e]"></span>{comparisonData?.microrregiao || 'Comparação'}</span>
                   <span className="flex items-center gap-2"><span className="inline-block w-4 h-2 rounded bg-[#a21caf]"></span>Mediana: <b>{chartData[0]?.Mediana?.toFixed(2)}</b></span>
-                  <span className="flex items-center gap-2"><span className="inline-block w-4 h-2 rounded border border-[#eab308] bg-transparent"></span>Emergente: <b>{'< 0.33'}</b></span>
-                  <span className="flex items-center gap-2"><span className="inline-block w-4 h-2 rounded border border-[#3b82f6] bg-transparent"></span>Em Evolução: <b>{'0.33 - 0.65'}</b></span>
-                  <span className="flex items-center gap-2"><span className="inline-block w-4 h-2 rounded border border-[#10b981] bg-transparent"></span>Avançado: <b>{'≥ 0.66'}</b></span>
+                  <span className="flex items-center gap-2"><span className="inline-block w-4 h-2 rounded border border-[#eab308] bg-transparent"></span>Emergente: <b>{'≤ 0,33'}</b></span>
+                  <span className="flex items-center gap-2"><span className="inline-block w-4 h-2 rounded border border-[#3b82f6] bg-transparent"></span>Em Evolução: <b>{'0,33 - 0,66'}</b></span>
+                  <span className="flex items-center gap-2"><span className="inline-block w-4 h-2 rounded border border-[#10b981] bg-transparent"></span>Avançado: <b>{'>'} 0,66</b></span>
                 </div>
               </CardContent>
             </Card>

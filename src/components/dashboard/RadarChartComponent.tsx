@@ -76,17 +76,17 @@ const CustomTooltip = (props: any) => {
                 icon = '📊';
                 break;
               case 'Emergente':
-                description = 'Nível básico de maturidade (0-30%)';
+                description = 'Nível básico de maturidade (≤ 0,33)';
                 colorClass = 'text-red-600';
                 icon = '🌱';
                 break;
               case 'Em Evolução':
-                description = 'Nível intermediário (31-70%)';
+                description = 'Nível intermediário (0,33 - 0,66)';
                 colorClass = 'text-yellow-600';
                 icon = '📈';
                 break;
               case 'Avançado':
-                description = 'Nível alto de maturidade (71-100%)';
+                description = 'Nível alto de maturidade (> 0,66)';
                 colorClass = 'text-green-600';
                 icon = '🚀';
                 break;
@@ -161,9 +161,9 @@ export function RadarChartComponent({ data, medians, onNavigateToRecommendations
       eixo: `Eixo ${index + 1} - ${nome}`,
       'Microrregião': valor,
       'Mediana Geral': mediana,
-      'Emergente': 0.2,
-      'Em Evolução': 0.5,
-      'Avançado': 0.8,
+      'Emergente': 0.33,
+      'Em Evolução': 0.66,
+      'Avançado': 1.0,
     };
   });
 
@@ -263,15 +263,15 @@ export function RadarChartComponent({ data, medians, onNavigateToRecommendations
           </div>
           <div className="flex items-center gap-2">
             <span className="w-3 h-3 rounded-full border-2 border-red-400 border-dashed inline-block" />
-            <span>Emergente (0.20)</span>
+            <span>Emergente (≤ 0,33)</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="w-3 h-3 rounded-full border-2 border-yellow-500 border-dashed inline-block" />
-            <span>Em Evolução (0.50)</span>
+            <span>Em Evolução (0,33 - 0,66)</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="w-3 h-3 rounded-full border-2 border-green-500 border-dashed inline-block" />
-            <span>Avançado (0.80)</span>
+            <span>Avançado ({'>'} 0,66)</span>
           </div>
         </div>
       </div>
