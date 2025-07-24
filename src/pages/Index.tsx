@@ -29,13 +29,11 @@ const joyrideSteps: Step[] = [
   {
     target: 'body',
     content: ( 
-      <div className="flex items-center gap-3">
-        <span style={{fontSize: 32}}>🤖</span>
-        <div>
-          <b>Olá! Eu sou o DigiBot</b> <br/>
-          Bem-vindo ao Radar do Núcleo de Saúde Digital!<br/>
-          Vou te mostrar como navegar por aqui. Vamos juntos? 🚀
-        </div>
+      <div className="flex flex-col items-center gap-2 p-2">
+        <img src="/logo_sus_digital-removebg-preview.png" alt="AlexSUS" style={{width: 64, height: 64, marginBottom: 8, borderRadius: '50%', boxShadow: '0 2px 12px #2563eb33'}} />
+        <div className="text-2xl font-extrabold text-blue-700 mb-1 text-center drop-shadow">Olá! Eu sou o AlexSUS</div>
+        <div className="text-base sm:text-lg text-blue-900 text-center font-medium mb-1">Bem-vindo ao Radar do Núcleo de Saúde Digital!</div>
+        <div className="text-base text-blue-800 text-center">Vou te mostrar como navegar por aqui. Vamos juntos? <span className='text-2xl'>🚀</span></div>
       </div>
     ),
     placement: 'center',
@@ -43,116 +41,215 @@ const joyrideSteps: Step[] = [
   },
   {
     target: '[data-tour="menu-overview"]',
-    content: <span>🏠 <b>Geral:</b> Aqui você vê um resumo completo da sua microrregião.</span>,
+    content: (
+      <div className="p-2">
+        <div className="text-xl font-bold text-blue-700 mb-1 flex items-center gap-2">🏠 Geral</div>
+        <div className="text-base text-blue-900 mb-2">Aqui você vê um resumo completo da sua microrregião.</div>
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 text-blue-800 text-sm mt-1 shadow-sm"><b>Exemplo:</b> Descubra rapidamente se sua região está acima ou abaixo da média em maturidade digital, sem precisar olhar gráfico por gráfico.</div>
+      </div>
+    ),
     title: 'Menu: Geral',
     placement: 'bottom',
   },
   {
     target: '[data-tour="menu-radar"]',
-    content: <span>📊 <b>Radar:</b> Veja forças e fraquezas em cada área avaliada.</span>,
+    content: (
+      <div className="p-2">
+        <div className="text-xl font-bold text-blue-700 mb-1 flex items-center gap-2">📊 Radar</div>
+        <div className="text-base text-blue-900 mb-2">Veja forças e fraquezas em cada área avaliada.</div>
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 text-blue-800 text-sm mt-1 shadow-sm"><b>Exemplo:</b> Se o eixo “Internet” estiver baixo, é um sinal de que a região precisa investir em conectividade. Se “Gestão” estiver alto, é um ponto forte!</div>
+      </div>
+    ),
     title: 'Menu: Radar',
     placement: 'bottom',
   },
   {
     target: '[data-tour="menu-barras"]',
-    content: <span>📈 <b>Barras:</b> Compare o ranking das microrregiões.</span>,
+    content: (
+      <div className="p-2">
+        <div className="text-xl font-bold text-blue-700 mb-1 flex items-center gap-2">📈 Barras</div>
+        <div className="text-base text-blue-900 mb-2">Compare o ranking das microrregiões.</div>
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 text-blue-800 text-sm mt-1 shadow-sm"><b>Exemplo:</b> Veja se sua microrregião está entre as melhores ou precisa de mais atenção. Use para mostrar resultados em reuniões.</div>
+      </div>
+    ),
     title: 'Menu: Barras',
     placement: 'bottom',
   },
   {
     target: '[data-tour="menu-populacao"]',
-    content: <span>👥 <b>População:</b> Veja quantas pessoas vivem em cada região.</span>,
+    content: (
+      <div className="p-2">
+        <div className="text-xl font-bold text-blue-700 mb-1 flex items-center gap-2">👥 População</div>
+        <div className="text-base text-blue-900 mb-2">Veja quantas pessoas vivem em cada região.</div>
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 text-blue-800 text-sm mt-1 shadow-sm"><b>Exemplo:</b> Regiões mais populosas podem ter desafios maiores, mas também mais impacto ao melhorar.</div>
+      </div>
+    ),
     title: 'Menu: População',
     placement: 'bottom',
   },
   {
     target: '[data-tour="menu-tabela"]',
-    content: <span>📋 <b>Eixos:</b> Detalhe de cada área avaliada.</span>,
+    content: (
+      <div className="p-2">
+        <div className="text-xl font-bold text-blue-700 mb-1 flex items-center gap-2">📋 Eixos</div>
+        <div className="text-base text-blue-900 mb-2">Detalhe de cada área avaliada.</div>
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 text-blue-800 text-sm mt-1 shadow-sm"><b>Exemplo:</b> Descubra em qual dos 7 eixos sua região está melhor ou pior. Use para planejar ações específicas.</div>
+      </div>
+    ),
     title: 'Menu: Eixos',
     placement: 'bottom',
   },
   {
     target: '[data-tour="menu-recomendacoes"]',
-    content: <span>💡 <b>Recomendações:</b> Dicas práticas para melhorar sua microrregião.</span>,
+    content: (
+      <div className="p-2">
+        <div className="text-xl font-bold text-blue-700 mb-1 flex items-center gap-2">💡 Recomendações</div>
+        <div className="text-base text-blue-900 mb-2">Dicas práticas para melhorar sua microrregião.</div>
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 text-blue-800 text-sm mt-1 shadow-sm"><b>Exemplo:</b> Receba sugestões automáticas, como “Invista em treinamento digital” ou “Melhore a troca de informações entre cidades”.</div>
+      </div>
+    ),
     title: 'Menu: Recomendações',
     placement: 'bottom',
   },
   {
     target: '[data-tour="menu-executivo"]',
-    content: <span>🎯 <b>Executivo:</b> Visão estratégica para gestores.</span>,
+    content: (
+      <div className="p-2">
+        <div className="text-xl font-bold text-blue-700 mb-1 flex items-center gap-2">🎯 Executivo</div>
+        <div className="text-base text-blue-900 mb-2">Visão estratégica para gestores.</div>
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 text-blue-800 text-sm mt-1 shadow-sm"><b>Exemplo:</b> Use esta visão para tomar decisões rápidas e embasar políticas públicas.</div>
+      </div>
+    ),
     title: 'Menu: Executivo',
     placement: 'bottom',
   },
   {
     target: '[data-tour="menu-analise-avancada"]',
-    content: <span>📊 <b>Avançada:</b> Compare regiões em detalhes.</span>,
+    content: (
+      <div className="p-2">
+        <div className="text-xl font-bold text-blue-700 mb-1 flex items-center gap-2">📊 Avançada</div>
+        <div className="text-base text-blue-900 mb-2">Compare regiões em detalhes.</div>
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 text-blue-800 text-sm mt-1 shadow-sm"><b>Exemplo:</b> Analise tendências e veja quais regiões estão evoluindo mais rápido.</div>
+      </div>
+    ),
     title: 'Menu: Avançada',
     placement: 'bottom',
   },
   {
     target: '[data-tour="filtros"]',
-    content: <span>🔎 <b>Filtros:</b> Selecione a macrorregião e microrregião que deseja analisar.</span>,
+    content: (
+      <div className="p-2">
+        <div className="text-xl font-bold text-blue-700 mb-1 flex items-center gap-2">🔎 Filtros</div>
+        <div className="text-base text-blue-900 mb-2">Selecione a macrorregião e microrregião que deseja analisar.</div>
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 text-blue-800 text-sm mt-1 shadow-sm"><b>Exemplo:</b> Compare sua região com outras semelhantes ou filtre só por regiões emergentes.</div>
+      </div>
+    ),
     title: 'Filtros',
     placement: 'bottom',
   },
   {
     target: '[data-tour="cards-overview"]',
-    content: <span>📦 <b>Indicadores:</b> Veja os principais números da sua microrregião.</span>,
+    content: (
+      <div className="p-2">
+        <div className="text-xl font-bold text-blue-700 mb-1 flex items-center gap-2">📦 Indicadores</div>
+        <div className="text-base text-blue-900 mb-2">Veja os principais números da sua microrregião.</div>
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 text-blue-800 text-sm mt-1 shadow-sm"><b>Exemplo:</b> Descubra rapidamente população, classificação e outros dados essenciais.</div>
+      </div>
+    ),
     title: 'Indicadores',
     placement: 'bottom',
   },
   {
     target: '[data-tour="radar"]',
-    content: <span>🕸️ <b>Radar:</b> Visualize forças e fraquezas de forma gráfica.</span>,
+    content: (
+      <div className="p-2">
+        <div className="text-xl font-bold text-blue-700 mb-1 flex items-center gap-2">🕸️ Radar</div>
+        <div className="text-base text-blue-900 mb-2">Visualize forças e fraquezas de forma gráfica.</div>
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 text-blue-800 text-sm mt-1 shadow-sm"><b>Exemplo:</b> Veja se sua microrregião está acima ou abaixo da média em cada eixo.</div>
+      </div>
+    ),
     title: 'Gráfico Radar',
     placement: 'top',
   },
   {
     target: '[data-tour="barras"]',
-    content: <span>📊 <b>Barras:</b> Veja o ranking das microrregiões.</span>,
+    content: (
+      <div className="p-2">
+        <div className="text-xl font-bold text-blue-700 mb-1 flex items-center gap-2">📊 Barras</div>
+        <div className="text-base text-blue-900 mb-2">Veja o ranking das microrregiões.</div>
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 text-blue-800 text-sm mt-1 shadow-sm"><b>Exemplo:</b> Use para mostrar resultados em reuniões ou para buscar inspiração em regiões líderes.</div>
+      </div>
+    ),
     title: 'Gráfico Barras',
     placement: 'top',
   },
   {
     target: '[data-tour="populacao"]',
-    content: <span>👥 <b>População:</b> Compare o tamanho das regiões.</span>,
+    content: (
+      <div className="p-2">
+        <div className="text-xl font-bold text-blue-700 mb-1 flex items-center gap-2">👥 População</div>
+        <div className="text-base text-blue-900 mb-2">Compare o tamanho das regiões.</div>
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 text-blue-800 text-sm mt-1 shadow-sm"><b>Exemplo:</b> Regiões maiores podem demandar mais recursos e atenção.</div>
+      </div>
+    ),
     title: 'População',
     placement: 'top',
   },
   {
     target: '[data-tour="tabela-eixos"]',
-    content: <span>📋 <b>Tabela:</b> Detalhe de cada eixo avaliado.</span>,
+    content: (
+      <div className="p-2">
+        <div className="text-xl font-bold text-blue-700 mb-1 flex items-center gap-2">📋 Tabela</div>
+        <div className="text-base text-blue-900 mb-2">Detalhe de cada eixo avaliado.</div>
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 text-blue-800 text-sm mt-1 shadow-sm"><b>Exemplo:</b> Veja onde sua região está melhor e onde pode evoluir.</div>
+      </div>
+    ),
     title: 'Tabela de Eixos',
     placement: 'top',
   },
   {
     target: '[data-tour="recomendacoes"]',
-    content: <span>💡 <b>Recomendações:</b> Veja dicas práticas para evoluir.</span>,
+    content: (
+      <div className="p-2">
+        <div className="text-xl font-bold text-blue-700 mb-1 flex items-center gap-2">💡 Recomendações</div>
+        <div className="text-base text-blue-900 mb-2">Veja dicas práticas para evoluir.</div>
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 text-blue-800 text-sm mt-1 shadow-sm"><b>Exemplo:</b> Siga as recomendações para acelerar a transformação digital da sua região.</div>
+      </div>
+    ),
     title: 'Recomendações',
     placement: 'top',
   },
   {
     target: '#faq-fab',
-    content: <span>❓ <b>FAQ:</b> Este botão vermelho no <b>canto inferior direito</b> abre o Dicionário e Perguntas Frequentes. Clique sempre que tiver dúvidas!</span>,
+    content: (
+      <div className="p-2">
+        <div className="text-xl font-bold text-blue-700 mb-1 flex items-center gap-2">❓ FAQ</div>
+        <div className="text-base text-blue-900 mb-2">Este botão vermelho no <b>canto inferior direito</b> abre o Dicionário e Perguntas Frequentes.</div>
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 text-blue-800 text-sm mt-1 shadow-sm"><b>Exemplo:</b> Não sabe o que é “Eixo” ou “Maturidade Digital”? Clique aqui e o AlexSUS explica de forma simples!</div>
+      </div>
+    ),
     title: 'Ajuda e FAQ',
     placement: 'top',
   },
   {
     target: '[data-tour="scroll-top"]',
-    content: <span>⬆️ <b>Voltar ao Topo:</b> Este botão azul no <b>canto inferior direito</b> faz você subir rapidamente para o início da página.</span>,
+    content: (
+      <div className="p-2">
+        <div className="text-xl font-bold text-blue-700 mb-1 flex items-center gap-2">⬆️ Voltar ao Topo</div>
+        <div className="text-base text-blue-900 mb-2">Este botão azul no <b>canto inferior direito</b> faz você subir rapidamente para o início da página.</div>
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 text-blue-800 text-sm mt-1 shadow-sm"><b>Exemplo:</b> Útil quando você está explorando muitos dados e quer voltar para o começo sem rolar tudo manualmente.</div>
+      </div>
+    ),
     title: 'Voltar ao Topo',
     placement: 'top',
   },
   {
     target: 'body',
     content: (
-      <div className="flex items-center gap-3">
-        <span style={{fontSize: 32}}>🤖</span>
-        <div>
-          Pronto! Agora você já sabe navegar pelo Radar NSDIGI.<br/>
-          Sempre que quiser, clique na engrenagem para rever este tour.<br/>
-          Conte comigo para ajudar! 💙
-        </div>
+      <div className="flex flex-col items-center gap-2 p-2">
+        <img src="/logo_sus_digital-removebg-preview.png" alt="AlexSUS" style={{width: 64, height: 64, marginBottom: 8, borderRadius: '50%', boxShadow: '0 2px 12px #2563eb33'}} />
+        <div className="text-2xl font-extrabold text-blue-700 mb-1 text-center drop-shadow">Pronto! Você já sabe navegar!</div>
+        <div className="text-base text-blue-900 text-center">Sempre que quiser, clique na engrenagem para rever este guia.<br/>Conte comigo, AlexSUS, para ajudar! 💙</div>
       </div>
     ),
     placement: 'center',
