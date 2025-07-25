@@ -211,6 +211,12 @@ export function DashboardRadarChart({ data, medians, onNavigateToRecommendations
           </div>
         </div>
       )}
+      {/* Fonte ABNT */}
+      <div className="pt-2 text-right w-full">
+        <span style={{ fontSize: '11px', color: '#64748b' }}>
+          Fonte: BRASIL. Ministério da Saúde. Secretaria de Informação e Saúde Digital. Disponível em: <a href="https://www.gov.br/saude/pt-br/composicao/seidigi" target="_blank" rel="noopener noreferrer" style={{ color: '#2563eb', textDecoration: 'underline' }}>https://www.gov.br/saude/pt-br/composicao/seidigi</a>.
+        </span>
+      </div>
     </div>
   );
 }

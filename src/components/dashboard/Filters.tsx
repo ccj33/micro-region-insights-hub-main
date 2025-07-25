@@ -167,6 +167,7 @@ export function Filters({
                           value={macro}
                           onSelect={() => {
                             onFiltersChange({ ...filters, macrorregiao: macro });
+                            onMicroregiaoChange(""); // Resetar microrregião ao trocar macro
                             setOpenMacro(false);
                           }}
                         >

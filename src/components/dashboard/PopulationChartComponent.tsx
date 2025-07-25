@@ -108,33 +108,31 @@ export function PopulationChartComponent({ data, selectedMicroregiao, onLoad }: 
   return (
     <div data-section="populacao" className="bg-card rounded-lg border p-6 shadow-lg" style={{ width: '100%', height: '100%', position: 'relative', minHeight: 400 }}>
       {selectedMicroregiao && selectedData && (
-        <div style={{ position: 'absolute', top: -20, left: '50%', transform: 'translateX(-50%)', zIndex: 10, background: 'rgba(255,255,255,0.92)', borderRadius: 8, padding: '6px 18px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', fontWeight: 600, fontSize: 16, color: '#1e3a8a', textAlign: 'center' }}>
-          {selectedMicroregiao}
-          <div style={{ fontWeight: 400, fontSize: 13, color: '#666', marginTop: 2 }}>
+        <div style={{ position: 'absolute', top: 16, left: '50%', transform: 'translateX(-50%)', zIndex: 10, background: 'rgba(255,255,255,0.92)', borderRadius: 8, padding: '6px 18px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', fontWeight: 600, fontSize: 16, color: '#1e3a8a', textAlign: 'center' }}>
+          <div style={{ fontWeight: 400, fontSize: 13, color: '#666', marginBottom: 2 }}>
             Macrorregião: <strong>{selectedData.macrorregiao || 'Todas'}</strong>
           </div>
+          <div style={{ fontWeight: 600, fontSize: 16, color: '#1e3a8a' }}>{selectedMicroregiao}</div>
         </div>
       )}
-      {/* Legenda integrada ao card */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-4 mt-2">
-        <div className="font-semibold text-blue-900 text-base">Distribuição Populacional</div>
-        <ul className="flex flex-wrap gap-4 text-xs">
+      {/* Legenda compacta */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-2 mb-2 mt-2">
+        <ul className="flex flex-wrap gap-2 text-xs sm:justify-end justify-center">
           {POPULATION_ORDER.map((category, idx) => {
             const entry = pyramidData.find(e => e.category === category);
             if (!entry) return null;
             return (
-              <li key={category} className="flex items-center gap-2">
+              <li key={category} className="flex items-center gap-1">
                 <span style={{
                   display: 'inline-block',
-                  width: 14,
-                  height: 14,
-                  borderRadius: 4,
+                  width: 10,
+                  height: 10,
+                  borderRadius: 3,
                   background: CATEGORY_COLORS[category] || '#bdbdbd',
                   border: entry.isSelected ? '2px solid #0ea5e9' : '1px solid #cbd5e1',
-                  boxShadow: entry.isSelected ? '0 2px 8px #0ea5e955' : '0 1px 3px rgba(0,0,0,0.08)'
+                  boxShadow: entry.isSelected ? '0 1px 4px #0ea5e955' : '0 1px 2px rgba(0,0,0,0.08)'
                 }}></span>
-                <span className={entry.isSelected ? 'font-bold text-sky-700' : 'text-gray-700'} style={{ fontSize: '12px' }}>
-                  {entry.isSelected && <span role="img" aria-label="pin" style={{ marginRight: 4 }}>📍</span>}
+                <span className={entry.isSelected ? 'font-bold text-sky-700' : 'text-gray-700'} style={{ fontSize: '11px' }}>
                   {category}
                   {entry.isSelected && <span className="ml-1 text-xs text-sky-700 font-medium">(Sua microrregião)</span>}
                 </span>
@@ -143,6 +141,7 @@ export function PopulationChartComponent({ data, selectedMicroregiao, onLoad }: 
           })}
         </ul>
       </div>
+      <div className="font-semibold text-blue-900 text-base mb-2">Distribuição Populacional</div>
       <ResponsiveContainer width="100%" height={320}>
         <BarChart
           data={pyramidData}
@@ -229,6 +228,11 @@ export function PopulationChartComponent({ data, selectedMicroregiao, onLoad }: 
           </Bar>
         </BarChart>
       </ResponsiveContainer>
+      <div className="pt-2 text-right w-full">
+        <span style={{ fontSize: '11px', color: '#64748b' }}>
+          Fonte: BRASIL. Instituto Brasileiro de Geografia e Estatística – IBGE. Censo Demográfico 2022. Disponível em: <a href="https://www.ibge.gov.br/estatisticas/sociais/populacao/22827-censo-demografico-2022.html" target="_blank" rel="noopener noreferrer" style={{ color: '#2563eb', textDecoration: 'underline' }}>https://www.ibge.gov.br/estatisticas/sociais/populacao/22827-censo-demografico-2022.html</a>.
+        </span>
+      </div>
     </div>
   );
 }

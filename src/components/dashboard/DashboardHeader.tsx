@@ -66,18 +66,6 @@ export function DashboardHeader({ data, allData, onMicroregiaoChange }: Dashboar
                 </div>
                 
                 <div className="flex items-center gap-2">
-                  <User className="h-4 w-4 text-primary" />
-                  <span className="text-caption font-medium">Analista:</span>
-                  <span className="text-body-small">{data.analista}</span>
-                </div>
-                
-                <div className="flex items-center gap-2">
-                  <Mail className="h-4 w-4 text-primary" />
-                  <span className="text-caption font-medium">Email:</span>
-                  <span className="text-body-small text-primary hover:underline">{data.email_analista}</span>
-                </div>
-                
-                <div className="flex items-center gap-2">
                   <Users className="h-4 w-4 text-primary" />
                   <span className="font-medium">População:</span>
                   <span>{parseInt(String(data.populacao).replace(/\./g, '')).toLocaleString('pt-BR')}</span>
@@ -108,9 +96,20 @@ export function DashboardHeader({ data, allData, onMicroregiaoChange }: Dashboar
               {/* Ponto Focal */}
               <div className="pt-3 border-t border-border/50">
                 <div className="text-sm">
-                  <span className="font-medium text-foreground">Ponto(s) Focal(is):</span>
-                  <div className="mt-1">{data.ponto_focal}</div>
-                  <div className="text-primary text-xs mt-1">{data.email_ponto_focal}</div>
+                  <span className="font-medium text-foreground">Ponto Focal Central:</span>
+                  <div className="mt-1 flex items-center gap-2">
+                    <User className="h-4 w-4 text-primary" />
+                    <span className="text-body-small">{data.analista}</span>
+                  </div>
+                  <div className="flex items-center gap-2 mt-1">
+                    <Mail className="h-4 w-4 text-primary" />
+                    <span className="text-body-small text-primary hover:underline">{data.email_analista}</span>
+                  </div>
+                  <div className="mt-4">
+                    <span className="font-medium text-foreground">Ponto(s) Focal(is):</span>
+                    <div className="mt-1">{data.ponto_focal}</div>
+                    <div className="text-primary text-xs mt-1">{data.email_ponto_focal}</div>
+                  </div>
                 </div>
               </div>
             </div>

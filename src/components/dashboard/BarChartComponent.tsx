@@ -117,12 +117,15 @@ export function BarChartComponent({ data, selectedMicroregiao, macroFiltro, onLo
 
   return (
     <div data-section="barras" className="bg-card rounded-lg border p-6 shadow-sm" style={{ width: '100%', height: '500px', position: 'relative' }}>
+      <div className="mb-4">
+        <h2 className="text-lg font-bold text-foreground">Ranking de Maturidade Digital das Microrregiões</h2>
+      </div>
       {selectedMicroregiao && (
         <div style={{ position: 'absolute', top: 16, left: '50%', transform: 'translateX(-50%)', zIndex: 10, background: 'rgba(255,255,255,0.92)', borderRadius: 8, padding: '6px 18px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', fontWeight: 600, fontSize: 16, color: '#1e3a8a', textAlign: 'center' }}>
-          {selectedMicroregiao}
-          <div style={{ fontWeight: 400, fontSize: 13, color: '#666', marginTop: 2 }}>
+          <div style={{ fontWeight: 400, fontSize: 13, color: '#666', marginBottom: 2 }}>
             Macrorregião: <strong>{macroFiltro || 'Todas'}</strong>
           </div>
+          {selectedMicroregiao}
         </div>
       )}
       <div style={{ position: 'absolute', top: 24, right: 8, zIndex: 9, background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(8px)', borderRadius: 8, padding: '8px 12px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', fontSize: 12, color: '#444', textAlign: 'left', minWidth: 220, maxWidth: 280, border: '1px solid rgba(0,0,0,0.1)' }}>
@@ -181,6 +184,11 @@ export function BarChartComponent({ data, selectedMicroregiao, macroFiltro, onLo
           </Bar>
         </BarChart>
       </ResponsiveContainer>
+      <div className="pt-2 text-right w-full">
+        <span style={{ fontSize: '11px', color: '#64748b' }}>
+          Fonte: BRASIL. Ministério da Saúde. Secretaria de Informação e Saúde Digital. Disponível em: <a href="https://www.gov.br/saude/pt-br/composicao/seidigi" target="_blank" rel="noopener noreferrer" style={{ color: '#2563eb', textDecoration: 'underline' }}>https://www.gov.br/saude/pt-br/composicao/seidigi</a>.
+        </span>
+      </div>
     </div>
   );
 } 

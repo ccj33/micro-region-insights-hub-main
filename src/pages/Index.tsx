@@ -23,6 +23,7 @@ import { useEffect } from 'react';
 import React from 'react'; // Added missing import for React
 import Joyride, { CallBackProps, STATUS, Step } from 'react-joyride';
 import { DashboardHeader } from '@/components/dashboard/DashboardHeader';
+import { DistribuicaoINMSD } from '@/components/dashboard/DistribuicaoINMSD';
 
 const GUIDE_STORAGE_KEY = 'mrh-guide-dismissed';
 
@@ -476,6 +477,30 @@ const Index = () => {
     }
   };
 
+  // Macroregião ativa
+  const macroAtiva = filters.macrorregiao ? filters.macrorregiao : 'Todas as macrorregiões';
+
+  // Contagem por classificação INMSD
+  const classificationCounts = useMemo(() => {
+    return filteredData.reduce((acc, item) => {
+      const key = item?.classificacao_inmsd ?? 'Desconhecido';
+      acc[key] = (acc[key] || 0) + 1;
+      return acc;
+    }, {});
+  }, [filteredData]);
+
+  // Melhor desempenho
+  const topPerformer = useMemo(() => {
+    return filteredData.reduce((best, current) => {
+      const currentMaturity = current?.indice_geral ? parseFloat(String(current.indice_geral).replace(',', '.')) : 0;
+      const bestMaturity = best?.indice_geral ? parseFloat(String(best.indice_geral).replace(',', '.')) : 0;
+      return currentMaturity > bestMaturity ? current : best;
+    }, filteredData[0]);
+  }, [filteredData]);
+
+  // Controle de exibição do bloco
+  const [showDistribuicao, setShowDistribuicao] = useState(true);
+
 
   if (loading) {
     return (
@@ -560,6 +585,29 @@ const Index = () => {
             <div data-tour="cards-overview">
               <StatsOverview data={data} selectedData={selectedData} macroFiltro={filters.macrorregiao} />
             </div>
+            <div data-tour="populacao">
+              <PopulationChartComponent
+                data={filteredData}
+                selectedMicroregiao={selectedMicroregiao}
+              />
+            </div>
+            <div className="w-full h-0.5 bg-gray-200 my-6 rounded-full" />
+            <div data-tour="barras">
+              <DistribuicaoINMSD
+                showDistribuicao={showDistribuicao}
+                macroAtiva={macroAtiva}
+                classificationCounts={classificationCounts}
+                filteredData={filteredData}
+                topPerformer={topPerformer}
+              />
+              <div className="mt-8" />
+              <BarChartComponent
+                data={filteredData}
+                selectedMicroregiao={selectedMicroregiao}
+                macroFiltro={filters.macrorregiao}
+              />
+            </div>
+            <div className="mt-12" />
             {selectedData ? (
               <>
                 <div data-tour="radar">
@@ -576,19 +624,6 @@ const Index = () => {
                 />
                 <div data-tour="tabela-eixos">
                   <EixosTable data={selectedData} medians={medians} />
-                </div>
-                <div data-tour="barras">
-                  <BarChartComponent
-                    data={filteredData}
-                    selectedMicroregiao={selectedMicroregiao}
-                    macroFiltro={filters.macrorregiao}
-                  />
-                </div>
-                <div data-tour="populacao">
-                  <PopulationChartComponent
-                    data={filteredData}
-                    selectedMicroregiao={selectedMicroregiao}
-                  />
                 </div>
                 <div data-tour="recomendacoes">
                   <RecommendationsPanel data={selectedData} />
