@@ -9,12 +9,12 @@ interface NavigationMenuProps {
 
 const sections = [
   { id: 'overview', label: 'Visão Geral', icon: Home, description: 'Resumo completo' },
-  { id: 'radar', label: 'Gráfico Radar', icon: PieChart, description: 'Comparação por eixos' },
-  { id: 'barras', label: 'Gráfico Barras', icon: BarChart3, description: 'Ranking de maturidade' },
   { id: 'populacao', label: 'População', icon: Users, description: 'Distribuição demográfica' },
+  { id: 'barras', label: 'Gráfico Barras', icon: BarChart3, description: 'Ranking de maturidade' },
+  { id: 'radar', label: 'Gráfico Radar', icon: PieChart, description: 'Comparação por eixos' },
+  { id: 'executivo', label: 'Dashboard Executivo', icon: Target, description: 'Visão estratégica' },
   { id: 'tabela', label: 'Tabela Eixos', icon: Table, description: 'Detalhamento por eixos' },
   { id: 'recomendacoes', label: 'Recomendações', icon: BookOpen, description: 'Sugestões por eixo' },
-  { id: 'executivo', label: 'Dashboard Executivo', icon: Target, description: 'Visão estratégica' },
   { id: 'analise-avancada', label: 'Análise Avançada', icon: TrendingUp, description: 'Comparação entre regiões' },
 ];
 

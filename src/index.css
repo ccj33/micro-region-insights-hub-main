@@ -9,7 +9,7 @@ All colors MUST be HSL.
 @layer base {
   :root {
     /* Dashboard color scheme - 2024 Modern Professional Analytics Theme */
-    --background: 220 14% 98%;
+    --background: 220 20% 99%; /* Slightly softer background */
     --foreground: 222 84% 4%;
 
     --card: 0 0% 100%;
@@ -18,11 +18,11 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 222 84% 4%;
 
-    /* Primary - 2024 Modern Blue (mais sofisticado) */
-    --primary: 221 83% 53%;
+    /* Primary - 2024 Modern Blue (mais vibrante e moderno) */
+    --primary: 217 91% 60%;
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 221 83% 48%;
-    --primary-light: 221 83% 98%;
+    --primary-hover: 217 91% 55%;
+    --primary-light: 217 91% 98%;
 
     /* Secondary - Professional Gray 2024 */
     --secondary: 220 14% 96%;
@@ -35,7 +35,7 @@ All colors MUST be HSL.
     --dashboard-header: 0 0% 100%;
     
     /* Data visualization colors - Paleta 2024 moderna e acessível */
-    --chart-primary: 221 83% 53%;
+    --chart-primary: 217 91% 60%; /* Alinhado com a nova cor primária */
     --chart-secondary: 142 71% 45%;
     --chart-tertiary: 38 92% 50%;
     --chart-quaternary: 262 83% 58%;
@@ -53,8 +53,12 @@ All colors MUST be HSL.
     --info: 221 83% 53%;
     --info-foreground: 0 0% 100%;
 
+    /* Nova cor de acento vibrante */
+    --accent-vibrant: 160 60% 45%;
+    --accent-vibrant-foreground: 0 0% 100%;
+
     --muted: 220 14% 96%;
-    --muted-foreground: 220 9% 46%;
+    --muted-foreground: 220 10% 40%; /* Melhor contraste */
 
     --accent: 221 83% 98%;
     --accent-foreground: 221 83% 53%;
@@ -64,7 +68,7 @@ All colors MUST be HSL.
 
     --border: 220 13% 91%;
     --input: 220 13% 91%;
-    --ring: 221 83% 53%;
+    --ring: 217 91% 60%; /* Alinhado com a nova cor primária */
 
     --radius: 0.75rem;
 
@@ -73,10 +77,11 @@ All colors MUST be HSL.
     --gradient-chart: linear-gradient(180deg, hsl(var(--chart-primary) / 0.06), transparent);
     --gradient-dashboard: linear-gradient(135deg, hsl(var(--dashboard-bg)), hsl(var(--primary-light)));
 
-    /* Shadows - 2024 mais refinados */
-    --shadow-card: 0 1px 2px 0 hsl(var(--primary) / 0.08), 0 1px 1px 0 hsl(var(--primary) / 0.04);
-    --shadow-elevated: 0 4px 6px -1px hsl(var(--primary) / 0.08), 0 2px 4px -1px hsl(var(--primary) / 0.04);
-    --shadow-header: 0 1px 2px 0 hsl(var(--primary) / 0.04);
+    /* Shadows - 2024 com cores mais naturais */
+    --shadow-color: 220 10% 10%;
+    --shadow-card: 0 1px 2px 0 hsl(var(--shadow-color) / 0.08), 0 1px 1px 0 hsl(var(--shadow-color) / 0.04);
+    --shadow-elevated: 0 4px 6px -1px hsl(var(--shadow-color) / 0.08), 0 2px 4px -1px hsl(var(--shadow-color) / 0.04);
+    --shadow-header: 0 1px 2px 0 hsl(var(--shadow-color) / 0.04);
 
     /* Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);

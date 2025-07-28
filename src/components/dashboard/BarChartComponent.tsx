@@ -109,84 +109,69 @@ export function BarChartComponent({ data, selectedMicroregiao, macroFiltro, onLo
   };
 
   const getClassificationLevel = (value: number) => {
-    if (value >= 0.8) return 'Avançado';
-    if (value >= 0.5) return 'Em Evolução';
-    if (value >= 0.2) return 'Emergente';
+    if (value > 0.66) return 'Avançado';
+    if (value > 0.33) return 'Em Evolução';
     return 'Emergente';
   };
 
   return (
-    <div data-section="barras" className="bg-card rounded-lg border p-6 shadow-sm" style={{ width: '100%', height: '500px', position: 'relative' }}>
+    <div data-section="barras" className="bg-card rounded-lg border p-4 sm:p-6 shadow-sm">
       <div className="mb-4">
-        <h2 className="text-lg font-bold text-foreground">Ranking de Maturidade Digital das Microrregiões</h2>
+        <h2 className="text-base sm:text-lg font-bold text-foreground">Ranking de Maturidade Digital</h2>
+        {macroFiltro && (
+          <p className="text-xs sm:text-sm text-muted-foreground">Macrorregião: {macroFiltro}</p>
+        )}
       </div>
-      {selectedMicroregiao && (
-        <div style={{ position: 'absolute', top: 16, left: '50%', transform: 'translateX(-50%)', zIndex: 10, background: 'rgba(255,255,255,0.92)', borderRadius: 8, padding: '6px 18px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', fontWeight: 600, fontSize: 16, color: '#1e3a8a', textAlign: 'center' }}>
-          <div style={{ fontWeight: 400, fontSize: 13, color: '#666', marginBottom: 2 }}>
-            Macrorregião: <strong>{macroFiltro || 'Todas'}</strong>
-          </div>
-          {selectedMicroregiao}
+
+      {/* Legenda Estática */}
+      <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs sm:text-sm mb-4 p-2 bg-muted rounded-md">
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 rounded-sm bg-yellow-400 border border-yellow-500"></div>
+          <span>Microrregião Selecionada</span>
         </div>
-      )}
-      <div style={{ position: 'absolute', top: 24, right: 8, zIndex: 9, background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(8px)', borderRadius: 8, padding: '8px 12px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', fontSize: 12, color: '#444', textAlign: 'left', minWidth: 220, maxWidth: 280, border: '1px solid rgba(0,0,0,0.1)' }}>
-        <div>
-          <div style={{ fontWeight: 600, color: '#1e3a8a', marginBottom: 8, fontSize: 13, textAlign: 'center', borderBottom: '1px solid #e5e7eb', paddingBottom: 4 }}>
-            Legenda do Ranking
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 8 }}>
-            <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span style={{ display: 'inline-block', width: 12, height: 12, borderRadius: 3, background: '#3b82f6', border: '2px solid #2563eb', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}></span>
-              <span style={{ fontWeight: 500, color: '#222', fontSize: 11 }}>Outras Microrregiões</span>
-            </span>
-            <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span style={{ display: 'inline-block', width: 12, height: 12, borderRadius: 3, background: '#fde047', border: '2px solid #facc15', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}></span>
-              <span style={{ fontWeight: 500, color: '#222', fontSize: 11 }}>Microrregião Selecionada</span>
-            </span>
-          </div>
-          <div style={{ fontWeight: 600, color: '#eab308', marginBottom: 4, fontSize: 11, display: 'flex', alignItems: 'center', gap: 4 }}>
-            💡 Dica:
-          </div>
-          <div style={{ fontSize: 11, color: '#444', lineHeight: 1.3 }}>
-            Quanto mais alta a barra, melhor a maturidade digital.<br />
-            A barra amarela representa sua microrregião selecionada.
-          </div>
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 rounded-sm bg-blue-500 border border-blue-600"></div>
+          <span>Outras Microrregiões</span>
         </div>
       </div>
-      <ResponsiveContainer width="100%" height={400}>
-        <BarChart
-          data={chartData}
-          margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
-          <XAxis 
-            dataKey="microrregiao" 
-            hide={true}
-          />
-          <YAxis 
-            domain={[0, 1]}
-            tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
-          />
-          <Tooltip content={<CustomTooltip />} />
-          <Bar 
-            dataKey="indice" 
-            radius={[4, 4, 0, 0]}
-            stroke="hsl(var(--border))"
-            strokeWidth={1}
+
+      <div className="w-full h-[300px] sm:h-[400px]">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart
+            data={chartData}
+            margin={{ top: 5, right: 5, left: -20, bottom: 5 }}
           >
-            {chartData.map((entry, index) => (
-              <Cell 
-                key={`cell-${index}`} 
-                fill={entry.isSelected ? 'hsl(45, 100%, 50%)' : 'hsl(220, 80%, 50%)'}
-                stroke={entry.isSelected ? 'hsl(45, 90%, 40%)' : 'hsl(220, 90%, 40%)'}
-                strokeWidth={entry.isSelected ? 2 : 1}
-              />
-            ))}
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
+            <XAxis 
+              dataKey="microrregiao" 
+              hide={true}
+            />
+            <YAxis 
+              domain={[0, 1]}
+              tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
+            />
+            <Tooltip content={<CustomTooltip />} />
+            <Bar 
+              dataKey="indice" 
+              radius={[2, 2, 0, 0]}
+              stroke="hsl(var(--border))"
+              strokeWidth={1}
+            >
+              {chartData.map((entry, index) => (
+                <Cell 
+                  key={`cell-${index}`} 
+                  fill={entry.isSelected ? 'hsl(45, 95%, 55%)' : 'hsl(220, 85%, 60%)'}
+                  stroke={entry.isSelected ? 'hsl(45, 90%, 45%)' : 'hsl(220, 90%, 50%)'}
+                  strokeWidth={entry.isSelected ? 1 : 0}
+                />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
       <div className="pt-2 text-right w-full">
-        <span style={{ fontSize: '11px', color: '#64748b' }}>
-          Fonte: BRASIL. Ministério da Saúde. Secretaria de Informação e Saúde Digital. Disponível em: <a href="https://www.gov.br/saude/pt-br/composicao/seidigi" target="_blank" rel="noopener noreferrer" style={{ color: '#2563eb', textDecoration: 'underline' }}>https://www.gov.br/saude/pt-br/composicao/seidigi</a>.
+        <span className="text-[10px] sm:text-xs text-muted-foreground">
+          Fonte: Ministério da Saúde/SEIDIGI
         </span>
       </div>
     </div>

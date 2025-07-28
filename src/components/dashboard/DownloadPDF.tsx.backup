@@ -663,15 +663,15 @@ export function DownloadPDF({ selectedData, data, selectedMicroregiao }: Downloa
 
   const getStatusColor = (valor: string): string => {
     const num = parseFloat(String(valor).replace(',', '.'));
-    if (num >= 0.7) return '#dcfce7'; // Verde claro
-    if (num >= 0.4) return '#fef3c7'; // Amarelo claro
+    if (num > 0.66) return '#dcfce7'; // Verde claro
+    if (num > 0.33) return '#fef3c7'; // Amarelo claro
     return '#fee2e2'; // Vermelho claro
   };
 
   const getStatusText = (valor: string): string => {
     const num = parseFloat(String(valor).replace(',', '.'));
-    if (num >= 0.7) return 'Consolidado';
-    if (num >= 0.4) return 'Em Evolução';
+    if (num > 0.66) return 'Consolidado';
+    if (num > 0.33) return 'Em Evolução';
     return 'Inicial';
   };
 
@@ -690,7 +690,7 @@ export function DownloadPDF({ selectedData, data, selectedMicroregiao }: Downloa
       <h3 style="color: #1e40af; font-size: 16px; margin-bottom: 15px;">Explicação dos Indicadores:</h3>
       <p style="font-size: 14px; line-height: 1.6; color: #374151;">
         <strong>Índice Geral:</strong> Representa a média ponderada de todos os eixos de maturidade digital.<br>
-        <strong>Status:</strong> Classifica a microrregião em Emergente (0-0.3), Em Evolução (0.3-0.7) ou Avançado (0.7-1.0).<br>
+        <strong>Status:</strong> Classifica a microrregião em Emergente (≤0.33), Em Evolução (0.33-0.66) ou Avançado (>0.66).<br>
         <strong>População:</strong> Total de habitantes da microrregião.<br>
         <strong>Municípios:</strong> Número de cidades que compõem a microrregião.
       </p>
@@ -734,9 +734,9 @@ export function DownloadPDF({ selectedData, data, selectedMicroregiao }: Downloa
               <p><strong>🟢 Linha VERDE:</strong> Mediana geral de todas as microrregiões analisadas</p>
               <p><strong>🔴 Linhas pontilhadas:</strong> Níveis de referência para comparação</p>
               <ul style="margin-left: 20px;">
-                <li><strong>Vermelho pontilhado:</strong> Nível Emergente (20% - 0.2)</li>
-                <li><strong>Laranja pontilhado:</strong> Nível Em Evolução (50% - 0.5)</li>
-                <li><strong>Verde pontilhado:</strong> Nível Avançado (80% - 0.8)</li>
+                <li><strong>Vermelho pontilhado:</strong> Nível Emergente (≤33% - 0.33)</li>
+                <li><strong>Laranja pontilhado:</strong> Nível Em Evolução (33%-66% - 0.33-0.66)</li>
+                <li><strong>Verde pontilhado:</strong> Nível Avançado (>66% - 0.66)</li>
               </ul>
               <p><strong>📊 Escala:</strong> 0 = Inicial (sem maturidade) → 1 = Consolidado (maturidade completa)</p>
             </div>
@@ -928,7 +928,7 @@ export function DownloadPDF({ selectedData, data, selectedMicroregiao }: Downloa
 
   const generateExecutivePage = () => {
     const indiceGeral = parseFloat(String(selectedData.indice_geral).replace(',', '.'));
-    const classification = indiceGeral >= 0.8 ? 'Consolidado' : indiceGeral >= 0.5 ? 'Em Evolução' : indiceGeral >= 0.2 ? 'Emergente' : 'Inicial';
+    const classification = indiceGeral > 0.66 ? 'Consolidado' : indiceGeral > 0.33 ? 'Em Evolução' : 'Emergente';
     
     return `
       <div style="text-align: center; margin-bottom: 30px;">
@@ -1006,8 +1006,8 @@ export function DownloadPDF({ selectedData, data, selectedMicroregiao }: Downloa
     for (let i = 1; i <= 7; i++) {
       const eixoKey = `eixo_${i}` as keyof MicroRegionData;
       const valor = parseFloat(String(selectedData[eixoKey]).replace(',', '.'));
-      const status = valor >= 0.8 ? 'Avançado' : valor >= 0.5 ? 'Em Evolução' : valor >= 0.2 ? 'Emergente' : 'Inicial';
-      const statusColor = valor >= 0.8 ? '#10b981' : valor >= 0.5 ? '#f59e0b' : valor >= 0.2 ? '#eab308' : '#ef4444';
+      const status = valor > 0.66 ? 'Avançado' : valor > 0.33 ? 'Em Evolução' : 'Emergente';
+      const statusColor = valor > 0.66 ? '#10b981' : valor > 0.33 ? '#f59e0b' : '#eab308';
       
       eixosContent += `
         <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e5e7eb; border-radius: 8px; background-color: #ffffff;">

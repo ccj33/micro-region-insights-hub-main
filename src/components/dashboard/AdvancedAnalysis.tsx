@@ -188,7 +188,7 @@ export function AdvancedAnalysis({ data, selectedMicroregiao, medians }: Advance
       </Card>
 
       {/* Controles de Análise */}
-      <Card>
+      <Card data-tour="comparacao-controles">
         <CardContent className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
@@ -252,7 +252,7 @@ export function AdvancedAnalysis({ data, selectedMicroregiao, medians }: Advance
               <p className="text-sm text-muted-foreground mb-4">
                 Compare o índice de maturidade digital (INMSD) entre as microrregiões selecionadas. A diferença mostra quanto a região selecionada está acima ou abaixo da comparação.
               </p>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6" data-tour="comparacao-eixos">
                 <div className="text-center p-4 bg-white rounded-lg border border-gray-200">
                   <div className="text-2xl font-bold text-gray-900">
                     {(comparisonStats?.selectedIndice).toFixed(2)}
@@ -435,57 +435,55 @@ export function AdvancedAnalysis({ data, selectedMicroregiao, medians }: Advance
                         <div>
                           <h4 className="font-semibold text-lg mb-4">Análise Detalhada por Eixos</h4>
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {eixosAnalysis.map((eixo) => (
-                              <div 
-                                key={eixo.eixo}
-                                className={`p-4 rounded-lg border-2 ${
-                                  eixo.status === 'superior' 
-                                    ? 'bg-green-50 border-green-200' 
-                                    : eixo.status === 'inferior'
-                                    ? 'bg-red-50 border-red-200'
-                                    : 'bg-gray-50 border-gray-200'
-                                }`}
-                              >
-                                <div className="flex items-center justify-between mb-2">
-                                  <h5 className="font-semibold">Eixo {eixo.eixo}</h5>
-                                  <Badge 
-                                    variant={eixo.status === 'superior' ? 'default' : 'secondary'}
-                                    className={
-                                      eixo.status === 'superior' ? 'bg-green-500' :
-                                      eixo.status === 'inferior' ? 'bg-red-500' : 'bg-gray-500'
-                                    }
-                                  >
-                                    {eixo.status === 'superior' ? 'Superior' :
-                                     eixo.status === 'inferior' ? 'Inferior' : 'Similar'}
-                                  </Badge>
-                                </div>
-                                <p className="text-sm text-gray-600 mb-2">{eixo.nome}</p>
-                                <div className="space-y-1 text-xs">
-                                  <div className="flex justify-between">
-                                    <span><b className="text-blue-700 font-semibold">{selectedData.microrregiao}</b> <span className="text-gray-500">(Selecionada)</span>:</span>
-                                    <span className="font-semibold">{(eixo.selectedValue * 100).toFixed(1)}%</span>
+                            {eixosAnalysis.map((eixo) => {
+                              const statusConfig = {
+                                superior: { label: 'Superior', color: 'bg-green-100 text-green-800 border-green-200' },
+                                inferior: { label: 'Inferior', color: 'bg-red-100 text-red-800 border-red-200' },
+                                similar: { label: 'Similar', color: 'bg-slate-100 text-slate-800 border-slate-200' },
+                              };
+                              const currentStatus = statusConfig[eixo.status as keyof typeof statusConfig];
+                              
+                              return (
+                                <div 
+                                  key={eixo.eixo}
+                                  className="p-4 rounded-lg border bg-white shadow-sm"
+                                >
+                                  <div className="flex items-center justify-between mb-3">
+                                    <h5 className="font-semibold text-slate-700">Eixo {eixo.eixo}</h5>
+                                    <Badge 
+                                      className={`${currentStatus.color} border`}
+                                    >
+                                      {currentStatus.label}
+                                    </Badge>
                                   </div>
-                                  <div className="flex justify-between">
-                                    <span><b className="text-blue-700 font-semibold">{comparisonData.microrregiao}</b> <span className="text-gray-500">(Comparação)</span>:</span>
-                                    <span className="font-semibold">{(eixo.comparisonValue * 100).toFixed(1)}%</span>
-                                  </div>
-                                  <div className="flex justify-between">
-                                    <span>Diferença:</span>
-                                    <span className={`font-semibold ${
-                                      eixo.difference > 0 ? 'text-green-600' : 
-                                      eixo.difference < 0 ? 'text-red-600' : 'text-gray-600'
-                                    }`}>
-                                      {eixo.difference > 0 ? '+' : ''}{(eixo.difference * 100).toFixed(1)}%
-                                    </span>
+                                  <p className="text-sm text-gray-600 mb-3">{eixo.nome}</p>
+                                  <div className="space-y-2 text-sm">
+                                    <div className="flex justify-between">
+                                      <span className="text-slate-500">{selectedData.microrregiao}:</span>
+                                      <span className="font-bold text-slate-800">{eixo.selectedValue.toFixed(2)}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                      <span className="text-slate-500">{comparisonData.microrregiao}:</span>
+                                      <span className="font-bold text-slate-800">{eixo.comparisonValue.toFixed(2)}</span>
+                                    </div>
+                                    <div className="flex justify-between border-t border-slate-200 pt-2 mt-2">
+                                      <span className="font-semibold text-slate-600">Diferença:</span>
+                                      <span className={`font-bold ${
+                                        eixo.difference > 0 ? 'text-green-600' : 
+                                        eixo.difference < 0 ? 'text-red-600' : 'text-slate-600'
+                                      }`}>
+                                        {eixo.difference > 0 ? '+' : ''}{(eixo.difference * 100).toFixed(1)}%
+                                      </span>
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                            ))}
+                              );
+                            })}
                           </div>
                         </div>
 
                         {/* Recomendações */}
-                        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg border border-blue-200">
+                        <div className="mt-6 bg-slate-50 p-6 rounded-lg border border-slate-200">
                           <h4 className="font-semibold text-lg mb-4 text-blue-900">Recomendações Estratégicas</h4>
                           <div className="space-y-3">
                             {comparisonStats?.status === 'superior' ? (

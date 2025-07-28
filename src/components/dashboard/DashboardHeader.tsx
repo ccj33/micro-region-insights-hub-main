@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MicroRegionData } from "@/types/dashboard";
 import { MapPin, Target, User, Mail, Users, BarChart3 } from "lucide-react";
+import { getStatusAppearance, StatusLevel } from "@/lib/statusUtils";
 
 interface DashboardHeaderProps {
   data: MicroRegionData;
@@ -10,25 +11,19 @@ interface DashboardHeaderProps {
 }
 
 export function DashboardHeader({ data, allData, onMicroregiaoChange }: DashboardHeaderProps) {
-  const getClassificationColor = (classification: string) => {
-    switch (classification.toLowerCase()) {
-      case 'avancado':
-        return 'bg-success text-success-foreground';
-      case 'em evolução':
-        return 'bg-warning text-warning-foreground';
-      case 'emergente':
-        return 'bg-yellow-100 text-yellow-800';
-      default:
-        return 'bg-muted text-muted-foreground';
-    }
+  const getClassificationStatus = (classification: string): StatusLevel => {
+    const lowerCaseClass = classification.toLowerCase();
+    if (lowerCaseClass.includes('avançado') || lowerCaseClass.includes('consolidado')) return 'Avançado';
+    if (lowerCaseClass.includes('em evolução')) return 'Em Evolução';
+    if (lowerCaseClass.includes('emergente')) return 'Emergente';
+    return 'Padrão';
   };
 
-  const getIDHColor = (idh: string) => {
+  const getIDHStatus = (idh: string): StatusLevel => {
     const valor = parseFloat(String(idh).replace(',', '.'));
-    if (valor >= 0.8) return 'bg-success text-success-foreground';
-    if (valor >= 0.7) return 'bg-chart-tertiary text-foreground';
-    if (valor >= 0.6) return 'bg-warning text-warning-foreground';
-    return 'bg-yellow-100 text-yellow-800';
+    if (valor > 0.7) return 'Avançado';
+    if (valor > 0.5) return 'Em Evolução';
+    return 'Emergente';
   };
 
   // Filtrar microrregiões da mesma macrorregião
@@ -39,42 +34,43 @@ export function DashboardHeader({ data, allData, onMicroregiaoChange }: Dashboar
 
   return (
     <>
-      <Card className="mb-6 shadow-lg border-0 bg-gradient-to-r from-dashboard-header to-primary-light">
+      <Card className="mb-6 shadow-lg border-0 bg-gradient-to-br from-white to-primary/5" data-tour="header-detalhes">
         <CardContent className="p-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Identificação Principal */}
             <div className="lg:col-span-2 space-y-4">
-              <div className="flex flex-wrap items-center gap-3 mb-4">
-                <h1 className="text-title font-bold text-foreground">{data.microrregiao}</h1>
-                {/* Removido o Badge de classificação */}
-                {/* <Badge className={getClassificationColor(data.classificacao_inmsd)}>
+              <div className="flex flex-wrap items-center gap-4 mb-4">
+                <h1 className="text-3xl font-extrabold text-foreground tracking-tight">{data.microrregiao}</h1>
+                <Badge 
+                  className={`${getStatusAppearance(getClassificationStatus(data.classificacao_inmsd)).bgColor} ${getStatusAppearance(getClassificationStatus(data.classificacao_inmsd)).textColor} border-none`}
+                >
                   {data.classificacao_inmsd}
-                </Badge> */}
+                </Badge>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3 text-sm">
                 <div className="flex items-center gap-2">
                   <MapPin className="h-4 w-4 text-primary" />
-                  <span className="text-caption font-medium">Macrorregião:</span>
+                  <span className="text-muted-foreground">Macrorregião:</span>
                   <span className="text-body-small">{data.macrorregiao}</span>
                 </div>
                 
                 <div className="flex items-center gap-2">
                   <Target className="h-4 w-4 text-primary" />
-                  <span className="text-caption font-medium">Regional de Saúde:</span>
-                  <span className="text-body-small">{data.regional_saude}</span>
+                  <span className="text-muted-foreground">Regional de Saúde:</span>
+                  <span className="text-foreground font-medium">{data.regional_saude}</span>
                 </div>
                 
                 <div className="flex items-center gap-2">
                   <Users className="h-4 w-4 text-primary" />
-                  <span className="font-medium">População:</span>
-                  <span>{parseInt(String(data.populacao).replace(/\./g, '')).toLocaleString('pt-BR')}</span>
+                  <span className="text-muted-foreground">População:</span>
+                  <span className="text-foreground font-medium">{parseInt(String(data.populacao).replace(/\./g, '')).toLocaleString('pt-BR')}</span>
                 </div>
                 
                 <div className="flex items-center gap-2">
                   <BarChart3 className="h-4 w-4 text-primary" />
-                  <span className="font-medium">IDH:</span>
-                  <Badge className={getIDHColor(data.idh_valor)}>
+                  <span className="text-muted-foreground">IDH:</span>
+                  <Badge className={`${getStatusAppearance(getIDHStatus(data.idh_valor)).bgColor} ${getStatusAppearance(getIDHStatus(data.idh_valor)).textColor} border-none`}>
                     {data.idh_completo}
                   </Badge>
                 </div>
@@ -94,21 +90,23 @@ export function DashboardHeader({ data, allData, onMicroregiaoChange }: Dashboar
               </div>
               
               {/* Ponto Focal */}
-              <div className="pt-3 border-t border-border/50">
+              <div className="pt-4 border-t">
                 <div className="text-sm">
-                  <span className="font-medium text-foreground">Ponto Focal Central:</span>
-                  <div className="mt-1 flex items-center gap-2">
-                    <User className="h-4 w-4 text-primary" />
-                    <span className="text-body-small">{data.analista}</span>
-                  </div>
-                  <div className="flex items-center gap-2 mt-1">
-                    <Mail className="h-4 w-4 text-primary" />
-                    <span className="text-body-small text-primary hover:underline">{data.email_analista}</span>
+                  <h3 className="font-semibold text-foreground mb-2">Ponto Focal Central</h3>
+                  <div className="space-y-1 text-muted-foreground">
+                    <div className="flex items-center gap-2">
+                      <User className="h-4 w-4 text-primary/80" />
+                      <span>{data.analista}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Mail className="h-4 w-4 text-primary/80" />
+                      <a href={`mailto:${data.email_analista}`} className="text-primary hover:underline">{data.email_analista}</a>
+                    </div>
                   </div>
                   <div className="mt-4">
-                    <span className="font-medium text-foreground">Ponto(s) Focal(is):</span>
-                    <div className="mt-1">{data.ponto_focal}</div>
-                    <div className="text-primary text-xs mt-1">{data.email_ponto_focal}</div>
+                    <h4 className="font-semibold text-foreground">Ponto(s) Focal(is) Local(is):</h4>
+                    <p className="text-muted-foreground mt-1">{data.ponto_focal}</p>
+                    <p className="text-primary text-xs mt-1">{data.email_ponto_focal}</p>
                   </div>
                 </div>
               </div>
@@ -116,23 +114,23 @@ export function DashboardHeader({ data, allData, onMicroregiaoChange }: Dashboar
             
             {/* Métricas Principais */}
             <div className="space-y-4">
-              <div className="text-center p-4 bg-card rounded-lg shadow-sm">
-                <div className="text-3xl font-bold text-primary mb-2">
+              <Card className="text-center p-4 border-primary/20">
+                <div className="text-4xl font-bold text-primary mb-1">
                   {parseFloat(String(data.indice_geral).replace(',', '.')).toFixed(2)}
                 </div>
-                <div className="text-sm font-medium text-muted-foreground">
+                <p className="text-sm font-medium text-muted-foreground">
                   Índice Geral de Maturidade Digital
-                </div>
-              </div>
+                </p>
+              </Card>
               
-              <div className="text-center p-4 bg-card rounded-lg shadow-sm">
-                <div className="text-lg font-semibold text-foreground mb-2">
+              <Card className="text-center p-4">
+                <div className="text-xl font-semibold text-foreground mb-1">
                   {data.macro_micro}
                 </div>
-                <div className="text-xs text-muted-foreground">
+                <p className="text-xs text-muted-foreground">
                   Classificação Administrativa
-                </div>
-              </div>
+                </p>
+              </Card>
             </div>
           </div>
           
@@ -154,14 +152,14 @@ export function DashboardHeader({ data, allData, onMicroregiaoChange }: Dashboar
 
       {/* Outras Microrregiões da Macrorregião */}
       {microrregioesDaMacro.length > 0 && (
-        <Card className="mb-6 shadow-lg border-0 bg-gradient-to-r from-muted/50 to-primary/5">
+        <Card className="mb-6 shadow-md border bg-white">
           <CardHeader>
             <CardTitle className="text-lg font-semibold flex items-center gap-2">
               <MapPin className="h-5 w-5 text-primary" />
-              Outras Microrregiões da Macrorregião {data.macrorregiao}
+              Outras Microrregiões em {data.macrorregiao}
             </CardTitle>
             <p className="text-sm text-muted-foreground">
-              {microrregioesDaMacro.length} microrregiões disponíveis para análise
+              {microrregioesDaMacro.length} outras microrregiões disponíveis para análise.
             </p>
           </CardHeader>
           <CardContent>
@@ -169,19 +167,19 @@ export function DashboardHeader({ data, allData, onMicroregiaoChange }: Dashboar
               {microrregioesDaMacro.map((microrregiao, index) => (
                 <Card 
                   key={index} 
-                  className="hover:shadow-md transition-shadow cursor-pointer border border-border/50"
+                  className="hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer border group"
                   onClick={() => onMicroregiaoChange?.(microrregiao.microrregiao)}
                 >
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-semibold text-foreground text-sm">{microrregiao.microrregiao}</h4>
-                      <Badge className={getClassificationColor(microrregiao.classificacao_inmsd)}>
+                      <h4 className="font-semibold text-foreground text-base group-hover:text-primary transition-colors">{microrregiao.microrregiao}</h4>
+                      <Badge variant="outline" className={`${getStatusAppearance(getClassificationStatus(microrregiao.classificacao_inmsd)).bgColor} ${getStatusAppearance(getClassificationStatus(microrregiao.classificacao_inmsd)).textColor} border-none`}>
                         {microrregiao.classificacao_inmsd}
                       </Badge>
                     </div>
-                    <div className="space-y-1 text-xs text-muted-foreground">
+                    <div className="space-y-1 text-sm text-muted-foreground">
                       <div className="flex justify-between">
-                        <span>Índice:</span>
+                        <span>Índice Geral:</span>
                         <span className="font-medium text-foreground">
                           {parseFloat(String(microrregiao.indice_geral).replace(',', '.')).toFixed(3)}
                         </span>

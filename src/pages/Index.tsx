@@ -24,6 +24,8 @@ import React from 'react'; // Added missing import for React
 import Joyride, { CallBackProps, STATUS, Step } from 'react-joyride';
 import { DashboardHeader } from '@/components/dashboard/DashboardHeader';
 import { DistribuicaoINMSD } from '@/components/dashboard/DistribuicaoINMSD';
+import { Menu, Filter } from 'lucide-react'; // Importar ícones
+import { Drawer, DrawerContent, DrawerTrigger, DrawerHeader, DrawerTitle, DrawerDescription, DrawerFooter } from '@/components/ui/drawer'; // Importar Drawer com mais componentes
 
 const GUIDE_STORAGE_KEY = 'mrh-guide-dismissed';
 
@@ -31,230 +33,167 @@ const joyrideSteps: Step[] = [
   {
     target: 'body',
     content: ( 
-      <div className="flex flex-col items-center gap-2 p-2">
-        <img src="/logo_sus_digital-removebg-preview.png" alt="AlexSUS" style={{width: 64, height: 64, marginBottom: 8, borderRadius: '50%', boxShadow: '0 2px 12px #2563eb33'}} />
-        <div className="text-2xl font-extrabold text-blue-700 mb-1 text-center drop-shadow">Olá! Eu sou o AlexSUS</div>
-        <div className="text-base sm:text-lg text-blue-900 text-center font-medium mb-1">Bem-vindo ao Radar do Núcleo de Saúde Digital!</div>
-        <div className="text-base text-blue-800 text-center">Vou te mostrar como navegar por aqui. Vamos juntos? <span className='text-2xl'>🚀</span></div>
+      <div className="text-center p-2">
+        <img src="/logo_sus_digital-removebg-preview.png" alt="AlexSUS" className="w-16 h-16 mx-auto mb-2 rounded-full shadow-lg" />
+        <h2 className="text-2xl font-extrabold text-blue-700 mb-1">Bem-vindo ao Radar NSD!</h2>
+        <p className="text-base text-slate-800">Sou o AlexSUS, seu guia digital. Vou te mostrar como extrair o máximo de insights desta ferramenta. Vamos começar? 🚀</p>
       </div>
     ),
     placement: 'center',
     disableBeacon: true,
   },
   {
+    target: '[data-tour="filtros"]',
+    content: (
+      <div className="p-2">
+        <h3 className="text-xl font-bold text-blue-700 mb-2">1. Comece pelos Filtros</h3>
+        <p className="text-slate-800">Este é o seu ponto de partida. Use esses controles para selecionar a <strong>Macrorregião</strong> e depois a <strong>Microrregião</strong> que deseja analisar.</p>
+        <p className="mt-2 text-sm text-blue-800 bg-blue-50 p-2 rounded-md"><strong>Dica:</strong> A análise começa de verdade após escolher uma microrregião!</p>
+      </div>
+    ),
+    placement: 'bottom',
+  },
+  {
     target: '[data-tour="menu-overview"]',
     content: (
       <div className="p-2">
-        <div className="text-xl font-bold text-blue-700 mb-1 flex items-center gap-2">🏠 Geral</div>
-        <div className="text-base text-blue-900 mb-2">Aqui você vê um resumo completo da sua microrregião.</div>
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 text-blue-800 text-sm mt-1 shadow-sm"><b>Exemplo:</b> Descubra rapidamente se sua região está acima ou abaixo da média em maturidade digital, sem precisar olhar gráfico por gráfico.</div>
+        <h3 className="text-xl font-bold text-blue-700 mb-2">2. Navegue pelas Seções</h3>
+        <p className="text-slate-800">Use este menu para explorar as diferentes áreas de análise. Você está na <strong>Visão Geral</strong>, o resumo inicial.</p>
       </div>
     ),
-    title: 'Menu: Geral',
-    placement: 'bottom',
-  },
-  {
-    target: '[data-tour="menu-radar"]',
-    content: (
-      <div className="p-2">
-        <div className="text-xl font-bold text-blue-700 mb-1 flex items-center gap-2">📊 Radar</div>
-        <div className="text-base text-blue-900 mb-2">Veja forças e fraquezas em cada área avaliada.</div>
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 text-blue-800 text-sm mt-1 shadow-sm"><b>Exemplo:</b> Se o eixo “Internet” estiver baixo, é um sinal de que a região precisa investir em conectividade. Se “Gestão” estiver alto, é um ponto forte!</div>
-      </div>
-    ),
-    title: 'Menu: Radar',
-    placement: 'bottom',
-  },
-  {
-    target: '[data-tour="menu-barras"]',
-    content: (
-      <div className="p-2">
-        <div className="text-xl font-bold text-blue-700 mb-1 flex items-center gap-2">📈 Barras</div>
-        <div className="text-base text-blue-900 mb-2">Compare o ranking das microrregiões.</div>
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 text-blue-800 text-sm mt-1 shadow-sm"><b>Exemplo:</b> Veja se sua microrregião está entre as melhores ou precisa de mais atenção. Use para mostrar resultados em reuniões.</div>
-      </div>
-    ),
-    title: 'Menu: Barras',
     placement: 'bottom',
   },
   {
     target: '[data-tour="menu-populacao"]',
     content: (
       <div className="p-2">
-        <div className="text-xl font-bold text-blue-700 mb-1 flex items-center gap-2">👥 População</div>
-        <div className="text-base text-blue-900 mb-2">Veja quantas pessoas vivem em cada região.</div>
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 text-blue-800 text-sm mt-1 shadow-sm"><b>Exemplo:</b> Regiões mais populosas podem ter desafios maiores, mas também mais impacto ao melhorar.</div>
+        <h3 className="text-xl font-bold text-blue-700 mb-2">População</h3>
+        <p className="text-slate-800">Acesse dados demográficos e compare o tamanho das microrregiões para entender o impacto das ações.</p>
       </div>
     ),
-    title: 'Menu: População',
     placement: 'bottom',
   },
   {
-    target: '[data-tour="menu-tabela"]',
+    target: '[data-tour="menu-barras"]',
     content: (
       <div className="p-2">
-        <div className="text-xl font-bold text-blue-700 mb-1 flex items-center gap-2">📋 Eixos</div>
-        <div className="text-base text-blue-900 mb-2">Detalhe de cada área avaliada.</div>
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 text-blue-800 text-sm mt-1 shadow-sm"><b>Exemplo:</b> Descubra em qual dos 7 eixos sua região está melhor ou pior. Use para planejar ações específicas.</div>
+        <h3 className="text-xl font-bold text-blue-700 mb-2">Ranking de Maturidade</h3>
+        <p className="text-slate-800">Veja o ranking completo das microrregiões ordenadas pelo Índice Geral de Maturidade Digital.</p>
       </div>
     ),
-    title: 'Menu: Eixos',
     placement: 'bottom',
   },
   {
-    target: '[data-tour="menu-recomendacoes"]',
+    target: '[data-tour="menu-radar"]',
     content: (
       <div className="p-2">
-        <div className="text-xl font-bold text-blue-700 mb-1 flex items-center gap-2">💡 Recomendações</div>
-        <div className="text-base text-blue-900 mb-2">Dicas práticas para melhorar sua microrregião.</div>
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 text-blue-800 text-sm mt-1 shadow-sm"><b>Exemplo:</b> Receba sugestões automáticas, como “Invista em treinamento digital” ou “Melhore a troca de informações entre cidades”.</div>
+        <h3 className="text-xl font-bold text-blue-700 mb-2">Análise por Eixos</h3>
+        <p className="text-slate-800">Visualize forças e fraquezas em cada um dos 7 eixos de maturidade digital de forma gráfica.</p>
       </div>
     ),
-    title: 'Menu: Recomendações',
     placement: 'bottom',
   },
   {
     target: '[data-tour="menu-executivo"]',
     content: (
       <div className="p-2">
-        <div className="text-xl font-bold text-blue-700 mb-1 flex items-center gap-2">🎯 Executivo</div>
-        <div className="text-base text-blue-900 mb-2">Visão estratégica para gestores.</div>
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 text-blue-800 text-sm mt-1 shadow-sm"><b>Exemplo:</b> Use esta visão para tomar decisões rápidas e embasar políticas públicas.</div>
+        <h3 className="text-xl font-bold text-blue-700 mb-2">Dashboard Executivo</h3>
+        <p className="text-slate-800">Acesse KPIs, pontos fortes, oportunidades e recomendações estratégicas para tomada de decisão.</p>
       </div>
     ),
-    title: 'Menu: Executivo',
+    placement: 'bottom',
+  },
+  {
+    target: '[data-tour="menu-tabela"]',
+    content: (
+      <div className="p-2">
+        <h3 className="text-xl font-bold text-blue-700 mb-2">Detalhamento por Eixos</h3>
+        <p className="text-slate-800">Veja o desempenho detalhado de cada um dos 7 eixos de maturidade digital em formato tabular.</p>
+      </div>
+    ),
+    placement: 'bottom',
+  },
+  {
+    target: '[data-tour="menu-recomendacoes"]',
+    content: (
+      <div className="p-2">
+        <h3 className="text-xl font-bold text-blue-700 mb-2">Recomendações</h3>
+        <p className="text-slate-800">Encontre um plano de ação detalhado para cada eixo, com sugestões específicas para evolução da maturidade digital.</p>
+      </div>
+    ),
     placement: 'bottom',
   },
   {
     target: '[data-tour="menu-analise-avancada"]',
     content: (
       <div className="p-2">
-        <div className="text-xl font-bold text-blue-700 mb-1 flex items-center gap-2">📊 Avançada</div>
-        <div className="text-base text-blue-900 mb-2">Compare regiões em detalhes.</div>
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 text-blue-800 text-sm mt-1 shadow-sm"><b>Exemplo:</b> Analise tendências e veja quais regiões estão evoluindo mais rápido.</div>
+        <h3 className="text-xl font-bold text-blue-700 mb-2">Análise Avançada</h3>
+        <p className="text-slate-800">Compare duas microrregiões lado a lado e identifique diferenças específicas em cada eixo de maturidade.</p>
       </div>
     ),
-    title: 'Menu: Avançada',
     placement: 'bottom',
   },
   {
-    target: '[data-tour="filtros"]',
+    target: '[data-tour="distribuicao-inmsd"]',
     content: (
       <div className="p-2">
-        <div className="text-xl font-bold text-blue-700 mb-1 flex items-center gap-2">🔎 Filtros</div>
-        <div className="text-base text-blue-900 mb-2">Selecione a macrorregião e microrregião que deseja analisar.</div>
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 text-blue-800 text-sm mt-1 shadow-sm"><b>Exemplo:</b> Compare sua região com outras semelhantes ou filtre só por regiões emergentes.</div>
+        <h3 className="text-xl font-bold text-blue-700 mb-2">Distribuição e Desempenho</h3>
+        <p className="text-slate-800">Este painel mostra como as microrregiões da macrorregião selecionada se distribuem entre os níveis de maturidade (Emergente, Em Evolução, Avançado) e destaca a de <strong>melhor desempenho</strong>.</p>
       </div>
     ),
-    title: 'Filtros',
-    placement: 'bottom',
-  },
-  {
-    target: '[data-tour="cards-overview"]',
-    content: (
-      <div className="p-2">
-        <div className="text-xl font-bold text-blue-700 mb-1 flex items-center gap-2">📦 Indicadores</div>
-        <div className="text-base text-blue-900 mb-2">Veja os principais números da sua microrregião.</div>
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 text-blue-800 text-sm mt-1 shadow-sm"><b>Exemplo:</b> Descubra rapidamente população, classificação e outros dados essenciais.</div>
-      </div>
-    ),
-    title: 'Indicadores',
-    placement: 'bottom',
-  },
-  {
-    target: '[data-tour="radar"]',
-    content: (
-      <div className="p-2">
-        <div className="text-xl font-bold text-blue-700 mb-1 flex items-center gap-2">🕸️ Radar</div>
-        <div className="text-base text-blue-900 mb-2">Visualize forças e fraquezas de forma gráfica.</div>
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 text-blue-800 text-sm mt-1 shadow-sm"><b>Exemplo:</b> Veja se sua microrregião está acima ou abaixo da média em cada eixo.</div>
-      </div>
-    ),
-    title: 'Gráfico Radar',
     placement: 'top',
   },
   {
     target: '[data-tour="barras"]',
     content: (
       <div className="p-2">
-        <div className="text-xl font-bold text-blue-700 mb-1 flex items-center gap-2">📊 Barras</div>
-        <div className="text-base text-blue-900 mb-2">Veja o ranking das microrregiões.</div>
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 text-blue-800 text-sm mt-1 shadow-sm"><b>Exemplo:</b> Use para mostrar resultados em reuniões ou para buscar inspiração em regiões líderes.</div>
+        <h3 className="text-xl font-bold text-blue-700 mb-2">Ranking de Maturidade</h3>
+        <p className="text-slate-800">Este gráfico de barras ordena todas as microrregiões da macrorregião selecionada pelo <strong>Índice Geral de Maturidade</strong>, permitindo uma comparação visual rápida.</p>
       </div>
     ),
-    title: 'Gráfico Barras',
-    placement: 'top',
-  },
-  {
-    target: '[data-tour="populacao"]',
-    content: (
-      <div className="p-2">
-        <div className="text-xl font-bold text-blue-700 mb-1 flex items-center gap-2">👥 População</div>
-        <div className="text-base text-blue-900 mb-2">Compare o tamanho das regiões.</div>
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 text-blue-800 text-sm mt-1 shadow-sm"><b>Exemplo:</b> Regiões maiores podem demandar mais recursos e atenção.</div>
-      </div>
-    ),
-    title: 'População',
-    placement: 'top',
-  },
-  {
-    target: '[data-tour="tabela-eixos"]',
-    content: (
-      <div className="p-2">
-        <div className="text-xl font-bold text-blue-700 mb-1 flex items-center gap-2">📋 Tabela</div>
-        <div className="text-base text-blue-900 mb-2">Detalhe de cada eixo avaliado.</div>
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 text-blue-800 text-sm mt-1 shadow-sm"><b>Exemplo:</b> Veja onde sua região está melhor e onde pode evoluir.</div>
-      </div>
-    ),
-    title: 'Tabela de Eixos',
-    placement: 'top',
-  },
-  {
-    target: '[data-tour="recomendacoes"]',
-    content: (
-      <div className="p-2">
-        <div className="text-xl font-bold text-blue-700 mb-1 flex items-center gap-2">💡 Recomendações</div>
-        <div className="text-base text-blue-900 mb-2">Veja dicas práticas para evoluir.</div>
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 text-blue-800 text-sm mt-1 shadow-sm"><b>Exemplo:</b> Siga as recomendações para acelerar a transformação digital da sua região.</div>
-      </div>
-    ),
-    title: 'Recomendações',
-    placement: 'top',
-  },
-  {
-    target: '#faq-fab',
-    content: (
-      <div className="p-2">
-        <div className="text-xl font-bold text-blue-700 mb-1 flex items-center gap-2">❓ FAQ</div>
-        <div className="text-base text-blue-900 mb-2">Este botão vermelho no <b>canto inferior direito</b> abre o Dicionário e Perguntas Frequentes.</div>
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 text-blue-800 text-sm mt-1 shadow-sm"><b>Exemplo:</b> Não sabe o que é “Eixo” ou “Maturidade Digital”? Clique aqui e o AlexSUS explica de forma simples!</div>
-      </div>
-    ),
-    title: 'Ajuda e FAQ',
     placement: 'top',
   },
   {
     target: '[data-tour="scroll-top"]',
     content: (
       <div className="p-2">
-        <div className="text-xl font-bold text-blue-700 mb-1 flex items-center gap-2">⬆️ Voltar ao Topo</div>
-        <div className="text-base text-blue-900 mb-2">Este botão azul no <b>canto inferior direito</b> faz você subir rapidamente para o início da página.</div>
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 text-blue-800 text-sm mt-1 shadow-sm"><b>Exemplo:</b> Útil quando você está explorando muitos dados e quer voltar para o começo sem rolar tudo manualmente.</div>
+        <h3 className="text-xl font-bold text-blue-700 mb-2">⬆️ Voltar ao Topo</h3>
+        <p className="text-slate-800">Este botão azul no <strong>canto inferior direito</strong> faz você subir rapidamente para o início da página. Útil quando você está explorando muitos dados!</p>
       </div>
     ),
-    title: 'Voltar ao Topo',
+    placement: 'top',
+  },
+  {
+    target: '#faq-fab',
+    content: (
+      <div className="p-2">
+        <h3 className="text-xl font-bold text-blue-700 mb-2">❓ Dúvidas? Consulte o FAQ</h3>
+        <p className="text-slate-800">Este botão vermelho no <strong>canto inferior direito</strong> abre o Dicionário e Perguntas Frequentes. Encontre explicações sobre termos técnicos e tire suas dúvidas!</p>
+      </div>
+    ),
+    placement: 'top',
+  },
+  {
+    target: '[data-tour="configuracoes"]',
+    content: (
+      <div className="p-2">
+        <h3 className="text-xl font-bold text-blue-700 mb-2">⚙️ Revise o Tour Quando Quiser</h3>
+        <p className="text-slate-800">Este botão azul no <strong>canto inferior esquerdo</strong> permite que você reviva este tour a qualquer momento. Clique nele para relembrar como usar a ferramenta!</p>
+      </div>
+    ),
     placement: 'top',
   },
   {
     target: 'body',
     content: (
-      <div className="flex flex-col items-center gap-2 p-2">
-        <img src="/logo_sus_digital-removebg-preview.png" alt="AlexSUS" style={{width: 64, height: 64, marginBottom: 8, borderRadius: '50%', boxShadow: '0 2px 12px #2563eb33'}} />
-        <div className="text-2xl font-extrabold text-blue-700 mb-1 text-center drop-shadow">Pronto! Você já sabe navegar!</div>
-        <div className="text-base text-blue-900 text-center">Sempre que quiser, clique na engrenagem para rever este guia.<br/>Conte comigo, AlexSUS, para ajudar! 💙</div>
+      <div className="text-center p-2">
+        <h2 className="text-2xl font-extrabold text-blue-700 mb-2">Exploração Concluída!</h2>
+        <p className="text-base text-slate-800">Você aprendeu o básico para navegar no Radar NSD. Explore à vontade e, se precisar, clique na engrenagem ⚙️ no canto inferior para rever este guia.</p>
+        <p className="mt-3 text-lg font-semibold text-blue-800">Boas análises!</p>
       </div>
     ),
     placement: 'center',
+    disableBeacon: true,
   },
 ];
 
@@ -405,6 +344,9 @@ const Index = () => {
   const [runTour, setRunTour] = useState(() => !localStorage.getItem(GUIDE_STORAGE_KEY));
   const [showAdvanced, setShowAdvanced] = useState(true);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+  const [isFabMenuOpen, setIsFabMenuOpen] = useState(false);
+  const [selectedEixoIndex, setSelectedEixoIndex] = useState(0);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -450,6 +392,22 @@ const Index = () => {
     }
   };
 
+  const handleFiltersOpenChange = (open: boolean) => {
+    setIsFiltersOpen(open);
+    // Fecha o menu FAB se a gaveta de filtros for aberta
+    if (open) {
+      setIsFabMenuOpen(false);
+    }
+  };
+
+  const handleFabMenuToggle = () => {
+    // Fecha a gaveta de filtros se o menu FAB for aberto
+    if (isFiltersOpen) {
+      setIsFiltersOpen(false);
+    }
+    setIsFabMenuOpen(!isFabMenuOpen);
+  };
+
   const handleNavigate = (section: string) => {
     setActiveSection(section);
     // Scroll suave para a seção
@@ -460,13 +418,22 @@ const Index = () => {
   };
 
   const handleNavigateToRecommendations = (eixoIndex: number) => {
+    setSelectedEixoIndex(eixoIndex);
     setActiveSection('recomendacoes');
     setTimeout(() => {
       const element = document.querySelector(`#eixo-${eixoIndex + 1}`);
       if (element) {
         element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        // Fallback: tentar novamente após mais tempo
+        setTimeout(() => {
+          const elementRetry = document.querySelector(`#eixo-${eixoIndex + 1}`);
+          if (elementRetry) {
+            elementRetry.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }, 500);
       }
-    }, 100);
+    }, 200); // Aumentado de 100ms para 200ms
   };
 
   const handleJoyrideCallback = (data: CallBackProps) => {
@@ -556,43 +523,80 @@ const Index = () => {
       {/* Menu de Navegação Superior */}
       <NavigationMenu activeSection={activeSection} onNavigate={handleNavigate} />
 
-
-
-      {/* Conteúdo Principal */}
-      <main className="container mx-auto px-4 py-8">
-        {/* Filtros */}
-        <div data-tour="filtros">
-          <Filters
-            data={data}
-            selectedMicroregiao={selectedMicroregiao}
-            filters={filters}
-            onMicroregiaoChange={handleMicroregiaoChange}
-            onFiltersChange={handleFiltersChange}
-            selectedData={selectedData}
-          />
-        </div>
-
-        {/* Cabeçalho detalhado da microrregião - só na aba Geral */}
-        {activeSection === 'overview' && selectedData && (
-          <div className="mb-8">
-            <DashboardHeader data={selectedData} allData={data} />
-          </div>
-        )}
-
-        {/* Seções do Dashboard */}
-        {activeSection === 'overview' && (
-          <div className="space-y-8">
-            <div data-tour="cards-overview">
-              <StatsOverview data={data} selectedData={selectedData} macroFiltro={filters.macrorregiao} />
-            </div>
-            <div data-tour="populacao">
-              <PopulationChartComponent
-                data={filteredData}
+      {/* Botão de Filtros para Mobile */}
+      <div className="lg:hidden fixed top-4 right-4 z-50">
+        <Drawer open={isFiltersOpen} onOpenChange={handleFiltersOpenChange}>
+          <DrawerTrigger asChild>
+            <Button size="icon" className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg">
+              <Filter className="h-5 w-5" />
+            </Button>
+          </DrawerTrigger>
+          <DrawerContent>
+            <DrawerHeader className="text-left">
+              <DrawerTitle>Filtros de Análise</DrawerTitle>
+              <DrawerDescription>
+                Selecione os filtros para refinar os dados exibidos no dashboard.
+              </DrawerDescription>
+            </DrawerHeader>
+            <div className="p-4 overflow-y-auto">
+              <Filters
+                data={data}
                 selectedMicroregiao={selectedMicroregiao}
+                filters={filters}
+                onMicroregiaoChange={(microrregiao) => {
+                  handleMicroregiaoChange(microrregiao);
+                  // Opcional: fechar ao selecionar, mas vamos manter aberto para múltiplos filtros
+                  // setIsFiltersOpen(false); 
+                }}
+                onFiltersChange={handleFiltersChange}
+                selectedData={selectedData}
               />
             </div>
-            <div className="w-full h-0.5 bg-gray-200 my-6 rounded-full" />
-            <div data-tour="barras">
+            <DrawerFooter>
+              <Button onClick={() => setIsFiltersOpen(false)}>Ver Resultados</Button>
+            </DrawerFooter>
+          </DrawerContent>
+        </Drawer>
+      </div>
+
+      {/* Conteúdo Principal */}
+      <main className="container mx-auto px-4 py-8 flex gap-8">
+        {/* Filtros - Visível apenas em telas grandes */}
+        <aside className="hidden lg:block w-1/4 xl:w-1/5 sticky top-20 self-start">
+          <div data-tour="filtros">
+            <Filters
+              data={data}
+              selectedMicroregiao={selectedMicroregiao}
+              filters={filters}
+              onMicroregiaoChange={handleMicroregiaoChange}
+              onFiltersChange={handleFiltersChange}
+              selectedData={selectedData}
+            />
+          </div>
+        </aside>
+
+        {/* Conteúdo do Dashboard */}
+        <div className="flex-1 min-w-0">
+          {/* Cabeçalho detalhado da microrregião - só na aba Geral */}
+          {activeSection === 'overview' && selectedData && (
+            <div className="mb-8">
+              <DashboardHeader data={selectedData} allData={data} />
+            </div>
+          )}
+
+          {/* Seções do Dashboard */}
+          {activeSection === 'overview' && (
+            <div className="space-y-8">
+              <div data-tour="cards-overview">
+                <StatsOverview data={data} selectedData={selectedData} macroFiltro={filters.macrorregiao} />
+              </div>
+              <div data-tour="populacao">
+                <PopulationChartComponent
+                  data={filteredData}
+                  selectedMicroregiao={selectedMicroregiao}
+                />
+              </div>
+              <div className="w-full h-0.5 bg-gray-200 my-6 rounded-full" />
               <DistribuicaoINMSD
                 showDistribuicao={showDistribuicao}
                 macroAtiva={macroAtiva}
@@ -601,191 +605,196 @@ const Index = () => {
                 topPerformer={topPerformer}
               />
               <div className="mt-8" />
+              <div data-tour="barras">
+                <BarChartComponent
+                  data={filteredData}
+                  selectedMicroregiao={selectedMicroregiao}
+                  macroFiltro={filters.macrorregiao}
+                />
+              </div>
+              <div className="mt-12" />
+              {selectedData ? (
+                <>
+                  <div data-tour="radar">
+                    <DashboardRadarChart
+                      data={selectedData}
+                      medians={medians}
+                      onNavigateToRecommendations={handleNavigateToRecommendations}
+                    />
+                  </div>
+                  <ExecutiveDashboard
+                    data={data}
+                    selectedMicroregiao={selectedMicroregiao}
+                    medians={medians}
+                  />
+                  <div data-tour="tabela-eixos">
+                    <EixosTable data={selectedData} medians={medians} />
+                  </div>
+                  <div data-tour="recomendacoes">
+                    <RecommendationsPanel data={selectedData} initialEixoIndex={selectedEixoIndex} />
+                  </div>
+                  <AdvancedAnalysis
+                    data={data}
+                    selectedMicroregiao={selectedMicroregiao}
+                    medians={medians}
+                  />
+                </>
+              ) : (
+                <div className="text-center py-12">
+                  <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-8 max-w-md mx-auto">
+                    <div className="text-blue-600 text-6xl mb-4">📊</div>
+                    <h3 className="text-xl font-semibold text-blue-900 mb-2">
+                      Selecione uma Microrregião
+                    </h3>
+                    <p className="text-blue-700 mb-4">
+                      Use os filtros acima para escolher uma microrregião e visualizar todos os dados do dashboard.
+                    </p>
+                    <div className="text-sm text-blue-600">
+                      💡 <strong>Dica:</strong> Você pode filtrar por macrorregião ou classificação para encontrar a região desejada.
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeSection === 'radar' && (
+            selectedData ? (
+              <div data-tour="radar">
+                <DashboardRadarChart
+                  data={selectedData}
+                  medians={medians}
+                  onNavigateToRecommendations={handleNavigateToRecommendations}
+                />
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-8 max-w-md mx-auto">
+                  <div className="text-blue-600 text-6xl mb-4">📊</div>
+                  <h3 className="text-xl font-semibold text-blue-900 mb-2">Selecione uma Microrregião</h3>
+                  <p className="text-blue-700">Para visualizar o gráfico radar, selecione uma microrregião nos filtros.</p>
+                </div>
+              </div>
+            )
+          )}
+
+          {activeSection === 'barras' && (
+            <div data-tour="barras">
               <BarChartComponent
                 data={filteredData}
                 selectedMicroregiao={selectedMicroregiao}
                 macroFiltro={filters.macrorregiao}
               />
             </div>
-            <div className="mt-12" />
-            {selectedData ? (
-              <>
-                <div data-tour="radar">
-                  <DashboardRadarChart
-                    data={selectedData}
-                    medians={medians}
-                    onNavigateToRecommendations={handleNavigateToRecommendations}
-                  />
-                </div>
-                <ExecutiveDashboard
-                  data={data}
-                  selectedMicroregiao={selectedMicroregiao}
-                  medians={medians}
-                />
-                <div data-tour="tabela-eixos">
-                  <EixosTable data={selectedData} medians={medians} />
-                </div>
-                <div data-tour="recomendacoes">
-                  <RecommendationsPanel data={selectedData} />
-                </div>
-                <AdvancedAnalysis
-                  data={data}
-                  selectedMicroregiao={selectedMicroregiao}
-                  medians={medians}
-                />
-              </>
+          )}
+
+          {activeSection === 'populacao' && (
+            <div data-tour="populacao">
+              <PopulationChartComponent
+                data={filteredData}
+                selectedMicroregiao={selectedMicroregiao}
+              />
+            </div>
+          )}
+
+          {activeSection === 'tabela' && (
+            selectedData ? (
+              <div data-tour="tabela-eixos">
+                <EixosTable data={selectedData} medians={medians} />
+              </div>
             ) : (
               <div className="text-center py-12">
                 <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-8 max-w-md mx-auto">
                   <div className="text-blue-600 text-6xl mb-4">📊</div>
-                  <h3 className="text-xl font-semibold text-blue-900 mb-2">
-                    Selecione uma Microrregião
-                  </h3>
-                  <p className="text-blue-700 mb-4">
-                    Use os filtros acima para escolher uma microrregião e visualizar todos os dados do dashboard.
-                  </p>
-                  <div className="text-sm text-blue-600">
-                    💡 <strong>Dica:</strong> Você pode filtrar por macrorregião ou classificação para encontrar a região desejada.
-                  </div>
+                  <h3 className="text-xl font-semibold text-blue-900 mb-2">Selecione uma Microrregião</h3>
+                  <p className="text-blue-700">Para visualizar a tabela de eixos, selecione uma microrregião nos filtros.</p>
                 </div>
               </div>
-            )}
-          </div>
-        )}
+            )
+          )}
 
-        {activeSection === 'radar' && (
-          selectedData ? (
-            <div data-tour="radar">
-              <DashboardRadarChart
-                data={selectedData}
+          {activeSection === 'recomendacoes' && (
+            selectedData ? (
+              <div data-tour="recomendacoes">
+                <RecommendationsPanel data={selectedData} initialEixoIndex={selectedEixoIndex} />
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-8 max-w-md mx-auto">
+                  <div className="text-blue-600 text-6xl mb-4">📊</div>
+                  <h3 className="text-xl font-semibold text-blue-900 mb-2">Selecione uma Microrregião</h3>
+                  <p className="text-blue-700">Para visualizar as recomendações, selecione uma microrregião nos filtros.</p>
+                </div>
+              </div>
+            )
+          )}
+
+          {activeSection === 'executivo' && (
+            selectedData ? (
+              <ExecutiveDashboard
+                data={data}
+                selectedMicroregiao={selectedMicroregiao}
                 medians={medians}
-                onNavigateToRecommendations={handleNavigateToRecommendations}
               />
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-8 max-w-md mx-auto">
-                <div className="text-blue-600 text-6xl mb-4">📊</div>
-                <h3 className="text-xl font-semibold text-blue-900 mb-2">Selecione uma Microrregião</h3>
-                <p className="text-blue-700">Para visualizar o gráfico radar, selecione uma microrregião nos filtros.</p>
+            ) : (
+              <div className="text-center py-12">
+                <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-8 max-w-md mx-auto">
+                  <div className="text-blue-600 text-6xl mb-4">📊</div>
+                  <h3 className="text-xl font-semibold text-blue-900 mb-2">Selecione uma Microrregião</h3>
+                  <p className="text-blue-700">Para visualizar o dashboard executivo, selecione uma microrregião nos filtros.</p>
+                </div>
               </div>
-            </div>
-          )
-        )}
+            )
+          )}
 
-        {activeSection === 'barras' && (
-          <div data-tour="barras">
-            <BarChartComponent
-              data={filteredData}
-              selectedMicroregiao={selectedMicroregiao}
-              macroFiltro={filters.macrorregiao}
-            />
-          </div>
-        )}
-
-        {activeSection === 'populacao' && (
-          <div data-tour="populacao">
-            <PopulationChartComponent
-              data={filteredData}
-              selectedMicroregiao={selectedMicroregiao}
-            />
-          </div>
-        )}
-
-        {activeSection === 'tabela' && (
-          selectedData ? (
-            <div data-tour="tabela-eixos">
-              <EixosTable data={selectedData} medians={medians} />
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-8 max-w-md mx-auto">
-                <div className="text-blue-600 text-6xl mb-4">📊</div>
-                <h3 className="text-xl font-semibold text-blue-900 mb-2">Selecione uma Microrregião</h3>
-                <p className="text-blue-700">Para visualizar a tabela de eixos, selecione uma microrregião nos filtros.</p>
+          {activeSection === 'analise-avancada' && (
+            selectedData ? (
+              <AdvancedAnalysis
+                data={data}
+                selectedMicroregiao={selectedMicroregiao}
+                medians={medians}
+              />
+            ) : (
+              <div className="text-center py-12">
+                <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-8 max-w-md mx-auto">
+                  <div className="text-blue-600 text-6xl mb-4">📊</div>
+                  <h3 className="text-xl font-semibold text-blue-900 mb-2">Selecione uma Microrregião</h3>
+                  <p className="text-blue-700">Para visualizar a análise avançada, selecione uma microrregião nos filtros.</p>
+                </div>
               </div>
-            </div>
-          )
-        )}
-
-        {activeSection === 'recomendacoes' && (
-          selectedData ? (
-            <div data-tour="recomendacoes">
-              <RecommendationsPanel data={selectedData} />
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-8 max-w-md mx-auto">
-                <div className="text-blue-600 text-6xl mb-4">📊</div>
-                <h3 className="text-xl font-semibold text-blue-900 mb-2">Selecione uma Microrregião</h3>
-                <p className="text-blue-700">Para visualizar as recomendações, selecione uma microrregião nos filtros.</p>
-              </div>
-            </div>
-          )
-        )}
-
-        {activeSection === 'executivo' && (
-          selectedData ? (
-            <ExecutiveDashboard
-              data={data}
-              selectedMicroregiao={selectedMicroregiao}
-              medians={medians}
-            />
-          ) : (
-            <div className="text-center py-12">
-              <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-8 max-w-md mx-auto">
-                <div className="text-blue-600 text-6xl mb-4">📊</div>
-                <h3 className="text-xl font-semibold text-blue-900 mb-2">Selecione uma Microrregião</h3>
-                <p className="text-blue-700">Para visualizar o dashboard executivo, selecione uma microrregião nos filtros.</p>
-              </div>
-            </div>
-          )
-        )}
-
-        {activeSection === 'analise-avancada' && (
-          selectedData ? (
-            <AdvancedAnalysis
-              data={data}
-              selectedMicroregiao={selectedMicroregiao}
-              medians={medians}
-            />
-          ) : (
-            <div className="text-center py-12">
-              <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-8 max-w-md mx-auto">
-                <div className="text-blue-600 text-6xl mb-4">📊</div>
-                <h3 className="text-xl font-semibold text-blue-900 mb-2">Selecione uma Microrregião</h3>
-                <p className="text-blue-700">Para visualizar a análise avançada, selecione uma microrregião nos filtros.</p>
-              </div>
-            </div>
-          )
-        )}
+            )
+          )}
+        </div>
       </main>
 
-      {/* Botão de Configurações */}
-      <Button
-        size="icon"
-        className="fixed bottom-6 left-6 w-14 h-14 rounded-full shadow-lg bg-white hover:bg-gray-50 text-blue-600 border-2 border-blue-200 transition-all duration-300 hover:scale-110 z-50"
-        onClick={() => setRunTour(true)}
-      >
-        <Settings className="w-6 h-6" />
-      </Button>
-
-      {/* Botão de Ajuda */}
-      <div data-tour="faq">
-        <HelpButton />
-      </div>
-
-      {/* Botão Voltar ao Topo */}
-      {showScrollTop && (
+      {/* Menu de Ações Flutuantes (FAB) */}
+      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-center gap-3">
+        {/* Botões secundários que aparecem quando o menu está aberto */}
+        {isFabMenuOpen && (
+          <>
+            {showScrollTop && (
+              <Button
+                data-tour="scroll-top"
+                onClick={scrollToTop}
+                size="icon"
+                className="w-14 h-14 rounded-full shadow-lg bg-blue-600 hover:bg-blue-700 text-white transition-all duration-300 animate-fade-in-up"
+              >
+                <ArrowUp className="w-6 h-6" />
+              </Button>
+            )}
+            <HelpButton />
+          </>
+        )}
+        {/* Botão principal que abre/fecha o menu */}
         <Button
-          data-tour="scroll-top"
-          onClick={scrollToTop}
+          data-tour="configuracoes"
           size="icon"
-          className="fixed bottom-6 right-20 w-14 h-14 rounded-full shadow-lg bg-blue-600 hover:bg-blue-700 text-white z-40 transition-all duration-300 hover:scale-110"
+          className="w-16 h-16 rounded-full shadow-xl bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-2 border-blue-400 transition-all duration-300 hover:scale-110 z-50 hover:shadow-2xl"
+          onClick={handleFabMenuToggle}
         >
-          <ArrowUp className="w-6 h-6" />
+          <Settings className={`w-7 h-7 transition-transform duration-300 ${isFabMenuOpen ? 'rotate-90' : ''}`} />
         </Button>
-      )}
+      </div>
     </div>
   );
 };

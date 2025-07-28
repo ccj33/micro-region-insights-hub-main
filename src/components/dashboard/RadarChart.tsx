@@ -87,100 +87,107 @@ export function DashboardRadarChart({ data, medians, onNavigateToRecommendations
   };
 
   return (
-    <div data-section="radar" className="bg-card rounded-lg border p-6 shadow-sm">
+    <div data-section="radar" className="bg-card rounded-lg border p-4 sm:p-6 shadow-sm">
       {/* Cabeçalho */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-primary/10 rounded-lg">
-            <Target className="h-5 w-5 text-primary" />
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+        <div className="flex-1">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-primary/10 rounded-lg">
+              <Target className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <h3 className="text-base sm:text-lg font-semibold">Análise por Eixos</h3>
+              <p className="text-xs sm:text-sm text-muted-foreground">
+                Comparativo da microrregião e medianas
+              </p>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <h3 className="text-lg font-semibold">Análise de Maturidade por Eixos</h3>
-            <button className="ml-2 p-1 rounded hover:bg-muted transition-colors" onClick={() => setShowRadar(v => !v)} aria-label={showRadar ? 'Ocultar bloco' : 'Mostrar bloco'} type="button">
-              {showRadar ? <Eye className="h-5 w-5 text-primary" /> : <EyeOff className="h-5 w-5 text-primary" />}
-            </button>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            Comparação dos eixos da microrregião selecionada com referências de maturidade
-          </p>
         </div>
-        
-        {/* Nome da microrregião com destaque */}
-        <div className="text-right">
-          <div className="text-2xl font-bold text-primary">
+        <div className="text-left sm:text-right">
+          <div className="text-lg sm:text-xl font-bold text-primary">
             {data.microrregiao}
-          </div>
-          <div className="text-sm text-muted-foreground">
-            Microrregião Selecionada
           </div>
         </div>
       </div>
 
-      {/* Botão de exportar */}
-      <div className="mb-4 flex justify-end">
+      {/* Legenda Estática */}
+      <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs sm:text-sm mb-4 p-2 bg-muted rounded-md">
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+          <span>Microrregião Selecionada</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 rounded-full bg-gray-400"></div>
+          <span>Mediana dos Eixos</span>
+        </div>
+      </div>
+
+      {/* Botão de exportar e visibilidade */}
+      <div className="flex items-center justify-end gap-2 mb-4">
+        <Button 
+          onClick={() => setShowRadar(v => !v)}
+          variant="outline"
+          size="sm"
+          aria-label={showRadar ? 'Ocultar gráfico' : 'Mostrar gráfico'}
+        >
+          {showRadar ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+        </Button>
         <Button 
           onClick={exportChartAsImage}
           className="export-button bg-blue-600 hover:bg-blue-700 text-white"
           size="sm"
         >
           <Download className="h-4 w-4 mr-2" />
-          Exportar Gráfico
+          Exportar
         </Button>
       </div>
 
-      {/* Caixinhas dos eixos clicáveis - ANTES do gráfico */}
+      {/* Caixinhas dos eixos clicáveis */}
       {isLoaded && (
         <div className="mb-4">
           <div className="p-2 bg-primary/10 border border-primary/20 rounded-lg mb-3">
             <p className="text-xs text-primary font-medium text-center">
-              💡 <strong>Passe o mouse nas caixinhas</strong> para destacar o eixo no gráfico • <strong>Clique</strong> para ver recomendações
+              💡 <strong>Dica:</strong> Clique em um eixo para ver as recomendações.
             </p>
           </div>
-          <div className="axis-cards grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2 mb-3">
+          <div className="axis-cards grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
             {EIXOS_NAMES.map((nome, index) => {
               const eixoKey = `eixo_${index + 1}` as keyof MicroRegionData;
               const valor = parseFloat(String(data[eixoKey]).replace(',', '.'));
               const mediana = medians[eixoKey] || 0;
               const diferenca = valor - mediana;
               
-              let statusColor = 'bg-gray-200 text-gray-700';
+              let statusColor = 'bg-gray-100 text-gray-800 border-gray-200';
               let statusText = 'Na Mediana';
-              let statusIcon = '=' as string;
+              let statusIcon = '=';
               
-              // Trocar statusColor para azul/cinza
               if (diferenca > 0.1) {
                 statusColor = 'bg-green-100 text-green-700 border-green-300';
                 statusText = 'Acima da Mediana';
                 statusIcon = '↑';
               } else if (diferenca < -0.1) {
                 statusColor = 'bg-yellow-50 text-yellow-600 border-yellow-200';
-                statusText = 'Oportunidade de melhoria em relação à mediana';
+                statusText = 'Abaixo da Mediana';
                 statusIcon = '↓';
-              } else {
-                statusColor = 'bg-gray-100 text-gray-800';
-                statusText = 'Na Mediana';
-                statusIcon = '=';
               }
-
+              
               return (
                 <button
                   key={index}
                   onClick={() => onNavigateToRecommendations?.(index)}
                   onMouseEnter={() => setHoveredEixo(index)}
                   onMouseLeave={() => setHoveredEixo(null)}
-                  className={`p-3 rounded-lg border-2 border-transparent hover:border-primary ${statusColor} hover:shadow-lg`}
+                  className={`p-2 text-center rounded-lg border-2 border-transparent hover:border-primary ${statusColor} hover:shadow-md transition-all`}
                 >
-                  <div className="text-center">
-                    <div className="text-xs font-bold mb-1">Eixo {index + 1}</div>
-                    <div className="text-xs opacity-90">{nome}</div>
-                    <div className="text-xs font-bold mt-1">{valor.toFixed(2)}</div>
-                    <div className="text-xs opacity-75 flex items-center justify-center gap-1">
-                      <span>{statusIcon}</span>
-                      <span>{statusText}</span>
-                    </div>
-                    <div className="text-xs opacity-60 mt-1 text-gray-500">
-                      Mediana: {mediana.toFixed(2)}
-                    </div>
+                  <div className="text-xs font-bold">Eixo {index + 1}</div>
+                  <div className="text-xs opacity-90 leading-tight my-1">{nome}</div>
+                  <div className="text-sm font-bold text-primary">{valor.toFixed(2)}</div>
+                  <div className="text-xs opacity-70 text-muted-foreground">
+                    (Mediana: {mediana.toFixed(2)})
+                  </div>
+                  <div className="text-xs mt-1 flex items-center justify-center gap-1">
+                    <span className="font-bold">{statusIcon}</span>
+                    <span className="text-xs">{statusText}</span>
                   </div>
                 </button>
               );
@@ -190,7 +197,7 @@ export function DashboardRadarChart({ data, medians, onNavigateToRecommendations
       )}
       
       {showRadar && (
-        <div className="h-[350px] sm:h-[400px] md:h-[450px] w-full mb-4">
+        <div className="w-full h-[300px] sm:h-[450px]">
           <Suspense fallback={<RadarChartSkeleton />}>
             <RadarChartComponent 
               data={data}
@@ -204,17 +211,10 @@ export function DashboardRadarChart({ data, medians, onNavigateToRecommendations
         </div>
       )}
 
-      {!isLoaded && (
-        <div className="mt-4 p-4 bg-muted/30 rounded-lg">
-          <div className="text-sm text-muted-foreground text-center">
-            <p>Carregando análise de maturidade...</p>
-          </div>
-        </div>
-      )}
       {/* Fonte ABNT */}
       <div className="pt-2 text-right w-full">
-        <span style={{ fontSize: '11px', color: '#64748b' }}>
-          Fonte: BRASIL. Ministério da Saúde. Secretaria de Informação e Saúde Digital. Disponível em: <a href="https://www.gov.br/saude/pt-br/composicao/seidigi" target="_blank" rel="noopener noreferrer" style={{ color: '#2563eb', textDecoration: 'underline' }}>https://www.gov.br/saude/pt-br/composicao/seidigi</a>.
+        <span className="text-[10px] sm:text-xs text-muted-foreground">
+          Fonte: Ministério da Saúde/SEIDIGI
         </span>
       </div>
     </div>

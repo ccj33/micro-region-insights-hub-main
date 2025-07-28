@@ -1,6 +1,6 @@
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell, LabelList } from 'recharts';
 import { MicroRegionData } from "@/types/dashboard";
-import { MapPin } from "lucide-react";
+import { MapPin, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface PopulationChartComponentProps {
@@ -11,6 +11,14 @@ interface PopulationChartComponentProps {
 
 export function PopulationChartComponent({ data, selectedMicroregiao, onLoad }: PopulationChartComponentProps) {
   const [hoveredBar, setHoveredBar] = useState<number | null>(null);
+
+  // Ícones para cada categoria
+  const CATEGORY_ICONS: Record<string, JSX.Element> = {
+    'Pequena (< 30 mil)': <span className="inline-block text-gray-400">👶</span>,
+    'Média (30 mil a 60 mil)': <span className="inline-block text-sky-400">🧒</span>,
+    'Grande (60 mil a 100 mil)': <span className="inline-block text-purple-400">🧑‍🎓</span>,
+    'Muito Grande (> 100 mil)': <span className="inline-block text-blue-600">🧑‍🎓</span>,
+  };
 
   useEffect(() => {
     // Simular carregamento do gráfico
@@ -53,28 +61,32 @@ export function PopulationChartComponent({ data, selectedMicroregiao, onLoad }: 
   const selectedData = selectedMicroregiao ? data.find(item => item.microrregiao === selectedMicroregiao) : null;
   const selectedCategory = selectedData ? categorizePopulation(parseInt(String(selectedData.populacao).replace(/\./g, ''))) : null;
 
-  // Nova paleta de cores suaves
   const CATEGORY_COLORS: Record<string, string> = {
-    'Pequena (< 30 mil)': '#cbd5e1', // cinza-azulado
-    'Média (30 mil a 60 mil)': '#38bdf8', // azul claro
-    'Grande (60 mil a 100 mil)': '#a78bfa', // lilás
-    'Muito Grande (> 100 mil)': '#0ea5e9', // azul vibrante
+    'Pequena (< 30 mil)': '#a8a29e', // stone-400
+    'Média (30 mil a 60 mil)': '#38bdf8', // sky-400
+    'Grande (60 mil a 100 mil)': '#a78bfa', // violet-400
+    'Muito Grande (> 100 mil)': '#3b82f6', // blue-500
   };
 
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
+      const isSelected = data.isSelected;
       return (
-        <div className="bg-card border border-border rounded-lg p-3 shadow-lg">
-          <p className="font-medium text-foreground">{data.category}</p>
-          <p className="text-primary">Microrregiões: {data.count}</p>
-          <p className="text-muted-foreground text-sm">
+        <div className="bg-white border-2 border-blue-400 rounded-xl p-4 shadow-2xl min-w-[220px]">
+          <div className="flex items-center gap-2 mb-1">
+            {isSelected && <MapPin className="w-5 h-5 text-blue-500" />}
+            <span className="font-bold text-blue-900 text-base">{data.category}</span>
+          </div>
+          <div className="text-lg font-extrabold text-blue-700 mb-1">{data.count} microrregiões</div>
+          <div className="text-sm text-gray-500 mb-1">{data.percent}% do total</div>
+          <div className="text-xs text-gray-400">
             Pop. Total: {typeof data.totalPop === 'number' ? data.totalPop.toLocaleString('pt-BR') : '-'}
-          </p>
-          {selectedMicroregiao && Array.isArray(data.microrregioes) && data.microrregioes.includes(selectedMicroregiao) && (
-            <p className="text-primary text-sm mt-1">
-              ✓ Inclui {selectedMicroregiao}
-            </p>
+          </div>
+          {isSelected && selectedMicroregiao && (
+            <div className="mt-2 flex items-center gap-1 text-blue-600 text-xs font-semibold">
+              <MapPin className="w-4 h-4" /> Sua microrregião
+            </div>
           )}
         </div>
       );
@@ -103,134 +115,137 @@ export function PopulationChartComponent({ data, selectedMicroregiao, onLoad }: 
           }
         : null;
     })
-    .filter(Boolean);
+    .filter(Boolean) as (typeof chartData[0] & { percent: number; isSelected: boolean })[];
 
   return (
-    <div data-section="populacao" className="bg-card rounded-lg border p-6 shadow-lg" style={{ width: '100%', height: '100%', position: 'relative', minHeight: 400 }}>
-      {selectedMicroregiao && selectedData && (
-        <div style={{ position: 'absolute', top: 16, left: '50%', transform: 'translateX(-50%)', zIndex: 10, background: 'rgba(255,255,255,0.92)', borderRadius: 8, padding: '6px 18px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', fontWeight: 600, fontSize: 16, color: '#1e3a8a', textAlign: 'center' }}>
-          <div style={{ fontWeight: 400, fontSize: 13, color: '#666', marginBottom: 2 }}>
-            Macrorregião: <strong>{selectedData.macrorregiao || 'Todas'}</strong>
-          </div>
-          <div style={{ fontWeight: 600, fontSize: 16, color: '#1e3a8a' }}>{selectedMicroregiao}</div>
+    <div
+      data-section="populacao"
+      className="bg-slate-50 rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 border border-slate-200/80 p-6 flex flex-col h-full"
+    >
+      {/* 1. HEADER SECTION */}
+      <div className="flex justify-between items-start mb-4">
+        <div>
+          <h3 className="text-xl font-bold text-slate-800 tracking-normal">Distribuição Populacional</h3>
+          <p className="text-sm text-slate-500">Microrregiões por faixa de população</p>
         </div>
-      )}
-      {/* Legenda compacta */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-2 mb-2 mt-2">
-        <ul className="flex flex-wrap gap-2 text-xs sm:justify-end justify-center">
-          {POPULATION_ORDER.map((category, idx) => {
-            const entry = pyramidData.find(e => e.category === category);
-            if (!entry) return null;
-            return (
-              <li key={category} className="flex items-center gap-1">
-                <span style={{
-                  display: 'inline-block',
-                  width: 10,
-                  height: 10,
-                  borderRadius: 3,
-                  background: CATEGORY_COLORS[category] || '#bdbdbd',
-                  border: entry.isSelected ? '2px solid #0ea5e9' : '1px solid #cbd5e1',
-                  boxShadow: entry.isSelected ? '0 1px 4px #0ea5e955' : '0 1px 2px rgba(0,0,0,0.08)'
-                }}></span>
-                <span className={entry.isSelected ? 'font-bold text-sky-700' : 'text-gray-700'} style={{ fontSize: '11px' }}>
-                  {category}
-                  {entry.isSelected && <span className="ml-1 text-xs text-sky-700 font-medium">(Sua microrregião)</span>}
-                </span>
-              </li>
-            );
-          })}
-        </ul>
+                {selectedMicroregiao && selectedData && (
+          <div className="text-right flex-shrink-0 ml-4">
+            <div className="text-xs text-slate-500">Macrorregião</div>
+            <div className="text-sm text-slate-600 font-medium mb-1">
+              {selectedData.macrorregiao || 'Todas'}
+            </div>
+            <div className="text-xs text-slate-500">Sua Microrregião</div>
+            <div className="flex items-center gap-2 text-sky-600 font-bold">
+              <MapPin className="h-4 w-4 text-sky-500" />
+              <span>{selectedMicroregiao}</span>
+            </div>
+          </div>
+        )}
       </div>
-      <div className="font-semibold text-blue-900 text-base mb-2">Distribuição Populacional</div>
-      <ResponsiveContainer width="100%" height={320}>
+
+      {/* 2. CHART SECTION - with legend on the right */}
+      <div className="flex-grow flex flex-col md:flex-row items-center gap-6 mt-4">
+        {/* The chart itself */}
+        <div className="w-full md:w-2/3 h-[300px]">
+          <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={pyramidData}
           layout="vertical"
-          margin={{ top: 10, right: 60, left: 40, bottom: 10 }}
-          barCategoryGap={32}
-        >
-          <XAxis type="number" hide domain={[0, Math.max(...pyramidData.map(d => d.count)) * 1.1]} />
-          <YAxis type="category" dataKey="category" tick={{ fontSize: 13 }} width={120} />
-          <Tooltip
-            cursor={{ fill: 'rgba(14,165,233,0.07)' }}
-            content={<CustomTooltip />}
-            formatter={(value, name, props) => [`${value} microrregiões (${props.payload.percent}%)`, '']}
-          />
-          <Bar dataKey="count" radius={10} onMouseLeave={() => setHoveredBar(null)}>
+              margin={{ top: 5, right: 60, left: 10, bottom: 5 }}
+              barCategoryGap="35%"
+            >
+              <XAxis type="number" hide domain={[0, 'dataMax + 5']} />
+              <YAxis
+                type="category"
+                dataKey="category"
+                width={140}
+                tickLine={false}
+                axisLine={false}
+                tick={({ x, y, payload }) => (
+                  <g transform={`translate(${x - 10},${y})`}>
+                    <text x={0} y={0} dy={4} textAnchor="end" fill="#475569" className="text-xs font-semibold">
+                      {payload.value.split('(')[0]}
+                    </text>
+                     <text x={0} y={0} dy={16} textAnchor="end" fill="#64748b" className="text-xs">
+                      {payload.value.match(/\(.*\)/)?.[0]}
+                    </text>
+                  </g>
+                )}
+              />
+              <Tooltip cursor={{ fill: 'rgba(2, 132, 199, 0.05)' }} content={<CustomTooltip />} />
+              <Bar dataKey="count" minPointSize={5} radius={[0, 8, 8, 0]}>
             <LabelList 
               dataKey="count" 
               position="right" 
-              content={(props) => {
-                const { x, y, value, index } = props;
-                const entry = pyramidData[index];
-                if (!entry) return null;
-                const xNum = typeof x === 'number' ? x : 0;
-                const yNum = typeof y === 'number' ? y : 0;
-                if (entry.isSelected) {
-                  return (
-                    <g>
-                      <rect
-                        x={xNum + 4}
-                        y={yNum - 6}
-                        width={120}
-                        height={32}
-                        rx={6}
-                        fill="#fff"
-                        opacity={0.92}
-                      />
-                      <text
-                        x={xNum + 12}
-                        y={yNum + 8}
-                        fill="#0ea5e9"
-                        fontWeight={900}
-                        fontSize={15}
-                      >
-                        {value} microrreg.
+                  offset={8}
+                  content={({ x, y, value }) => (
+                     <text x={Number(x) + 8} y={Number(y) + 16} fill="#1e293b" fontSize={13} fontWeight="bold">
+                      {`${value} microrreg.`}
                       </text>
-                      <text
-                        x={xNum + 12}
-                        y={yNum + 24}
-                        fill="#0ea5e9"
-                        fontWeight={700}
-                        fontSize={12}
-                      >
-                        (Sua microrregião)
-                      </text>
-                    </g>
-                  );
-                }
-                return (
-                  <text
-                    x={xNum + 8}
-                    y={yNum + 10}
-                    fill="#0f172a"
-                    fontWeight={700}
-                    fontSize={13}
-                  >
-                    {value} microrreg.
-                  </text>
-                );
-              }}
+                  )}
             />
             {pyramidData.map((entry, idx) => (
               <Cell
                 key={`cell-${idx}`}
-                fill={CATEGORY_COLORS[entry.category] || '#bdbdbd'}
-                onMouseEnter={() => setHoveredBar(idx)}
+                    fill={CATEGORY_COLORS[entry.category]}
                 style={{
-                  opacity: entry.isSelected ? 0.95 : 1,
-                  stroke: entry.isSelected ? '#0ea5e9' : 'none',
-                  strokeWidth: entry.isSelected ? 3 : 0,
-                  filter: entry.isSelected ? 'drop-shadow(0 2px 8px #0ea5e955)' : 'drop-shadow(0 1px 3px #64748b22)'
-                }}
+                      transition: 'opacity 0.2s',
+                      opacity: hoveredBar === null ? (entry.isSelected ? 1 : 0.8) : hoveredBar === idx ? 1 : 0.4,
+                      stroke: entry.isSelected ? '#0284c7' : 'none', // sky-600
+                      strokeWidth: 3,
+                    }}
+                    onMouseEnter={() => setHoveredBar(idx)}
+                    onMouseLeave={() => setHoveredBar(null)}
               />
             ))}
           </Bar>
         </BarChart>
       </ResponsiveContainer>
-      <div className="pt-2 text-right w-full">
-        <span style={{ fontSize: '11px', color: '#64748b' }}>
-          Fonte: BRASIL. Instituto Brasileiro de Geografia e Estatística – IBGE. Censo Demográfico 2022. Disponível em: <a href="https://www.ibge.gov.br/estatisticas/sociais/populacao/22827-censo-demografico-2022.html" target="_blank" rel="noopener noreferrer" style={{ color: '#2563eb', textDecoration: 'underline' }}>https://www.ibge.gov.br/estatisticas/sociais/populacao/22827-censo-demografico-2022.html</a>.
+        </div>
+
+        {/* The legend on the right */}
+        <div className="w-full md:w-1/3 flex flex-col justify-center gap-2 pl-4 md:border-l border-t md:border-t-0 border-slate-200 pt-4 md:pt-0">
+          <ul className="space-y-1.5">
+            {pyramidData.map((entry) => (
+              <li
+                key={entry.category}
+                className={`flex items-center gap-3 p-2 rounded-lg transition-all border-l-4 ${
+                  entry.isSelected
+                    ? 'bg-sky-100/70 border-sky-500'
+                    : 'border-transparent hover:bg-slate-200/60'
+                }`}
+              >
+                <span
+                  className="h-3 w-3 rounded-full"
+                  style={{ backgroundColor: CATEGORY_COLORS[entry.category] }}
+                />
+                <div className="flex-1">
+                  <span
+                    className={`text-sm font-medium ${
+                      entry.isSelected ? 'text-sky-800 font-bold' : 'text-slate-700'
+                    }`}
+                  >
+                    {entry.category.split('(')[0].trim()}
+                  </span>
+                </div>
+                <div className="text-right">
+                  <div
+                    className={`font-bold ${entry.isSelected ? 'text-sky-800' : 'text-slate-800'}`}
+                  >
+                    {entry.count}
+                  </div>
+                  <div className="text-xs text-slate-500">{entry.percent}%</div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      {/* 3. FOOTER */}
+      <div className="pt-4 mt-auto text-right w-full">
+        <span className="text-xs text-slate-400">
+          Fonte: IBGE, Censo Demográfico 2022.
         </span>
       </div>
     </div>
